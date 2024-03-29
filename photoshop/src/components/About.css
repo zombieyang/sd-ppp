@@ -1,0 +1,76 @@
+.aboutDialog sp-heading {
+    margin-top: 0;
+}
+.aboutDialog sp-divider {
+    margin: 8px 0;
+}
+
+.aboutDialog sp-button-group {
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.aboutDialog sp-button-group > * {
+    margin: 0 8px;
+}
+
+.aboutDialog sp-button-group > *:first-child {
+    margin-left: 0;
+}
+
+.aboutDialog sp-button-group > *:last-child {
+    margin-right: 0;
+}
+
+.aboutDialog .well {
+    border-radius: 8px;
+    width: 100%;
+    background-color: #095aba;
+    padding: 16px;
+    padding-left: 44px;
+    position: relative;
+    color: #e1e1e1;
+}
+
+.aboutDialog .well sp-icon {
+    position: absolute;
+    top: 18px;
+    left: 16px;
+}
+
+.aboutDialog .table {
+    display: flex;
+    flex-direction: column;
+    background-color: #00000025;
+    padding: 16px;
+    border-radius: 4px;
+}
+
+.aboutDialog .table div {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+    border-radius: 2px;
+}
+
+.aboutDialog .table div:nth-child(odd) {
+    background-color: #00000025;
+}
+
+.aboutDialog .table div sp-detail {
+    text-align: right;
+    flex: 0 0 66%;
+    padding-top: 2px;
+    margin-right: 1em;
+}
+
+.aboutDialog .table div sp-body {
+    flex: 1 1 auto;
+}
+
+.aboutDialog code {
+    font-family: 'Menlo', 'Courier New', Courier, monospace
+}

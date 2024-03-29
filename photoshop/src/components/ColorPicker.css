@@ -1,0 +1,103 @@
+
+.colorPicker .color {
+    margin: 16px auto;
+    height: 64px;
+    width: 64px;
+    border-radius: 8px;
+    position: relative;
+    border: 1px solid #252525;
+    outline: 1px solid #8C8C8C;
+    outline-radius: 10px;
+}
+
+.colorPicker .color:after {
+    content: ' ';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 1px solid white;
+    border-radius: 8px;
+}
+
+@media (prefers-color-scheme: darkest) {
+    .colorPicker .color {
+        outline-color: #6E6E6E;
+    }
+}
+@media (prefers-color-scheme: light), (prefers-color-scheme: lightest) {
+    .colorPicker .color {
+        outline-color: #FFFFFF;
+    }
+}
+
+
+.colorPicker .filledRange {
+    position: relative;
+}
+
+.colorPicker .sliderWithInput {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.colorPicker .sliderWithInput > *:first-child {
+    flex: 1 1 auto;
+}
+
+.colorPicker .sliderWithInput > *:last-child {
+    margin-left: 8px;
+    flex: 0 0 auto;
+    width: 50px;
+}
+.colorPicker sp-textfield {
+    height: 24px;
+    background-color: transparent;
+}
+
+.colorPicker sp-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.colorPicker sp-slider:focus {
+    outline: 1px solid #2680eb;
+    outline-radius: 4px;
+}
+
+@media (prefers-color-scheme: darkest), (prefers-color-scheme: lightest) {
+    .colorPicker sp-slider:focus {
+        outline-color: #2185E6
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .colorPicker sp-slider:focus {
+        outline-color: #3592EB
+    }
+}
+@media (prefers-color-scheme: light) {
+    .colorPicker sp-slider:focus {
+        outline-color: #0679E0
+    }
+}
+
+.colorPicker .gradient {
+    margin-top: 21px;
+    height: 14px;
+    margin-bottom: 28px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-left: 8px; 
+    margin-right: 8px;
+}
+
+.colorPicker .gradient.red {
+    background: linear-gradient(to right, #000000, #FF0000);
+}
+.colorPicker .gradient.green {
+    background: linear-gradient(to right, #000000, #00FF00);
+}
+.colorPicker .gradient.blue {
+    background: linear-gradient(to right, #000000, #0000FF);
+}
