@@ -66,9 +66,9 @@ class PhotoshopInstance:
         await asyncio.sleep(1)
         while (self.destroyed == False and self.wsCallsManager.ws.closed == False):
             try:
-                print('start poll layers')
+                # print('start poll layers')
                 self.layers = await self.get_layers()
-                print('layers done')
+                # print('layers done')
             except Exception as e:
                 await asyncio.sleep(3)
             finally:
