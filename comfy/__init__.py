@@ -324,5 +324,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     'Get Image From Photoshop Layer': 'Get image from Photoshop layer',
     'Send Images To Photoshop': 'Send images to Photoshop' 
 }
-WEB_DIRECTORY = 'plugins'
+WEB_DIRECTORY = 'comfy/plugins'
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
