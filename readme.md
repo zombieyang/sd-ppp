@@ -7,7 +7,7 @@
 
 2. install photoshop plugin
     1. by CXX:
-        1. download http://<your-comfy-url>/extensions/sd-ppp/sd-ppp_PS.ccx.
+        1. download `http://<your-comfy-url>/extensions/sd-ppp/sd-ppp_PS.ccx.`
         2. double click it. Or place it to the photoshop plugin directory.
     2. by UXP develop Tool (you can debug the code by this way):
         1. clone this repository
