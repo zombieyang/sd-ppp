@@ -1,4 +1,4 @@
-# SD-PPP  Photoshop Helper for ComfyUI
+# SD-PPP: Photoshop Helper for ComfyUI
 
 ## How to use
 1. Use ComfyManager to install `sd-ppp`
