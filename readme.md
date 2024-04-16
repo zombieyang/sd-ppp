@@ -11,7 +11,7 @@
         2. double click the `.ccx` file. Or place it into photoshop's plugin directory.
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
-        2. run `npm install` and `npm build` in `photoshop` directory.
+        2. [optionnal] run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
         3. click `Add Plugin` in UXP Develop Tool by selecting `photoshop/dist/manifest.json`.
 
 3. connect to comfyUI in Photoshop

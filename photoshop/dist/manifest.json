@@ -1,0 +1,128 @@
+{
+  "id": "sd-ppp",
+  "name": "SD-PPP",
+  "version": "1.0.0",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "host": [
+    {
+      "app": "PS",
+      "minVersion": "25.4.0"
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+        "domains": "all"
+    },
+    "allowCodeGenerationFromStrings": true,
+    "launchProcess": {
+      "schemes": [
+        "http",
+        "https"
+      ],
+      "extensions": [
+        ".svg",
+        ".png"
+      ]
+    },
+    "webview": {
+      "allow": "yes",
+      "domains": [
+        "https://*.adobe.com"
+      ]
+    }
+  },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "comfy-connect",
+      "label": {
+        "default": "Connect ComfyUI"
+      },
+      "minimumSize": {
+        "width": 300,
+        "height": 100
+      },
+      "maximumSize": {
+        "width": 400,
+        "height": 100
+      },
+      "preferredDockedSize": {
+        "width": 300,
+        "height": 100
+      },
+      "preferredFloatingSize": {
+        "width": 300,
+        "height": 100
+      },
+      "icons": [
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_D.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "dark",
+            "darkest"
+          ],
+          "species": [
+            "generic"
+          ]
+        },
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_N.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "lightest",
+            "light"
+          ],
+          "species": [
+            "generic"
+          ]
+        }
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "width": 32,
+      "height": 32,
+      "path": "icons/icon_D.png",
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "dark",
+        "darkest"
+      ],
+      "species": [
+        "generic"
+      ]
+    },
+    {
+      "width": 32,
+      "height": 32,
+      "path": "icons/icon_N.png",
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "lightest",
+        "light"
+      ],
+      "species": [
+        "generic"
+      ]
+    }
+  ]
+}
