@@ -33,6 +33,9 @@ class ComfyConnection {
     comfyURL = '';
     constructor(comfyURL) {
         ComfyConnection.instance = this;
+        if (!comfyURL) {
+            comfyURL = 'http://127.0.0.1:8188'
+        }
         this.comfyURL = comfyURL.replace(/\/*$/, '');
         this.connect();
     }
