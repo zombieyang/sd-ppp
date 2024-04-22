@@ -167,6 +167,90 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const executeAsModal = photoshop__WEBPACK_IMPORTED_MODULE_0__.core.executeAsModal;
+function getDesiredBounds(layer, boundsLayer) {
+  // layer null = document data which does not matter with bounds so not dealing with it
+  if (!layer) true; // intentionally passing
+  const docBounds = {
+    left: 0,
+    top: 0,
+    right: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
+    bottom: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height,
+    width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
+    height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
+  };
+  // empty layer = document bounds
+  const bounds = layer?.bounds;
+  const isEmptyLayer = (bounds?.left == 0 && bounds?.top == 0 && bounds?.right == 0 && bounds?.bottom == 0) ?? false;
+  if (isEmptyLayer) return docBounds;
+  // null boundsLayer = document bounds
+  if (!boundsLayer) return docBounds;
+  // empty boundsLayer = document bounds
+  const boundsLayerBounds = boundsLayer.bounds;
+  const isEmptyBoundsLayer = boundsLayerBounds.left == 0 && boundsLayerBounds.top == 0 && boundsLayerBounds.right == 0 && boundsLayerBounds.bottom == 0;
+  if (isEmptyBoundsLayer) return docBounds;
+  // normal layer
+  let desireBounds = {
+    left: boundsLayerBounds.left,
+    top: boundsLayerBounds.top,
+    right: boundsLayerBounds.right,
+    bottom: boundsLayerBounds.bottom,
+    width: boundsLayerBounds.width,
+    height: boundsLayerBounds.height
+  };
+  return desireBounds;
+}
+async function getPixelsDataHelper(layer, desireBounds) {
+  let options = {
+    documentID: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.id,
+    applyAlpha: false,
+    sourceBounds: desireBounds
+  };
+  if (layer) options.layerID = layer.id;
+  let pixels;
+  try {
+    pixels = await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.getPixels(options);
+  } catch (e) {
+    console.error(e.message);
+    return new Uint8Array(desireBounds.width * desireBounds.height * 4);
+  }
+  let psImageData = pixels.imageData;
+  const pixelDataFromAPI = await psImageData.getData();
+  Promise.resolve().then(() => {
+    psImageData.dispose();
+  });
+  return pixelDataFromAPI;
+}
+async function getPixelsData(layer, desireBounds) {
+  // layer null = document data
+  if (!layer) {
+    return await getPixelsDataHelper(null, desireBounds);
+  }
+  // empty layer = empty data
+  const bounds = layer.bounds;
+  const isEmptyLayer = bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0;
+  if (isEmptyLayer) {
+    return new Uint8Array(desireBounds.width * desireBounds.height * 4);
+  }
+  // normal layer
+  return getPixelsDataHelper(layer, desireBounds);
+}
+
+// ps returns trimmed data so need padding
+function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds) {
+  if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
+    return pixelDataFromAPI;
+  }
+  let pixelDataForReturn = new Uint8Array(desireBounds.width * desireBounds.height * 4);
+  let bounds = {
+    left: 0,
+    top: 0,
+    right: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
+    bottom: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
+  };
+  if (layer) bounds = layer.bounds;
+  (0,_util__WEBPACK_IMPORTED_MODULE_2__.unTrimImageData)(pixelDataFromAPI, pixelDataForReturn, bounds, desireBounds);
+  return pixelDataForReturn;
+}
 class ComfyConnection {
   static instance = null;
   static _connectStateCallbacks = [];
@@ -194,6 +278,9 @@ class ComfyConnection {
   comfyURL = '';
   constructor(comfyURL) {
     ComfyConnection.instance = this;
+    if (!comfyURL) {
+      comfyURL = 'http://127.0.0.1:8188';
+    }
     this.comfyURL = comfyURL.replace(/\/*$/, '');
     this.connect();
   }
@@ -211,24 +298,43 @@ class ComfyConnection {
         }));
       } else if (payload.action == 'send_images') {
         const imageIds = payload.params.image_ids;
+        const layerName = payload.params.layer_name;
         await Promise.all(imageIds.map(async imageId => {
           let layer;
+          let existingLayerName;
+          let newLayerName;
           await executeAsModal(async () => {
-            layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
-              name: 'Comfy Images ' + imageId
-            });
+            if (layerName) {
+              let imageIndexSuffix = "";
+              if (imageIds.length > 1) {
+                imageIndexSuffix = ` ${imageIds.indexOf(imageId)}`;
+              }
+              existingLayerName = layerName + imageIndexSuffix;
+              layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers.find(l => l.name == existingLayerName);
+            }
+            if (!layer) {
+              newLayerName = existingLayerName ?? 'Comfy Images ' + imageId;
+              layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
+                name: newLayerName
+              });
+            }
           });
           const jimp = await _jimp_min__WEBPACK_IMPORTED_MODULE_3___default().read(this.comfyURL + '/finished_images?id=' + imageId);
+          let putPixelsOptions = {
+            layerID: layer.id,
+            imageData: await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.createImageDataFromBuffer(jimp.bitmap.data, {
+              width: jimp.bitmap.width,
+              height: jimp.bitmap.height,
+              components: 4,
+              colorSpace: "RGB"
+            }),
+            replace: true
+          };
+          if (!newLayerName) {
+            putPixelsOptions.targetBounds = layer.bounds;
+          }
           await executeAsModal(async () => {
-            await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels({
-              layerID: layer.id,
-              imageData: await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.createImageDataFromBuffer(jimp.bitmap.data, {
-                width: jimp.bitmap.width,
-                height: jimp.bitmap.height,
-                components: 4,
-                colorSpace: "RGB"
-              })
-            });
+            await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels(putPixelsOptions);
           });
         }));
         this.socket.send(JSON.stringify({
@@ -237,67 +343,32 @@ class ComfyConnection {
         }));
       } else if (payload.action == 'get_image') {
         const layerID = payload.params.layer_id;
+        const layerBoundsID = payload.params.use_layer_bounds;
         await executeAsModal(async () => {
           const startTime = Date.now();
           let uploadName = 0;
           try {
-            const layer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerID);
-            if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
-            const bounds = layer.bounds;
+            let layer;
+            if (layerID != -1) {
+              layer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerID);
+              if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
+            }
+            let boundsLayer;
+            if (layerBoundsID != -1) {
+              boundsLayer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerBoundsID);
+              if (!boundsLayer) throw new Error(`Bounds layer(id: ${layerBoundsID}) not found`);
+            }
             // TODO support selection area
-            const desireBounds = {
-              left: 0,
-              top: 0,
-              right: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-              bottom: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
-            };
-            const isEmptyLayer = bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0;
-            const isFitLayer = bounds.left == desireBounds.left && bounds.top == desireBounds.top && bounds.right == desireBounds.right && bounds.bottom == desireBounds.bottom;
-            let pixelDataFromAPI = null;
-            let pixelDataForReturn = null;
-            if (!isEmptyLayer) {
-              const pixels = await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.getPixels({
-                documentID: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.id,
-                layerID: layerID,
-                applyAlpha: false,
-                sourceBounds: {
-                  left: 0,
-                  top: 0,
-                  width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-                  height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
-                }
-              });
-              let psImageData = pixels.imageData;
-              // Uint8Array
-              pixelDataFromAPI = await psImageData.getData();
-              Promise.resolve().then(() => {
-                psImageData.dispose();
-              });
-            }
+            const desireBounds = getDesiredBounds(layer, boundsLayer);
+            const pixelDataFromAPI = await getPixelsData(layer, desireBounds);
+            const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds);
             // console.log('getPixels', Date.now() - startTime, 'ms');
-            if (isFitLayer) {
-              pixelDataForReturn = pixelDataFromAPI;
-            } else {
-              pixelDataForReturn = new Uint8Array(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width * photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height * 4);
-              if (!isEmptyLayer) {
-                (0,_util__WEBPACK_IMPORTED_MODULE_2__.unTrimImageData)(pixelDataFromAPI, pixelDataForReturn, {
-                  left: Math.max(bounds.left, 0),
-                  top: Math.max(bounds.top, 0),
-                  right: Math.min(bounds.right, photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width),
-                  bottom: Math.min(bounds.bottom, photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height)
-                }, {
-                  width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-                  height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
-                });
-              }
-            }
-
-            // console.log('untrimed', Date.now() - startTime, 'ms');
+            // log desire size
             const image = await new Promise((resolve, reject) => {
               new (_jimp_min__WEBPACK_IMPORTED_MODULE_3___default())({
                 data: pixelDataForReturn,
-                width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-                height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
+                width: desireBounds.width,
+                height: desireBounds.height
               }, (err, image) => {
                 err ? reject(err) : resolve(image);
               });
@@ -408,29 +479,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getAllSubLayer: () => (/* binding */ getAllSubLayer),
 /* harmony export */   unTrimImageData: () => (/* binding */ unTrimImageData)
 /* harmony export */ });
-function unTrimImageData(fromImageDataArray, toImageDataArray, fromImageBound, toImageSize) {
-  const boundLeft = fromImageBound.left;
-  const boundTop = fromImageBound.top;
-  const boundRight = fromImageBound.right;
-  const boundBottom = fromImageBound.bottom;
-  const toWidth = toImageSize.width;
-  const toHeight = toImageSize.height;
+function unTrimImageData(intersectImageDataArray, toImageDataArray, fromImageBounds, toImageBounds) {
+  const fromLeft = fromImageBounds.left;
+  const fromTop = fromImageBounds.top;
+  const fromRight = fromImageBounds.right;
+  const fromBottom = fromImageBounds.bottom;
+  const fromWidth = fromRight - fromLeft;
+  const fromHeight = fromBottom - fromTop;
+  const toLeft = toImageBounds.left;
+  const toTop = toImageBounds.top;
+  const toRight = toImageBounds.right;
+  const toBottom = toImageBounds.bottom;
+  const toWidth = toRight - toLeft;
+  const toHeight = toBottom - toTop;
+  const intersectLeft = Math.max(fromLeft, toLeft);
+  const intersectTop = Math.max(fromTop, toTop);
+  const intersectRight = Math.min(fromRight, toRight);
+  const intersectBottom = Math.min(fromBottom, toBottom);
+  const intersectWidth = intersectRight - intersectLeft;
+  const intersectHeight = intersectBottom - intersectTop;
   const toLength = toWidth * toHeight * 4;
   if (toImageDataArray.length !== toLength) {
     throw new Error(`toImageDataArray.length(${toImageDataArray.length}) !== toLength(${toLength})`);
   }
-  if (fromImageDataArray.length !== (boundRight - boundLeft) * (boundBottom - boundTop) * 4) {
-    throw new Error(`fromImageDataArray.length(${fromImageDataArray.length}) !== boundSize(${(boundRight - boundLeft) * (boundBottom - boundTop) * 4})`);
+  const intersectLength = intersectWidth * intersectHeight * 4;
+  if (intersectImageDataArray.length !== intersectLength) {
+    throw new Error(`fromImageDataArray.length(${intersectImageDataArray.length}) !== fromLength(${intersectLength})`);
   }
   for (let i = 0; i < toLength; i += 4) {
-    const currentLeft = i / 4 % toWidth;
-    const currentTop = Math.floor(i / 4 / toWidth);
-    if (!(currentLeft < boundLeft || currentLeft >= boundRight || currentTop < boundTop || currentTop >= boundBottom)) {
-      const fromIndex = ((currentTop - boundTop) * (boundRight - boundLeft) + (currentLeft - boundLeft)) * 4;
-      const alpha = fromImageDataArray[fromIndex + 3];
-      toImageDataArray[i] = alpha == 0 ? 0 : fromImageDataArray[fromIndex];
-      toImageDataArray[i + 1] = alpha == 0 ? 0 : fromImageDataArray[fromIndex + 1];
-      toImageDataArray[i + 2] = alpha == 0 ? 0 : fromImageDataArray[fromIndex + 2];
+    const currentLeft = i / 4 % toWidth + toLeft;
+    const currentTop = Math.floor(i / 4 / toWidth) + toTop;
+    if (currentLeft >= fromLeft && currentLeft < fromRight && currentTop >= fromTop && currentTop < fromBottom) {
+      const fromIndex = ((currentTop - intersectTop) * intersectWidth + (currentLeft - intersectLeft)) * 4;
+      const alpha = intersectImageDataArray[fromIndex + 3];
+      toImageDataArray[i] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex];
+      toImageDataArray[i + 1] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex + 1];
+      toImageDataArray[i + 2] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex + 2];
       toImageDataArray[i + 3] = alpha;
     }
   }

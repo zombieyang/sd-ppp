@@ -4,6 +4,97 @@ import { findInAllSubLayer, getAllSubLayer, unTrimImageData } from "./util";
 import Jimp from "./jimp.min";
 const executeAsModal = core.executeAsModal;
 
+function getDesiredBounds(layer, boundsLayer) {
+    // layer null = document data which does not matter with bounds so not dealing with it
+    if (!layer) true; // intentionally passing
+    const docBounds = {
+        left: 0, 
+        top: 0, 
+        right: app.activeDocument.width, 
+        bottom: app.activeDocument.height,
+        width: app.activeDocument.width,
+        height: app.activeDocument.height
+    };
+    // empty layer = document bounds
+    const bounds = layer?.bounds;
+    const isEmptyLayer = (bounds?.left == 0 && bounds?.top == 0 && bounds?.right == 0 && bounds?.bottom == 0) ?? false;
+    if (isEmptyLayer) return docBounds;
+    // null boundsLayer = document bounds
+    if (!boundsLayer) return docBounds;
+    // empty boundsLayer = document bounds
+    const boundsLayerBounds = boundsLayer.bounds
+    const isEmptyBoundsLayer = boundsLayerBounds.left == 0 && boundsLayerBounds.top == 0 && boundsLayerBounds.right == 0 && boundsLayerBounds.bottom == 0;
+    if (isEmptyBoundsLayer) return docBounds;
+    // normal layer
+    let desireBounds = {
+        left: boundsLayerBounds.left,
+        top: boundsLayerBounds.top,
+        right: boundsLayerBounds.right,
+        bottom: boundsLayerBounds.bottom,
+        width: boundsLayerBounds.width,
+        height: boundsLayerBounds.height
+    };
+    return desireBounds
+}
+
+async function getPixelsDataHelper(layer, desireBounds) {
+    let options = {
+        documentID: app.activeDocument.id,
+        applyAlpha: false,
+        sourceBounds: desireBounds,
+    }
+    if (layer) options.layerID = layer.id
+    let pixels;
+    try {
+        pixels = await imaging.getPixels(options)
+    } catch (e) {
+        console.error(e.message)
+        return new Uint8Array(desireBounds.width * desireBounds.height * 4);
+    }
+    let psImageData = pixels.imageData
+    const pixelDataFromAPI = await psImageData.getData()
+    Promise.resolve().then(() => { psImageData.dispose() })
+    return pixelDataFromAPI
+}
+
+async function getPixelsData(layer, desireBounds) {
+    // layer null = document data
+    if (!layer) {
+        return await getPixelsDataHelper(null, desireBounds);
+    }
+    // empty layer = empty data
+    const bounds = layer.bounds;
+    const isEmptyLayer = bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0;
+    if (isEmptyLayer) {
+        return new Uint8Array(desireBounds.width * desireBounds.height * 4);
+    }
+    // normal layer
+    return getPixelsDataHelper(layer, desireBounds);
+}
+
+// ps returns trimmed data so need padding
+function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds) {
+    if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
+        return pixelDataFromAPI;
+    }
+    let pixelDataForReturn = new Uint8Array(desireBounds.width * desireBounds.height * 4);
+    let bounds = {
+        left: 0,
+        top: 0,
+        right: app.activeDocument.width,
+        bottom: app.activeDocument.height,
+    }
+    if (layer) 
+        bounds = layer.bounds;
+    unTrimImageData(
+        pixelDataFromAPI,
+        pixelDataForReturn, 
+        bounds,
+        desireBounds
+    )
+    return pixelDataForReturn;
+}
+
 class ComfyConnection {
     static instance = null;
 
@@ -56,30 +147,48 @@ class ComfyConnection {
 
             } else if (payload.action == 'send_images') {
                 const imageIds = payload.params.image_ids
+                const layerName = payload.params.layer_name
                 await Promise.all(
                     imageIds.map(async imageId => {
                         let layer;
+                        let existingLayerName;
+                        let newLayerName;
                         await executeAsModal(async () => {
-                            layer = await app.activeDocument.createLayer("pixel", {
-                                name: 'Comfy Images ' + imageId
-                            })
+                            if (layerName) {
+                                let imageIndexSuffix = ""
+                                if (imageIds.length > 1){
+                                    imageIndexSuffix = ` ${imageIds.indexOf(imageId)}`
+                                }
+                                existingLayerName = layerName + imageIndexSuffix
+                                layer = await app.activeDocument.layers.find(l => l.name == existingLayerName)
+                            }
+                            if (!layer) {
+                                newLayerName = existingLayerName ?? 'Comfy Images ' + imageId
+                                layer = await app.activeDocument.createLayer("pixel", {
+                                    name: newLayerName
+                                })
+                            }
                         })
 
                         const jimp = await Jimp.read(this.comfyURL + '/finished_images?id=' + imageId)
-
+                        let putPixelsOptions = {
+                            layerID: layer.id,
+                            imageData: await imaging.createImageDataFromBuffer(
+                                jimp.bitmap.data,
+                                {
+                                    width: jimp.bitmap.width,
+                                    height: jimp.bitmap.height,
+                                    components: 4,
+                                    colorSpace: "RGB"
+                                }
+                            ),
+                            replace: true,
+                        }
+                        if (!newLayerName) {
+                            putPixelsOptions.targetBounds = layer.bounds
+                        }
                         await executeAsModal(async () => {
-                            await imaging.putPixels({
-                                layerID: layer.id,
-                                imageData: await imaging.createImageDataFromBuffer(
-                                    jimp.bitmap.data,
-                                    {
-                                        width: jimp.bitmap.width,
-                                        height: jimp.bitmap.height,
-                                        components: 4,
-                                        colorSpace: "RGB"
-                                    }
-                                )
-                            })
+                            await imaging.putPixels(putPixelsOptions)
                         })
                     })
                 )
@@ -92,73 +201,33 @@ class ComfyConnection {
 
             } else if (payload.action == 'get_image') {
                 const layerID = payload.params.layer_id
+                const layerBoundsID = payload.params.use_layer_bounds
 
                 await executeAsModal(async () => {
                     const startTime = Date.now();
                     let uploadName = 0;
                     try {
-                        const layer = findInAllSubLayer(app.activeDocument, layerID)
-                        if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
-
-                        const bounds = layer.bounds;
+                        let layer;
+                        if (layerID != -1) {
+                            layer = findInAllSubLayer(app.activeDocument, layerID)
+                            if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
+                        }
+                        let boundsLayer;
+                        if (layerBoundsID != -1) {
+                            boundsLayer = findInAllSubLayer(app.activeDocument, layerBoundsID)
+                            if (!boundsLayer) throw new Error(`Bounds layer(id: ${layerBoundsID}) not found`);
+                        }
                         // TODO support selection area
-                        const desireBounds = {
-                            left: 0,
-                            top: 0,
-                            right: app.activeDocument.width,
-                            bottom: app.activeDocument.height
-                        }
-                        const isEmptyLayer = bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0;
-                        const isFitLayer = bounds.left == desireBounds.left && bounds.top == desireBounds.top && bounds.right == desireBounds.right && bounds.bottom == desireBounds.bottom;
-                        let pixelDataFromAPI = null;
-                        let pixelDataForReturn = null;
-                        if (!isEmptyLayer) {
-                            const pixels = await imaging.getPixels({
-                                documentID: app.activeDocument.id,
-                                layerID: layerID,
-                                applyAlpha: false,
-                                sourceBounds: {
-                                    left: 0,
-                                    top: 0,
-                                    width: app.activeDocument.width,
-                                    height: app.activeDocument.height
-                                }
-                            })
-        
-                            let psImageData = pixels.imageData
-                            // Uint8Array
-                            pixelDataFromAPI = await psImageData.getData()
-                            Promise.resolve().then(() => { psImageData.dispose() })
-                        }
+                        const desireBounds = getDesiredBounds(layer, boundsLayer);
+                        const pixelDataFromAPI = await getPixelsData(layer, desireBounds)
+                        const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
                         // console.log('getPixels', Date.now() - startTime, 'ms');
-                        if (isFitLayer) {
-                            pixelDataForReturn = pixelDataFromAPI;
-
-                        } else {
-                            pixelDataForReturn = new Uint8Array(app.activeDocument.width * app.activeDocument.height * 4)
-                            if (!isEmptyLayer) {
-                                unTrimImageData(
-                                    pixelDataFromAPI,
-                                    pixelDataForReturn, {
-                                        left: Math.max(bounds.left, 0),
-                                        top: Math.max(bounds.top, 0),
-                                        right: Math.min(bounds.right, app.activeDocument.width),
-                                        bottom: Math.min(bounds.bottom, app.activeDocument.height)
-                                    }, {
-                                        width: app.activeDocument.width,
-                                        height: app.activeDocument.height
-                                    }
-                                )
-                            }
-
-                        }
-
-                        // console.log('untrimed', Date.now() - startTime, 'ms');
+                        // log desire size
                         const image = await new Promise((resolve, reject)=> {
                             new Jimp({
                                 data: pixelDataForReturn,
-                                width: app.activeDocument.width,
-                                height: app.activeDocument.height
+                                width: desireBounds.width,
+                                height: desireBounds.height
                             }, (err, image) => {
                                 err ? reject(err) : resolve(image);
                             })                                          

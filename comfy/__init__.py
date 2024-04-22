@@ -110,13 +110,13 @@ class PhotoshopInstance:
         layers = result['layers']                           
         return layers
         
-    async def get_image(self, layer_id):
-        result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id}, timeout=60)
+    async def get_image(self, layer_id, use_layer_bounds=False):
+        result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': use_layer_bounds}, timeout=60)
         id = result['upload_name']
         return id
     
-    async def send_images(self, image_ids):
-        result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids})
+    async def send_images(self, image_ids, layer_name=""):
+        result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids, 'layer_name': layer_name})
         return result
             
     async def destroy(self):
@@ -238,14 +238,18 @@ class GetImageFromPhotoshopLayerNode:
     def INPUT_TYPES(cls):
         if (PhotoshopInstance.instance is None):
             layer_strs = []
+            bounds_strs = []
         else:
-            layer_strs = list(map(lambda layer: 
-                f"{layer['name']} (id:{layer['id']})"
-            , PhotoshopInstance.instance.layers))
-            
+            layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", PhotoshopInstance.instance.layers))
+            layer_strs.insert(0, 'Canvas')
+            bounds_strs = list(layer_strs)
+            bounds_strs.insert(0, 'Same as layer')
+        
+        
         return {
             "required": {
-                "layer": (layer_strs, ),
+                "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
+                "use_layer_bounds": (bounds_strs, {"default": bounds_strs[0] if len(bounds_strs) > 0 else None}),
             }
         }
 
@@ -254,13 +258,22 @@ class GetImageFromPhotoshopLayerNode:
     FUNCTION = "get_image"
     CATEGORY = "Photoshop"
 
-    def get_image(self, layer):
+    def get_image(self, layer, use_layer_bounds):
         if (PhotoshopInstance.instance is None):
             raise ValueError('Photoshop is not connected')
-        
-        layer_name_and_id_split = layer.split('(id:')
-        id = int(layer_name_and_id_split.pop().strip()[:-1])
-        image_id = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id))
+        id = -1
+        layer_all = layer == 'Canvas'
+        if not layer_all:
+            layer_name_and_id_split = layer.split('(id:')
+            id = int(layer_name_and_id_split.pop().strip()[:-1])
+        bounds_id = -1
+        bounds_layer_all = use_layer_bounds == 'Canvas'
+        if use_layer_bounds == 'Same as layer':
+            bounds_id = id
+        elif not bounds_layer_all:
+            bounds_layer_name_and_id_split = use_layer_bounds.split('(id:')
+            bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
+        image_id = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id, use_layer_bounds=bounds_id))
         
         loadImage = LoadImage()
         (output_image, output_mask) = loadImage.load_image(image_id)
@@ -270,6 +283,17 @@ class GetImageFromPhotoshopLayerNode:
         
         return (output_image,)
     
+
+def cache_images(images):
+    ret = []
+    for (batch_number, image) in enumerate(images):
+        i = 255. * image.cpu().numpy()
+        img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+        ImageCache.image_id_inc += 1
+        image_id = ImageCache.image_id_inc
+        ImageCache.data[image_id] = img
+        ret.append(image_id)
+    return ret
 class SendImageToPhotoshopLayerNode:
     @classmethod
     def VALIDATE_INPUTS(s, images):
@@ -294,16 +318,39 @@ class SendImageToPhotoshopLayerNode:
         if (PhotoshopInstance.instance is None):
             raise ValueError('Photoshop is not connected')
         
-        ret = []
-        for (batch_number, image) in enumerate(images):
-            i = 255. * image.cpu().numpy()
-            img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-            ImageCache.image_id_inc += 1
-            image_id = ImageCache.image_id_inc
-            ImageCache.data[image_id] = img
-            ret.append(image_id)
+        ret = cache_images(images)
         
         threading.Thread(target=lambda: asyncio.run(PhotoshopInstance.instance.send_images(image_ids=ret))).start()
+        return (None,)
+
+class SendImageToPhotoshopSetLayerNode:
+    @classmethod
+    def VALIDATE_INPUTS(s, images):
+        if (PhotoshopInstance.instance is None):
+            return 'Photoshop is not connected'
+        return True
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "images": ("IMAGE", ),
+                "layer_name": (("STRING", {"default": "COMFY RESULT"}))
+            }
+        }
+
+    RETURN_TYPES = ()
+    FUNCTION = "send_image"
+    CATEGORY = "Photoshop"
+    OUTPUT_NODE = True
+
+    def send_image(self, images, layer_name):
+        if (PhotoshopInstance.instance is None):
+            raise ValueError('Photoshop is not connected')
+        
+        ret = cache_images(images)
+        
+        threading.Thread(target=lambda: asyncio.run(PhotoshopInstance.instance.send_images(image_ids=ret, layer_name=layer_name))).start()
         return (None,)
 
 loop = None
@@ -318,11 +365,13 @@ def _invoke_async(call):
 
 NODE_CLASS_MAPPINGS = { 
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
-    'Send Images To Photoshop': SendImageToPhotoshopLayerNode 
+    'Send Images To Photoshop': SendImageToPhotoshopLayerNode,
+    'Send Images To Photoshop Set Layer': SendImageToPhotoshopSetLayerNode,
 }
 NODE_DISPLAY_NAME_MAPPINGS = { 
     'Get Image From Photoshop Layer': 'Get image from Photoshop layer',
-    'Send Images To Photoshop': 'Send images to Photoshop' 
+    'Send Images To Photoshop': 'Send images to Photoshop',
+    'Send Images To Photoshop And Set Layer': 'Send images to Photoshop And Set Layer',
 }
 WEB_DIRECTORY = 'comfy/plugins'
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
