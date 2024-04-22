@@ -1,40 +1,54 @@
 
 export function unTrimImageData(
-    fromImageDataArray,
+    intersectImageDataArray,
     toImageDataArray,
-    fromImageBound,
-    toImageSize
+    fromImageBounds,
+    toImageBounds
 ) {
-    const boundLeft = fromImageBound.left;
-    const boundTop = fromImageBound.top;
-    const boundRight = fromImageBound.right;
-    const boundBottom = fromImageBound.bottom;
+    const fromLeft = fromImageBounds.left;
+    const fromTop = fromImageBounds.top;
+    const fromRight = fromImageBounds.right;
+    const fromBottom = fromImageBounds.bottom;
+    const fromWidth = fromRight - fromLeft;
+    const fromHeight = fromBottom - fromTop;
 
-    const toWidth = toImageSize.width;
-    const toHeight = toImageSize.height;
+    const toLeft = toImageBounds.left;
+    const toTop = toImageBounds.top;
+    const toRight = toImageBounds.right;
+    const toBottom = toImageBounds.bottom;
+    const toWidth = toRight - toLeft;
+    const toHeight = toBottom - toTop;
+
+    const intersectLeft = Math.max(fromLeft, toLeft);
+    const intersectTop = Math.max(fromTop, toTop);
+    const intersectRight = Math.min(fromRight, toRight);
+    const intersectBottom = Math.min(fromBottom, toBottom);
+    const intersectWidth = intersectRight - intersectLeft;
+    const intersectHeight = intersectBottom - intersectTop;
 
     const toLength = toWidth * toHeight * 4;
     if (toImageDataArray.length !== toLength) {
         throw new Error(`toImageDataArray.length(${toImageDataArray.length}) !== toLength(${toLength})`);
     }
-    if (fromImageDataArray.length !== (boundRight - boundLeft) * (boundBottom - boundTop) * 4) {
-        throw new Error(`fromImageDataArray.length(${fromImageDataArray.length}) !== boundSize(${(boundRight - boundLeft) * (boundBottom - boundTop) * 4})`);
+    const intersectLength = intersectWidth * intersectHeight * 4;
+    if (intersectImageDataArray.length !== intersectLength) {
+        throw new Error(`fromImageDataArray.length(${intersectImageDataArray.length}) !== fromLength(${intersectLength})`);
     }
 
     for (let i = 0; i < toLength; i += 4) {
-        const currentLeft = (i / 4) % toWidth;
-        const currentTop = Math.floor((i / 4) / toWidth);
+        const currentLeft = (i / 4) % toWidth + toLeft;
+        const currentTop = Math.floor((i / 4) / toWidth) + toTop;
         if (
-            !(currentLeft < boundLeft || 
-            currentLeft >= boundRight || 
-            currentTop < boundTop || 
-            currentTop >= boundBottom)
+            currentLeft >= fromLeft &&
+            currentLeft < fromRight &&
+            currentTop >= fromTop &&
+            currentTop < fromBottom
         ) {
-            const fromIndex = ((currentTop - boundTop) * (boundRight - boundLeft) + (currentLeft - boundLeft)) * 4;
-            const alpha = fromImageDataArray[fromIndex + 3];
-            toImageDataArray[i] = alpha == 0 ? 0 : fromImageDataArray[fromIndex];
-            toImageDataArray[i + 1] = alpha == 0 ? 0 : fromImageDataArray[fromIndex + 1];
-            toImageDataArray[i + 2] = alpha == 0 ? 0 : fromImageDataArray[fromIndex + 2];
+            const fromIndex = ((currentTop - intersectTop) * intersectWidth + (currentLeft - intersectLeft)) * 4;
+            const alpha = intersectImageDataArray[fromIndex + 3];
+            toImageDataArray[i] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex];
+            toImageDataArray[i + 1] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex + 1];
+            toImageDataArray[i + 2] = alpha == 0 ? 0 : intersectImageDataArray[fromIndex + 2];
             toImageDataArray[i + 3] = alpha;
         }
     }
