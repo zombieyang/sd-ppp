@@ -413,6 +413,23 @@ class ComfyConnection {
         }, {
           commandName: "get content of layer " + layerID
         });
+      } else if (payload.action == 'get_active_history_state_id') {
+        try {
+          const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.historyStates;
+          const historyState = historyStates[historyStates.length - 1];
+          this.socket.send(JSON.stringify({
+            call_id: payload.call_id,
+            result: {
+              history_state_id: historyState.id
+            }
+          }));
+        } catch (e) {
+          this.socket.send(JSON.stringify({
+            call_id: payload.call_id,
+            error: e.message
+          }));
+          throw e;
+        }
       }
     } catch (e) {
       console.error(e);

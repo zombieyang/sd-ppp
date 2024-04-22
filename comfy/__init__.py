@@ -61,6 +61,9 @@ class PhotoshopInstance:
         self.wsCallsManager = WSCallsManager(ws)
         self.destroyed = False
         self.layers = []
+        self.get_img_state_id = None
+        self.last_get_img_id = None
+        self.send_img_state_id = None
         
     async def poll_layers(self):
         await asyncio.sleep(1)
@@ -111,13 +114,33 @@ class PhotoshopInstance:
         return layers
         
     async def get_image(self, layer_id, use_layer_bounds=False):
+        history_state_id = await self.get_active_history_state_id()
+        if self.get_img_state_id == history_state_id:
+            return self.last_get_img_id
         result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': use_layer_bounds}, timeout=60)
         id = result['upload_name']
+        self.get_img_state_id = history_state_id
+        self.last_get_img_id = id
         return id
     
+    def is_get_image_changed(self):
+        current_id = _invoke_async(self.get_active_history_state_id())
+        return self.get_img_state_id != current_id
+
     async def send_images(self, image_ids, layer_name=""):
+        history_state_id = await self.get_active_history_state_id()
+        if self.send_img_state_id == history_state_id:
+            return {}
         result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids, 'layer_name': layer_name})
+        history_state_id = await self.get_active_history_state_id() # need to get new id after operation, it causes history change
+        self.send_img_state_id = history_state_id
+        self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
         return result
+    
+    async def get_active_history_state_id(self):
+        result = await self.wsCallsManager.call('get_active_history_state_id', {})
+        id = result['history_state_id']
+        return id
             
     async def destroy(self):
         await self.wsCallsManager.ws.close()
@@ -231,8 +254,11 @@ class GetImageFromPhotoshopLayerNode:
         return True
     
     @classmethod
-    def IS_CHANGED(s, layer):
-        return np.random.rand()
+    def IS_CHANGED(self, layer, use_layer_bounds):
+        if (PhotoshopInstance.instance is None):
+            return np.random.rand()
+        else:
+            return PhotoshopInstance.instance.is_get_image_changed()
     
     @classmethod
     def INPUT_TYPES(cls):
@@ -277,9 +303,6 @@ class GetImageFromPhotoshopLayerNode:
         
         loadImage = LoadImage()
         (output_image, output_mask) = loadImage.load_image(image_id)
-        
-        # image_out = ImageCache.data[id]
-        # ImageCache.data.pop(id)
         
         return (output_image,)
     
