@@ -66,7 +66,6 @@ class PhotoshopInstance:
         self.push_data = {}
         self.get_img_state_id = None
         self.last_get_img_id = None
-        self.send_img_state_id = None
         
     async def poll_layers(self):
         await asyncio.sleep(1)
@@ -139,12 +138,8 @@ class PhotoshopInstance:
         return self.get_img_state_id != current_id
 
     async def send_images(self, image_ids, layer_name=""):
-        history_state_id = await self.get_active_history_state_id()
-        if self.send_img_state_id == history_state_id:
-            return {}
         result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids, 'layer_name': layer_name})
         history_state_id = await self.get_active_history_state_id() # need to get new id after operation, it causes history change
-        self.send_img_state_id = history_state_id
         self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
         return result
     
