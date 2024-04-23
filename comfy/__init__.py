@@ -66,6 +66,7 @@ class PhotoshopInstance:
         self.push_data = {}
         self.get_img_state_id = None
         self.last_get_img_id = None
+        self.change_tracker = {}
         
     async def poll_layers(self):
         await asyncio.sleep(1)
@@ -112,26 +113,40 @@ class PhotoshopInstance:
             print('Photoshop Disconnected')
             PhotoshopInstance.instance = None
     
-    def get_push_state_id(self):
-        return self.push_data.get('history_state_id', None)
-            
+    async def check_layer_bounds_combo_changed(self, layer, use_layer_bounds):
+        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+        layer_bounds_history_state_id = self.change_tracker.get(layer_bounds_combo, None)
+        if layer_bounds_history_state_id is None:
+            return True
+        latest_state_id = self.get_push_history_state_id() or await self.get_active_history_state_id()
+        if latest_state_id != layer_bounds_history_state_id:
+            return True, latest_state_id
+        return False, latest_state_id
+    
+    async def update_layer_bounds_history_state_id(self, layer, use_layer_bounds):
+        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+        latest_state_id = self.get_push_history_state_id() or await self.get_active_history_state_id()
+        self.change_tracker[layer_bounds_combo] = latest_state_id
+        return latest_state_id
+
     async def get_layers(self):
         result = await self.wsCallsManager.call('get_layers', {})
         layers = result['layers']                           
         return layers
         
-    async def get_image(self, layer_id, use_layer_bounds=False):
-        history_state_id = await self.get_active_history_state_id()
-        if self.get_img_state_id == history_state_id:
+    async def get_image(self, layer_id, bounds_id=False):
+        is_changed = await self.check_layer_bounds_combo_changed(layer_id, bounds_id)
+        if not is_changed:
             return self.last_get_img_id
-        result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': use_layer_bounds}, timeout=60)
+        result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': bounds_id}, timeout=60)
         id = result['upload_name']
+        history_state_id = await self.update_layer_bounds_history_state_id(layer_id, bounds_id)
         self.get_img_state_id = history_state_id
         self.last_get_img_id = id
         return id
     
-    async def is_get_image_changed(self):
-        push_state_id = self.get_push_state_id()
+    async def is_ps_history_changed(self):
+        push_state_id = self.get_push_history_state_id()
         if push_state_id is not None:
             return self.get_img_state_id != push_state_id
         current_id = await self.get_active_history_state_id()
@@ -143,6 +158,9 @@ class PhotoshopInstance:
         self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
         return result
     
+    def get_push_history_state_id(self):
+        return self.push_data.get('history_state_id', None)
+
     async def get_active_history_state_id(self):
         result = await self.wsCallsManager.call('get_active_history_state_id', {})
         id = result.get('history_state_id', None)
@@ -264,7 +282,11 @@ class GetImageFromPhotoshopLayerNode:
         if (PhotoshopInstance.instance is None):
             return np.random.rand()
         else:
-            return _invoke_async(PhotoshopInstance.instance.get_active_history_state_id())
+            id, bounds_id = self.LAYER_BOUNDS_NAME_TO_ID(layer, use_layer_bounds)
+            is_changed, history_state_id = asyncio.run(PhotoshopInstance.instance.check_layer_bounds_combo_changed(id, bounds_id))
+            if is_changed and history_state_id is None:
+                return np.random.rand()
+            return history_state_id
     
     @classmethod
     def INPUT_TYPES(cls):
@@ -284,15 +306,9 @@ class GetImageFromPhotoshopLayerNode:
                 "use_layer_bounds": (bounds_strs, {"default": bounds_strs[0] if len(bounds_strs) > 0 else None}),
             }
         }
-
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image_out",)
-    FUNCTION = "get_image"
-    CATEGORY = "Photoshop"
-
-    def get_image(self, layer, use_layer_bounds):
-        if (PhotoshopInstance.instance is None):
-            raise ValueError('Photoshop is not connected')
+    
+    @classmethod
+    def LAYER_BOUNDS_NAME_TO_ID(self, layer, use_layer_bounds):
         id = -1
         layer_all = layer == 'Canvas'
         if not layer_all:
@@ -305,13 +321,23 @@ class GetImageFromPhotoshopLayerNode:
         elif not bounds_layer_all:
             bounds_layer_name_and_id_split = use_layer_bounds.split('(id:')
             bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
-        image_id = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id, use_layer_bounds=bounds_id))
+        return id, bounds_id
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image_out",)
+    FUNCTION = "get_image"
+    CATEGORY = "Photoshop"
+
+    def get_image(self, layer, use_layer_bounds):
+        if (PhotoshopInstance.instance is None):
+            raise ValueError('Photoshop is not connected')
+
+        id, bounds_id = self.LAYER_BOUNDS_NAME_TO_ID(layer, use_layer_bounds)
+        image_id = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id, bounds_id=bounds_id))
         
         loadImage = LoadImage()
         (output_image, output_mask) = loadImage.load_image(image_id)
-        
         return (output_image,)
-    
 
 def cache_images(images):
     ret = []
@@ -390,7 +416,7 @@ def _invoke_async(call):
 async def fetch_customnode_mappings(request):
     is_changed = False
     if (PhotoshopInstance.instance is not None):
-        is_changed = await PhotoshopInstance.instance.is_get_image_changed()
+        is_changed = await PhotoshopInstance.instance.is_ps_history_changed()
     return web.json_response({'is_changed': is_changed}, content_type='application/json')
 
 NODE_CLASS_MAPPINGS = { 
