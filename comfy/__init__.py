@@ -165,6 +165,12 @@ class PhotoshopInstance:
         result = await self.wsCallsManager.call('get_active_history_state_id', {})
         id = result.get('history_state_id', None)
         return id
+    
+    def reset_change_tracker(self):
+        self.push_data = {}
+        self.get_img_state_id = None
+        self.last_get_img_id = None
+        self.change_tracker = {}
             
     async def destroy(self):
         await self.wsCallsManager.ws.close()
@@ -418,6 +424,12 @@ async def fetch_customnode_mappings(request):
     if (PhotoshopInstance.instance is not None):
         is_changed = await PhotoshopInstance.instance.is_ps_history_changed()
     return web.json_response({'is_changed': is_changed}, content_type='application/json')
+
+@PromptServer.instance.routes.get("/sd-ppp/resetchanges")
+async def fetch_customnode_mappings(request):
+    if (PhotoshopInstance.instance is not None):
+        PhotoshopInstance.instance.reset_change_tracker()
+    return web.json_response({}, content_type='application/json')
 
 NODE_CLASS_MAPPINGS = { 
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
