@@ -18,7 +18,7 @@ class WSCallsManager:
         self.call_id = 0
         self.ws = ws
     
-    async def call(self, action, params, timeout=5):
+    async def call(self, action, params, timeout=30):
         self.call_id += 1
         payload = {
             'call_id': self.call_id,
