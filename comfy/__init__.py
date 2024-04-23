@@ -296,16 +296,14 @@ class GetImageFromPhotoshopLayerNode:
     
     @classmethod
     def INPUT_TYPES(cls):
-        if (PhotoshopInstance.instance is None):
-            layer_strs = []
-            bounds_strs = []
-        else:
+        layer_strs = []
+        bounds_strs = []
+        if PhotoshopInstance.instance is not None:
             layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", PhotoshopInstance.instance.layers))
             layer_strs.insert(0, 'Canvas')
             bounds_strs = list(layer_strs)
+            bounds_strs.insert(0, 'Use selection')
             bounds_strs.insert(0, 'Same as layer')
-        
-        
         return {
             "required": {
                 "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
@@ -315,16 +313,20 @@ class GetImageFromPhotoshopLayerNode:
     
     @classmethod
     def LAYER_BOUNDS_NAME_TO_ID(self, layer, use_layer_bounds):
-        id = -1
-        layer_all = layer == 'Canvas'
-        if not layer_all:
+        id = 0
+        if layer == 'Canvas':
+            id = 0
+        else:
             layer_name_and_id_split = layer.split('(id:')
             id = int(layer_name_and_id_split.pop().strip()[:-1])
-        bounds_id = -1
-        bounds_layer_all = use_layer_bounds == 'Canvas'
-        if use_layer_bounds == 'Same as layer':
+        bounds_id = 0
+        if use_layer_bounds == 'Canvas':
+            bounds_id = 0
+        elif use_layer_bounds == 'Use selection':
+            bounds_id = -1
+        elif use_layer_bounds == 'Same as layer':
             bounds_id = id
-        elif not bounds_layer_all:
+        else:
             bounds_layer_name_and_id_split = use_layer_bounds.split('(id:')
             bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
         return id, bounds_id
