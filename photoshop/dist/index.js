@@ -195,9 +195,7 @@ async function executeAsModalUntilSuccess(...args) {
   }
   return result;
 }
-function getDesiredBounds(layer, boundsLayer) {
-  // layer null = document data which does not matter with bounds so not dealing with it
-  if (!layer) true; // intentionally passing
+function getDesiredBounds(boundsLayerID) {
   const docBounds = {
     left: 0,
     top: 0,
@@ -206,10 +204,25 @@ function getDesiredBounds(layer, boundsLayer) {
     width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
     height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
   };
-  // empty layer = document bounds
-  const bounds = layer?.bounds;
-  const isEmptyLayer = (bounds?.left == 0 && bounds?.top == 0 && bounds?.right == 0 && bounds?.bottom == 0) ?? false;
-  if (isEmptyLayer) return docBounds;
+  // if boundsLayerID == -1, use selection bounds
+  if (boundsLayerID == -1) {
+    // if no selection use document bounds
+    const selectionBounds = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.selection?.bounds;
+    if (!selectionBounds) return docBounds;
+    return {
+      left: selectionBounds.left,
+      top: selectionBounds.top,
+      right: selectionBounds.right,
+      bottom: selectionBounds.bottom,
+      width: selectionBounds.width,
+      height: selectionBounds.height
+    };
+  }
+  let boundsLayer;
+  if (boundsLayerID > 0) {
+    boundsLayer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, boundsLayerID);
+    if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
+  }
   // null boundsLayer = document bounds
   if (!boundsLayer) return docBounds;
   // empty boundsLayer = document bounds
@@ -252,12 +265,6 @@ async function getPixelsData(layer, desireBounds) {
   // layer null = document data
   if (!layer) {
     return await getPixelsDataHelper(null, desireBounds);
-  }
-  // empty layer = empty data
-  const bounds = layer.bounds;
-  const isEmptyLayer = bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0;
-  if (isEmptyLayer) {
-    return new Uint8Array(desireBounds.width * desireBounds.height * 4);
   }
   // normal layer
   return getPixelsDataHelper(layer, desireBounds);
@@ -384,23 +391,17 @@ class ComfyConnection {
         }));
       } else if (payload.action == 'get_image') {
         const layerID = payload.params.layer_id;
-        const layerBoundsID = payload.params.use_layer_bounds;
+        const boundsLayerID = payload.params.use_layer_bounds;
         await executeAsModalUntilSuccess(async () => {
           const startTime = Date.now();
           let uploadName = 0;
           try {
             let layer;
-            if (layerID != -1) {
+            if (layerID > 0) {
               layer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerID);
               if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
             }
-            let boundsLayer;
-            if (layerBoundsID != -1) {
-              boundsLayer = (0,_util__WEBPACK_IMPORTED_MODULE_2__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerBoundsID);
-              if (!boundsLayer) throw new Error(`Bounds layer(id: ${layerBoundsID}) not found`);
-            }
-            // TODO support selection area
-            const desireBounds = getDesiredBounds(layer, boundsLayer);
+            const desireBounds = getDesiredBounds(boundsLayerID);
             const pixelDataFromAPI = await getPixelsData(layer, desireBounds);
             const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds);
             // console.log('getPixels', Date.now() - startTime, 'ms');
