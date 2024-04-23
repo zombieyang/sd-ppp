@@ -329,8 +329,8 @@ class GetImageFromPhotoshopLayerNode:
             bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
         return id, bounds_id
 
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image_out",)
+    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_NAMES = ("image_out", "mask_out")
     FUNCTION = "get_image"
     CATEGORY = "Photoshop"
 
@@ -343,7 +343,7 @@ class GetImageFromPhotoshopLayerNode:
         
         loadImage = LoadImage()
         (output_image, output_mask) = loadImage.load_image(image_id)
-        return (output_image,)
+        return (output_image, output_mask)
 
 def cache_images(images):
     ret = []
