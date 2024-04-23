@@ -131,6 +131,18 @@ class ComfyConnection {
         this.connect();
     }
 
+    pushData(data) {
+        if (!this.socket || this.socket.readyState != WebSocket.OPEN) {
+            console.error('Connection not open');
+            return;
+        }
+        try{
+            this.socket.send(JSON.stringify({
+                push_data: data,
+            }));
+        } catch (e) { console.error(e) }
+    }
+
     async onMessage(event) {
         console.log("Message from comfy ", event.data);
         try {
@@ -280,14 +292,16 @@ class ComfyConnection {
 
             } else if (payload.action == 'get_active_history_state_id') {
                 try {
-                    const historyStates = app.activeDocument.historyStates;
-                    const historyState = historyStates[historyStates.length - 1];
+                    let result = {};
+                    const historyStates = app.activeDocument?.historyStates;
+                    if (historyStates && historyStates.length > 0) {
+                        const historyState = historyStates[historyStates.length - 1];
+                        result.history_state_id = historyState.id;
+                    } 
                     this.socket.send(
                         JSON.stringify({
                             call_id: payload.call_id,
-                            result: { 
-                                history_state_id: historyState.id,
-                            }
+                            result: result
                         })
                     )
                 } catch (e) {
@@ -326,6 +340,7 @@ class ComfyConnection {
             this._isConnected = false;
             ComfyConnection._callConnectStateChange();
         });
+
         socket.addEventListener('error', (event) => {
             console.log("Connection error", event);
             this.reconnectTimer = setTimeout(() => {

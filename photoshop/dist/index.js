@@ -88,8 +88,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../system/ComfyConnection */ "./src/system/ComfyConnection.js");
-/* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uxp */ "uxp");
-/* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(uxp__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _system_HistoryChecker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../system/HistoryChecker */ "./src/system/HistoryChecker.js");
+/* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! uxp */ "uxp");
+/* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(uxp__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
@@ -106,8 +108,18 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         isConnected: instance?.isConnected,
         comfyURL: instance ? instance.comfyURL : ''
       });
+      if (instance?.isConnected) {
+        const hc = _system_HistoryChecker__WEBPACK_IMPORTED_MODULE_2__["default"].createInstance();
+        hc.setChangeCallback(historyId => {
+          instance.pushData({
+            history_state_id: historyId
+          });
+        });
+      } else {
+        _system_HistoryChecker__WEBPACK_IMPORTED_MODULE_2__["default"].instance?.destroy();
+      }
     });
-    uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('comfyURL').then(value => {
+    uxp__WEBPACK_IMPORTED_MODULE_3__.storage.secureStorage.getItem('comfyURL').then(value => {
       if (!value) return;
       this.setState({
         comfyURL: Buffer.from(value).toString()
@@ -284,6 +296,19 @@ class ComfyConnection {
     this.comfyURL = comfyURL.replace(/\/*$/, '');
     this.connect();
   }
+  pushData(data) {
+    if (!this.socket || this.socket.readyState != WebSocket.OPEN) {
+      console.error('Connection not open');
+      return;
+    }
+    try {
+      this.socket.send(JSON.stringify({
+        push_data: data
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  }
   async onMessage(event) {
     console.log("Message from comfy ", event.data);
     try {
@@ -415,13 +440,15 @@ class ComfyConnection {
         });
       } else if (payload.action == 'get_active_history_state_id') {
         try {
-          const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.historyStates;
-          const historyState = historyStates[historyStates.length - 1];
+          let result = {};
+          const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument?.historyStates;
+          if (historyStates && historyStates.length > 0) {
+            const historyState = historyStates[historyStates.length - 1];
+            result.history_state_id = historyState.id;
+          }
           this.socket.send(JSON.stringify({
             call_id: payload.call_id,
-            result: {
-              history_state_id: historyState.id
-            }
+            result: result
           }));
         } catch (e) {
           this.socket.send(JSON.stringify({
@@ -470,6 +497,62 @@ class ComfyConnection {
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ComfyConnection);
+
+/***/ }),
+
+/***/ "./src/system/HistoryChecker.js":
+/*!**************************************!*\
+  !*** ./src/system/HistoryChecker.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! photoshop */ "photoshop");
+/* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(photoshop__WEBPACK_IMPORTED_MODULE_0__);
+
+class HistoryChecker {
+  static instance = null;
+  static createInstance() {
+    if (HistoryChecker.instance) {
+      return HistoryChecker.instance;
+    }
+    return new HistoryChecker();
+  }
+  constructor() {
+    HistoryChecker.instance = this;
+    this.lastCheckId = -1;
+    this.changeCallback = null;
+    // this.timer = setInterval(() => {
+    //     this.checkHistoryState();
+    // }, 1000)
+    photoshop__WEBPACK_IMPORTED_MODULE_0__.action.addNotificationListener("historyStateChanged", () => {
+      this.checkHistoryState();
+    });
+  }
+  destroy() {
+    clearInterval(this.timer);
+    this.timer = null;
+    this.changeCallback = null;
+    HistoryChecker.instance = null;
+  }
+  setChangeCallback(callback) {
+    this.changeCallback = callback;
+  }
+  checkHistoryState() {
+    const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument?.historyStates;
+    if (!historyStates || historyStates.length == 0) return;
+    const historyState = historyStates[historyStates.length - 1];
+    const historyId = historyState.id;
+    if (this.lastCheckId == historyId) return;
+    this.lastCheckId = historyId;
+    if (this.changeCallback) this.changeCallback(historyId);
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HistoryChecker);
 
 /***/ }),
 
