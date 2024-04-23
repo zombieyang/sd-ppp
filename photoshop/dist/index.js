@@ -179,6 +179,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const executeAsModal = photoshop__WEBPACK_IMPORTED_MODULE_0__.core.executeAsModal;
+async function executeAsModalUntilSuccess(...args) {
+  let result;
+  let failed = true;
+  while (failed) {
+    try {
+      result = await executeAsModal(...args);
+      failed = false;
+    } catch (e) {
+      if (e.number != 9) {
+        failed = false; // This case is hit if the targetFunction throws an exception
+      }
+    }
+    await new Promise(r => setTimeout(r, 200));
+  }
+  return result;
+}
 function getDesiredBounds(layer, boundsLayer) {
   // layer null = document data which does not matter with bounds so not dealing with it
   if (!layer) true; // intentionally passing
@@ -328,7 +344,7 @@ class ComfyConnection {
           let layer;
           let existingLayerName;
           let newLayerName;
-          await executeAsModal(async () => {
+          await executeAsModalUntilSuccess(async () => {
             if (layerName) {
               let imageIndexSuffix = "";
               if (imageIds.length > 1) {
@@ -358,7 +374,7 @@ class ComfyConnection {
           if (!newLayerName) {
             putPixelsOptions.targetBounds = layer.bounds;
           }
-          await executeAsModal(async () => {
+          await executeAsModalUntilSuccess(async () => {
             await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels(putPixelsOptions);
           });
         }));
@@ -369,7 +385,7 @@ class ComfyConnection {
       } else if (payload.action == 'get_image') {
         const layerID = payload.params.layer_id;
         const layerBoundsID = payload.params.use_layer_bounds;
-        await executeAsModal(async () => {
+        await executeAsModalUntilSuccess(async () => {
           const startTime = Date.now();
           let uploadName = 0;
           try {
@@ -526,9 +542,6 @@ class HistoryChecker {
     HistoryChecker.instance = this;
     this.lastCheckId = -1;
     this.changeCallback = null;
-    // this.timer = setInterval(() => {
-    //     this.checkHistoryState();
-    // }, 1000)
     photoshop__WEBPACK_IMPORTED_MODULE_0__.action.addNotificationListener("historyStateChanged", () => {
       this.checkHistoryState();
     });
