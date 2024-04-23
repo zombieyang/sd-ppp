@@ -12,9 +12,6 @@ class HistoryChecker {
         HistoryChecker.instance = this;
         this.lastCheckId = -1;
         this.changeCallback = null;
-        // this.timer = setInterval(() => {
-        //     this.checkHistoryState();
-        // }, 1000)
         action.addNotificationListener("historyStateChanged", () => {
             this.checkHistoryState();
         });
