@@ -7,6 +7,7 @@ app.registerExtension({
 	init() {
 	},
 	async setup() {
+		await api.fetchApi(`/sd-ppp/resetchanges`);
 		setInterval(checkChanges, 1000);
 	},
 });
