@@ -1,5 +1,6 @@
 import React from "react";
 import ComfyConnection from "../system/ComfyConnection";
+import HistoryChecker from "../system/HistoryChecker";
 import { storage } from "uxp";
 
 export default class Main extends React.Component {
@@ -16,6 +17,14 @@ export default class Main extends React.Component {
                 isConnected: instance?.isConnected,
                 comfyURL: instance ? instance.comfyURL : ''
             })
+            if (instance?.isConnected) {
+                const hc = HistoryChecker.createInstance();
+                hc.setChangeCallback((historyId) => {
+                    instance.pushData({history_state_id: historyId})
+                });
+            } else {
+                HistoryChecker.instance?.destroy();
+            }
         });
         storage.secureStorage.getItem('comfyURL').then((value) => {
             if (!value) return

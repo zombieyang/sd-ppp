@@ -1,3 +1,5 @@
+import os
+import shutil
 from server import PromptServer
 from aiohttp import web, WSMsgType
 import json
@@ -61,6 +63,7 @@ class PhotoshopInstance:
         self.wsCallsManager = WSCallsManager(ws)
         self.destroyed = False
         self.layers = []
+        self.push_data = {}
         self.get_img_state_id = None
         self.last_get_img_id = None
         self.send_img_state_id = None
@@ -87,7 +90,9 @@ class PhotoshopInstance:
                                                                                                      
                 if msg.type == WSMsgType.TEXT:
                     payload = json.loads(msg.data)
-                    
+                    if 'push_data' in payload:
+                        push_data = payload['push_data']
+                        self.push_data.update(push_data)
                     if 'call_id' in payload:
                         call_id = payload['call_id']
                         if 'error' in payload:
@@ -107,6 +112,9 @@ class PhotoshopInstance:
         finally:
             print('Photoshop Disconnected')
             PhotoshopInstance.instance = None
+    
+    def get_push_state_id(self):
+        return self.push_data.get('history_state_id', None)
             
     async def get_layers(self):
         result = await self.wsCallsManager.call('get_layers', {})
@@ -123,8 +131,11 @@ class PhotoshopInstance:
         self.last_get_img_id = id
         return id
     
-    def is_get_image_changed(self):
-        current_id = _invoke_async(self.get_active_history_state_id())
+    async def is_get_image_changed(self):
+        push_state_id = self.get_push_state_id()
+        if push_state_id is not None:
+            return self.get_img_state_id != push_state_id
+        current_id = await self.get_active_history_state_id()
         return self.get_img_state_id != current_id
 
     async def send_images(self, image_ids, layer_name=""):
@@ -139,7 +150,7 @@ class PhotoshopInstance:
     
     async def get_active_history_state_id(self):
         result = await self.wsCallsManager.call('get_active_history_state_id', {})
-        id = result['history_state_id']
+        id = result.get('history_state_id', None)
         return id
             
     async def destroy(self):
@@ -258,7 +269,7 @@ class GetImageFromPhotoshopLayerNode:
         if (PhotoshopInstance.instance is None):
             return np.random.rand()
         else:
-            return PhotoshopInstance.instance.is_get_image_changed()
+            return _invoke_async(PhotoshopInstance.instance.get_active_history_state_id())
     
     @classmethod
     def INPUT_TYPES(cls):
@@ -376,15 +387,16 @@ class SendImageToPhotoshopSetLayerNode:
         threading.Thread(target=lambda: asyncio.run(PhotoshopInstance.instance.send_images(image_ids=ret, layer_name=layer_name))).start()
         return (None,)
 
-loop = None
 def _invoke_async(call):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    task = loop.create_task(call)
-    loop.run_until_complete(task)
-    result = task.result()
-    loop.close()
-    return result
+    return asyncio.run(call)
+
+
+@PromptServer.instance.routes.get("/sd-ppp/checkchanges")
+async def fetch_customnode_mappings(request):
+    is_changed = False
+    if (PhotoshopInstance.instance is not None):
+        is_changed = await PhotoshopInstance.instance.is_get_image_changed()
+    return web.json_response({'is_changed': is_changed}, content_type='application/json')
 
 NODE_CLASS_MAPPINGS = { 
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
