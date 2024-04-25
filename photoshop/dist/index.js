@@ -543,7 +543,7 @@ class HistoryChecker {
     HistoryChecker.instance = this;
     this.lastCheckId = -1;
     this.changeCallback = null;
-    photoshop__WEBPACK_IMPORTED_MODULE_0__.action.addNotificationListener("historyStateChanged", () => {
+    photoshop__WEBPACK_IMPORTED_MODULE_0__.action.addNotificationListener(["historyStateChanged"], () => {
       this.checkHistoryState();
     });
   }
