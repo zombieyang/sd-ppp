@@ -63,10 +63,7 @@ class PhotoshopInstance:
         self.wsCallsManager = WSCallsManager(ws)
         self.destroyed = False
         self.layers = []
-        self.push_data = {}
-        self.get_img_state_id = None
-        self.last_get_img_id = None
-        self.change_tracker = {}
+        self.reset_change_tracker()
         
     async def poll_layers(self):
         await asyncio.sleep(1)
@@ -119,15 +116,30 @@ class PhotoshopInstance:
         if layer_bounds_history_state_id is None:
             return True
         latest_state_id = self.get_push_history_state_id() or await self.get_active_history_state_id()
-        if latest_state_id != layer_bounds_history_state_id:
+        if latest_state_id > layer_bounds_history_state_id:
             return True, latest_state_id
-        return False, latest_state_id
+        #didn't change, use last value
+        comfyui_last_value = self.comfyui_last_value_tracker.get(layer_bounds_combo, None) or layer_bounds_history_state_id
+        return False, comfyui_last_value
     
+    # have to track this value because comfyui determines if the value is changed by comparing it with the last value.
+    # can't use the real history id because sending images changes the history id, and comfyui will think the value is changed when it's not
+    def update_comfyui_last_value(self, layer, use_layer_bounds, value):
+        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+        self.comfyui_last_value_tracker[layer_bounds_combo] = value
+
     async def update_layer_bounds_history_state_id(self, layer, use_layer_bounds):
         layer_bounds_combo = f"{layer}{use_layer_bounds}"
         latest_state_id = self.get_push_history_state_id() or await self.get_active_history_state_id()
         self.change_tracker[layer_bounds_combo] = latest_state_id
         return latest_state_id
+    
+    async def update_history_state_id_after_send(self):
+        old_history_state_id = self.get_img_state_id
+        history_state_id = await self.get_active_history_state_id() # need to get new id after operation, it causes history change
+        self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
+        if old_history_state_id is not None: # udpate all the change trackers with the new history state id
+            self.change_tracker = {k: history_state_id for k, v in self.change_tracker.items() if v == old_history_state_id}
 
     async def get_layers(self):
         result = await self.wsCallsManager.call('get_layers', {})
@@ -136,7 +148,7 @@ class PhotoshopInstance:
         
     async def get_image(self, layer_id, bounds_id=False):
         is_changed = await self.check_layer_bounds_combo_changed(layer_id, bounds_id)
-        if not is_changed:
+        if not is_changed and self.last_get_img_id is not None:
             return self.last_get_img_id
         result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': bounds_id}, timeout=60)
         id = result['upload_name']
@@ -148,14 +160,13 @@ class PhotoshopInstance:
     async def is_ps_history_changed(self):
         push_state_id = self.get_push_history_state_id()
         if push_state_id is not None:
-            return self.get_img_state_id != push_state_id
+            return self.get_img_state_id < push_state_id
         current_id = await self.get_active_history_state_id()
         return self.get_img_state_id != current_id
 
     async def send_images(self, image_ids, layer_name=""):
         result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids, 'layer_name': layer_name})
-        history_state_id = await self.get_active_history_state_id() # need to get new id after operation, it causes history change
-        self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
+        await self.update_history_state_id_after_send()
         return result
     
     def get_push_history_state_id(self):
@@ -168,9 +179,10 @@ class PhotoshopInstance:
     
     def reset_change_tracker(self):
         self.push_data = {}
-        self.get_img_state_id = None
+        self.get_img_state_id = 0
         self.last_get_img_id = None
         self.change_tracker = {}
+        self.comfyui_last_value_tracker = {}
             
     async def destroy(self):
         await self.wsCallsManager.ws.close()
@@ -292,6 +304,7 @@ class GetImageFromPhotoshopLayerNode:
             is_changed, history_state_id = asyncio.run(PhotoshopInstance.instance.check_layer_bounds_combo_changed(id, bounds_id))
             if is_changed and history_state_id is None:
                 return np.random.rand()
+            PhotoshopInstance.instance.update_comfyui_last_value(id, bounds_id, history_state_id)
             return history_state_id
     
     @classmethod
@@ -421,14 +434,14 @@ def _invoke_async(call):
 
 
 @PromptServer.instance.routes.get("/sd-ppp/checkchanges")
-async def fetch_customnode_mappings(request):
+async def check_changes(request):
     is_changed = False
     if (PhotoshopInstance.instance is not None):
         is_changed = await PhotoshopInstance.instance.is_ps_history_changed()
     return web.json_response({'is_changed': is_changed}, content_type='application/json')
 
 @PromptServer.instance.routes.get("/sd-ppp/resetchanges")
-async def fetch_customnode_mappings(request):
+async def reset_changes(request):
     if (PhotoshopInstance.instance is not None):
         PhotoshopInstance.instance.reset_change_tracker()
     return web.json_response({}, content_type='application/json')
