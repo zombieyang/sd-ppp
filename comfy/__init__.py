@@ -288,6 +288,17 @@ async def websocket_handler(request):
     PhotoshopInstance(ws)
     await PhotoshopInstance.instance.run_server_loop()
 
+def get_layers_str():
+    layer_strs = []
+    bounds_strs = []
+    if PhotoshopInstance.instance is not None:
+        layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", PhotoshopInstance.instance.layers))
+        layer_strs.insert(0, 'Use canvas')
+        bounds_strs = list(layer_strs)
+        bounds_strs.insert(0, 'Use selection')
+        bounds_strs.insert(0, 'Same as layer')
+    return layer_strs, bounds_strs
+
 class GetImageFromPhotoshopLayerNode:
     @classmethod
     def VALIDATE_INPUTS(s, layer):
@@ -309,14 +320,7 @@ class GetImageFromPhotoshopLayerNode:
     
     @classmethod
     def INPUT_TYPES(cls):
-        layer_strs = []
-        bounds_strs = []
-        if PhotoshopInstance.instance is not None:
-            layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", PhotoshopInstance.instance.layers))
-            layer_strs.insert(0, 'Canvas')
-            bounds_strs = list(layer_strs)
-            bounds_strs.insert(0, 'Use selection')
-            bounds_strs.insert(0, 'Same as layer')
+        layer_strs, bounds_strs = get_layers_str()
         return {
             "required": {
                 "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
@@ -445,6 +449,14 @@ async def reset_changes(request):
     if (PhotoshopInstance.instance is not None):
         PhotoshopInstance.instance.reset_change_tracker()
     return web.json_response({}, content_type='application/json')
+
+@PromptServer.instance.routes.get("/sd-ppp/getlayers")
+async def get_layers(request):
+    layer_strs = []
+    bounds_strs = []
+    if (PhotoshopInstance.instance is not None):
+        layer_strs, bounds_strs = get_layers_str()
+    return web.json_response({'layer_strs': layer_strs, 'bounds_strs': bounds_strs}, content_type='application/json')
 
 NODE_CLASS_MAPPINGS = { 
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
