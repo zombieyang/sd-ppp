@@ -12,7 +12,7 @@ class HistoryChecker {
         HistoryChecker.instance = this;
         this.lastCheckId = -1;
         this.changeCallback = null;
-        action.addNotificationListener("historyStateChanged", () => {
+        action.addNotificationListener(["historyStateChanged"], () => {
             this.checkHistoryState();
         });
     }
