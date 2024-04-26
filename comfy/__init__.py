@@ -127,19 +127,20 @@ class PhotoshopInstance:
     def update_comfyui_last_value(self, layer, use_layer_bounds, value):
         layer_bounds_combo = f"{layer}{use_layer_bounds}"
         self.comfyui_last_value_tracker[layer_bounds_combo] = value
-
+    
+    # need to update history id after internal operation otherwise it might cause infinite change loop
+    async def update_history_state_id_after_internal_change(self, history_state_id=None):
+        if history_state_id is None: # need to get new id after operation, it causes history change
+            history_state_id = await self.get_active_history_state_id()
+        if self.get_img_state_id is not None: # udpate all the change trackers with the new history state id
+            self.change_tracker = {k: history_state_id for k, v in self.change_tracker.items() if v == self.get_img_state_id}
+        self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
+        
     async def update_layer_bounds_history_state_id(self, layer, use_layer_bounds):
         layer_bounds_combo = f"{layer}{use_layer_bounds}"
-        latest_state_id = self.get_push_history_state_id() or await self.get_active_history_state_id()
+        latest_state_id = await self.get_active_history_state_id()
         self.change_tracker[layer_bounds_combo] = latest_state_id
         return latest_state_id
-    
-    async def update_history_state_id_after_send(self):
-        old_history_state_id = self.get_img_state_id
-        history_state_id = await self.get_active_history_state_id() # need to get new id after operation, it causes history change
-        self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
-        if old_history_state_id is not None: # udpate all the change trackers with the new history state id
-            self.change_tracker = {k: history_state_id for k, v in self.change_tracker.items() if v == old_history_state_id}
 
     async def get_layers(self):
         result = await self.wsCallsManager.call('get_layers', {})
@@ -151,10 +152,10 @@ class PhotoshopInstance:
         if not is_changed and self.last_get_img_id is not None:
             return self.last_get_img_id
         result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': bounds_id}, timeout=60)
-        id = result['upload_name']
-        layer_opacity = result['layer_opacity']
         history_state_id = await self.update_layer_bounds_history_state_id(layer_id, bounds_id)
-        self.get_img_state_id = history_state_id
+        await self.update_history_state_id_after_internal_change(history_state_id)
+        layer_opacity = result['layer_opacity']
+        id = result['upload_name']
         self.last_get_img_id = id
         return id, layer_opacity
     
@@ -167,7 +168,7 @@ class PhotoshopInstance:
 
     async def send_images(self, image_ids, layer_name=""):
         result = await self.wsCallsManager.call('send_images', {'image_ids': image_ids, 'layer_name': layer_name})
-        await self.update_history_state_id_after_send()
+        await self.update_history_state_id_after_internal_change()
         return result
     
     def get_push_history_state_id(self):

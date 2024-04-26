@@ -93,7 +93,7 @@ async function getPixelsData(layer, desireBounds) {
         return await getPixelsDataHelper(null, desireBounds);
     }
     // normal layer
-    return getPixelsDataHelper(layer, desireBounds);
+    return await getPixelsDataHelper(layer, desireBounds);
 }
 
 // ps returns trimmed data so need padding
@@ -116,6 +116,24 @@ function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds
         desireBounds
     )
     return pixelDataForReturn;
+}
+
+function isLayerFolder(layer){
+    return layer.layers && layer.layers.length > 0;
+}
+
+async function findLayer(layerID) {
+    let layer;
+    let isFolder = false;
+    if (layerID <= 0) return [layer, isFolder];
+    layer = findInAllSubLayer(app.activeDocument, layerID)
+    if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
+    if (!isLayerFolder(layer)) return [layer, isFolder];
+    // layer is folder
+    const dupLayer = await layer.duplicate();
+    const mergedLayer = await dupLayer.merge()
+    isFolder = true;
+    return [mergedLayer, isFolder];
 }
 
 class ComfyConnection {
@@ -272,15 +290,23 @@ class ComfyConnection {
                 const layerID = payload.params.layer_id
                 const boundsLayerID = payload.params.use_layer_bounds
 
-                await executeAsModalUntilSuccess(async () => {
+                await executeAsModalUntilSuccess(async (executionContext) => {
+                    let hostControl;
+                    let suspensionID;
                     const startTime = Date.now();
                     let uploadName = 0;
                     let layer;
+                    let layerOpacity = 100;
+                    let isFolder = false;
+                    const activeLayers = app.activeDocument.activeLayers;
                     try {
-                        if (layerID > 0) {
-                            layer = findInAllSubLayer(app.activeDocument, layerID)
-                            if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
-                        }
+                        hostControl = executionContext.hostControl;
+                        suspensionID = await hostControl.suspendHistory({
+                            "documentID": app.activeDocument.id,
+                            "name": "Image To ComfyUI"
+                        });
+                        [layer, isFolder] = await findLayer(layerID);
+                        layerOpacity = layer?.opacity ?? 100;
                         const desireBounds = getDesiredBounds(boundsLayerID);
                         const pixelDataFromAPI = await getPixelsData(layer, desireBounds)
                         const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
@@ -329,6 +355,14 @@ class ComfyConnection {
                             })
                         )
                         throw e
+                    } finally {
+                        if (layer && isFolder) layer.delete();
+                        if (activeLayers && activeLayers.length > 0) {
+                            for (let i = 0; i < activeLayers.length; i++) {
+                                activeLayers[i].selected = true;
+                            }
+                        }
+                        if (hostControl && suspensionID) await hostControl.resumeHistory(suspensionID);
                     }
 
                     this.socket.send(
@@ -336,7 +370,7 @@ class ComfyConnection {
                             call_id: payload.call_id,
                             result: {
                                 upload_name: uploadName,
-                                layer_opacity: layer?.opacity ?? 100
+                                layer_opacity: layerOpacity,
                             }
                         })
                     )
