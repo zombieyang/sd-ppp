@@ -275,8 +275,8 @@ class ComfyConnection {
                 await executeAsModalUntilSuccess(async () => {
                     const startTime = Date.now();
                     let uploadName = 0;
+                    let layer;
                     try {
-                        let layer;
                         if (layerID > 0) {
                             layer = findInAllSubLayer(app.activeDocument, layerID)
                             if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
@@ -335,7 +335,8 @@ class ComfyConnection {
                         JSON.stringify({
                             call_id: payload.call_id,
                             result: {
-                                upload_name: uploadName
+                                upload_name: uploadName,
+                                layer_opacity: layer?.opacity ?? 100
                             }
                         })
                     )
