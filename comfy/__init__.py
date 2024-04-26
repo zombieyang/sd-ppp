@@ -152,10 +152,11 @@ class PhotoshopInstance:
             return self.last_get_img_id
         result = await self.wsCallsManager.call('get_image', {'layer_id': layer_id, 'use_layer_bounds': bounds_id}, timeout=60)
         id = result['upload_name']
+        layer_opacity = result['layer_opacity']
         history_state_id = await self.update_layer_bounds_history_state_id(layer_id, bounds_id)
         self.get_img_state_id = history_state_id
         self.last_get_img_id = id
-        return id
+        return id, layer_opacity
     
     async def is_ps_history_changed(self):
         push_state_id = self.get_push_history_state_id()
@@ -348,8 +349,8 @@ class GetImageFromPhotoshopLayerNode:
             bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
         return id, bounds_id
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image_out", "mask_out")
+    RETURN_TYPES = ("IMAGE", "MASK", "FLOAT")
+    RETURN_NAMES = ("image_out", "mask_out", "layer_opacity")
     FUNCTION = "get_image"
     CATEGORY = "Photoshop"
 
@@ -358,11 +359,11 @@ class GetImageFromPhotoshopLayerNode:
             raise ValueError('Photoshop is not connected')
 
         id, bounds_id = self.LAYER_BOUNDS_NAME_TO_ID(layer, use_layer_bounds)
-        image_id = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id, bounds_id=bounds_id))
+        image_id, layer_opacity = _invoke_async(PhotoshopInstance.instance.get_image(layer_id=id, bounds_id=bounds_id))
         
         loadImage = LoadImage()
         (output_image, output_mask) = loadImage.load_image(image_id)
-        return (output_image, output_mask)
+        return (output_image, output_mask, layer_opacity / 100)
 
 def cache_images(images):
     ret = []
@@ -432,6 +433,42 @@ class SendImageToPhotoshopSetLayerNode:
         
         threading.Thread(target=lambda: asyncio.run(PhotoshopInstance.instance.send_images(image_ids=ret, layer_name=layer_name))).start()
         return (None,)
+    
+class ImageTimesOpacity:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "images": ("IMAGE", ),
+                "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "image_times_opacity"
+    CATEGORY = "Photoshop"
+
+    def image_times_opacity(self, images, opacity):
+        image_out = images * opacity
+        return (image_out,)
+    
+class MaskTimesOpacity:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "masks": ("MASK", ),
+                "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
+            }
+        }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "mask_times_opacity"
+    CATEGORY = "Photoshop"
+
+    def mask_times_opacity(self, masks, opacity):
+        mask_out = masks * opacity
+        return (mask_out,)
 
 def _invoke_async(call):
     return asyncio.run(call)
@@ -462,11 +499,15 @@ NODE_CLASS_MAPPINGS = {
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
     'Send Images To Photoshop': SendImageToPhotoshopLayerNode,
     'Send Images To Photoshop Set Layer': SendImageToPhotoshopSetLayerNode,
+    'Image Times Opacity': ImageTimesOpacity,
+    'Mask Times Opacity': MaskTimesOpacity,
 }
 NODE_DISPLAY_NAME_MAPPINGS = { 
     'Get Image From Photoshop Layer': 'Get image from Photoshop layer',
     'Send Images To Photoshop': 'Send images to Photoshop',
-    'Send Images To Photoshop And Set Layer': 'Send images to Photoshop And Set Layer',
+    'Send Images To Photoshop Set Layer': 'Send images to Photoshop And Set Layer',
+    'Image Times Opacity': 'Image times opacity',
+    'Mask Times Opacity': 'Mask times opacity',
 }
 WEB_DIRECTORY = 'comfy/plugins'
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
