@@ -63,11 +63,16 @@ class SDPPP:
                     await asyncio.sleep(0.5)
             self.loop.create_task(selfEventLoop())
 
+        # only emit by photoshop instance
         @sio.event
         def disconnect(sid):
             self.state[sid] = False
-            self.photoshop_instances.pop(sid, None)
+            if sid in self.photoshop_instances:
+                self.photoshop_instances.pop(sid, None)
+            elif sid in self.comfyui_instances:
+                self.comfyui_instances.pop(sid, None)
 
+        # only emit by photoshop instance
         @sio.event
         async def sync_layers(sid, data):
             instance = self.get_ps_instance(sid)

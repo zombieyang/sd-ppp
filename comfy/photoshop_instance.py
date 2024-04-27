@@ -23,8 +23,8 @@ class PhotoshopInstance:
         layer_strs.insert(0, '### Use canvas ###')
 
         bounds_strs = list(layer_strs)
-        bounds_strs.insert(0, '### Use selection ###')
-        bounds_strs.insert(0, '### Same as layer ###')
+        bounds_strs.insert(1, '### Use selection ###')
+        bounds_strs.insert(1, '### Same as layer ###')
 
         return layer_strs, bounds_strs
     
