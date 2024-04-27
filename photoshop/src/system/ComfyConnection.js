@@ -78,7 +78,7 @@ class ComfyConnection {
             if (!this.isConnected) return;
             const allLayers = getAllSubLayer(app.activeDocument);
             this.socket.emit('sync_layers',
-                JSON.stringify({ layers: allLayers })
+                { layers: allLayers }
             )
         }, 3000)
 
