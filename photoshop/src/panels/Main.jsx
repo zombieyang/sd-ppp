@@ -1,5 +1,6 @@
 import React from "react";
 import ComfyConnection from "../system/ComfyConnection";
+import socketio from '../system/socket.io.js'
 import { storage } from "uxp";
 
 export default class Main extends React.Component {
