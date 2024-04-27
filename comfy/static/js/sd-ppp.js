@@ -1,5 +1,6 @@
-import { app } from "../../scripts/app.js";
-import { api } from "../../scripts/api.js"
+import { app } from "../../../scripts/app.js";
+import { api } from "../../../scripts/api.js"
+import socketio from './socket.io.js'
 
 let layerStrs = [];
 let boundsStrs = [];
@@ -12,6 +13,27 @@ app.registerExtension({
 	async setup() {
 		await api.fetchApi(`/sd-ppp/resetchanges`);
 		setInterval(checkChanges, 1000);
+
+        const socket = socketio(location.origin, {
+            transports: ["websocket"],
+            path: '/sd-ppp/',
+            query: {
+                version: 1,
+                type: 'comfyui'
+            }
+        });
+
+		socket.on('connect', () => {
+		});
+		socket.on('disconnect', () => {
+		});
+		socket.on('connect_error', () => {
+			console.error('sdppp socket connect_error')
+		});
+		socket.on('sync_layers', (data) => {
+			layerStrs = data.layer_strs;
+			boundsStrs = data.bound_strs;
+		});
 	},
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 		if (nodeType.comfyClass === 'Get Image From Photoshop Layer') {
@@ -40,18 +62,6 @@ const SDPPPNodes = [
 ]
 async function checkChanges() {
 	await checkHistoryChanges();
-	await refreshLayers();
-}
-
-async function refreshLayers() {
-	try {
-		const res = await api.fetchApi(`/sd-ppp/getlayers`);
-		const json = await res.json()
-		layerStrs = json.layer_strs;
-		boundsStrs = json.bounds_strs;
-	} catch (e) {
-		console.error("[sd-ppp]", "Failed to get layers", e);
-	}
 }
 
 async function checkHistoryChanges() {

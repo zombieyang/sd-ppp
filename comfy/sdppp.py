@@ -7,6 +7,7 @@ from .photoshop_instance import PhotoshopInstance
 class SDPPP:
     def __init__(self, PromptServer):
         self.photoshop_instances = dict()
+        self.comfyui_instances = dict()
 
         self.sio = socketio.AsyncServer(async_mode='aiohttp', cors_allowed_origins="*")
         self.sio.attach(PromptServer.instance.app, socketio_path='/sd-ppp/')
@@ -33,15 +34,20 @@ class SDPPP:
 
         @sio.event
         async def connect(sid, environ):
-            if len(self.photoshop_instances) > 0:
-                raise exceptions.ConnectionRefusedError('only 1 instance is allowed now')
-
             qs = environ['QUERY_STRING']
+            
             qsobj = dict(x.split('=') for x in qs.split('&'))
             if 'type' not in qsobj:
                 raise exceptions.ConnectionRefusedError('instance type missed in query')
+
             elif qsobj['type'] == 'photoshop':
+                if len(self.photoshop_instances) > 0:
+                    raise exceptions.ConnectionRefusedError('only 1 instance is allowed now')
                 self.photoshop_instances[sid] = PhotoshopInstance(self, sid)
+
+            elif qsobj['type'] == 'comfyui':
+                self.comfyui_instances[sid] = True
+
             else:
                 raise exceptions.ConnectionRefusedError('unknown instance type ' + qsobj['type'])
 
@@ -63,13 +69,19 @@ class SDPPP:
             self.photoshop_instances.pop(sid, None)
 
         @sio.event
-        def sync_layers(sid, data):
+        async def sync_layers(sid, data):
             data = json.loads(data)
             instance = self.get_ps_instance(sid)
             instance.layers = data['layers']
 
+            layer_strs, bounds_strs = instance.get_layers()
+            for sid, instance in self.comfyui_instances.items():
+                await sio.emit('sync_layers', {
+                    'layer_strs': layer_strs,
+                    'bound_strs': bounds_strs
+                }, to=sid)
+
         @sio.event
         def push_data(sid, data):
-            data = json.loads(data)
             instance = self.get_ps_instance(sid)
             instance.push_data.update(push_data)

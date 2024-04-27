@@ -45,13 +45,13 @@ def define_comfyui_nodes(sdppp):
         @classmethod
         def LAYER_BOUNDS_NAME_TO_ID(self, layer, use_layer_bounds):
             id = 0
-            if layer == 'Canvas':
+            if layer == '### Use canvas ###':
                 id = 0
             else:
                 layer_name_and_id_split = layer.split('(id:')
                 id = int(layer_name_and_id_split.pop().strip()[:-1])
             bounds_id = 0
-            if use_layer_bounds == '### Canvas ###':
+            if use_layer_bounds == '### Use canvas ###':
                 bounds_id = 0
             elif use_layer_bounds == '### Use selection ###':
                 bounds_id = -1
