@@ -29,8 +29,7 @@
   "dependencies": {
     "jimp": "^0.22.12",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "socket.io": "^4.7.5"
+    "react-dom": "^16.8.6"
   },
   "resolutions": {
     "acorn": "npm:acorn-with-stage3"
