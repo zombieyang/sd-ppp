@@ -70,7 +70,6 @@ class SDPPP:
 
         @sio.event
         async def sync_layers(sid, data):
-            data = json.loads(data)
             instance = self.get_ps_instance(sid)
             instance.layers = data['layers']
 
