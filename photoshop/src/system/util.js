@@ -1,3 +1,4 @@
+import { core } from "photoshop";
 
 export function unTrimImageData(
     intersectImageDataArray,
@@ -75,4 +76,23 @@ export function findInAllSubLayer(layer, layerid) {
         if (result) return result;
     }
     return null;
+}
+
+const executeAsModal = core.executeAsModal;
+
+export async function executeAsModalUntilSuccess(...args) {
+    let result;
+    let failed = true;
+    while(failed) {
+        try {
+            result = await executeAsModal(...args);
+            failed = false;
+        } catch (e) {
+            if (e.number != 9) {
+                failed = false; // This case is hit if the targetFunction throws an exception
+            }
+        }
+        await new Promise(r => setTimeout(r, 200));
+    }
+    return result;
 }
