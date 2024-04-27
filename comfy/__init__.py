@@ -295,10 +295,10 @@ def get_layers_str():
     bounds_strs = []
     if PhotoshopInstance.instance is not None:
         layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", PhotoshopInstance.instance.layers))
-        layer_strs.insert(0, 'Use canvas')
+        layer_strs.insert(0, '### Use canvas ###')
         bounds_strs = list(layer_strs)
-        bounds_strs.insert(0, 'Use selection')
-        bounds_strs.insert(0, 'Same as layer')
+        bounds_strs.insert(0, '### Use selection ###')
+        bounds_strs.insert(0, '### Same as layer ###')
     return layer_strs, bounds_strs
 
 class GetImageFromPhotoshopLayerNode:
@@ -339,11 +339,11 @@ class GetImageFromPhotoshopLayerNode:
             layer_name_and_id_split = layer.split('(id:')
             id = int(layer_name_and_id_split.pop().strip()[:-1])
         bounds_id = 0
-        if use_layer_bounds == 'Canvas':
+        if use_layer_bounds == '### Canvas ###':
             bounds_id = 0
-        elif use_layer_bounds == 'Use selection':
+        elif use_layer_bounds == '### Use selection ###':
             bounds_id = -1
-        elif use_layer_bounds == 'Same as layer':
+        elif use_layer_bounds == '### Same as layer ###':
             bounds_id = id
         else:
             bounds_layer_name_and_id_split = use_layer_bounds.split('(id:')
@@ -376,6 +376,7 @@ def cache_images(images):
         ImageCache.data[image_id] = img
         ret.append(image_id)
     return ret
+
 class SendImageToPhotoshopLayerNode:
     @classmethod
     def VALIDATE_INPUTS(s, images):
@@ -385,39 +386,12 @@ class SendImageToPhotoshopLayerNode:
     
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "images": ("IMAGE", )
-            }
-        }
-
-    RETURN_TYPES = ()
-    FUNCTION = "send_image"
-    CATEGORY = "Photoshop"
-    OUTPUT_NODE = True
-
-    def send_image(self, images):
-        if (PhotoshopInstance.instance is None):
-            raise ValueError('Photoshop is not connected')
-        
-        ret = cache_images(images)
-        
-        threading.Thread(target=lambda: asyncio.run(PhotoshopInstance.instance.send_images(image_ids=ret))).start()
-        return (None,)
-
-class SendImageToPhotoshopSetLayerNode:
-    @classmethod
-    def VALIDATE_INPUTS(s, images):
-        if (PhotoshopInstance.instance is None):
-            return 'Photoshop is not connected'
-        return True
-    
-    @classmethod
-    def INPUT_TYPES(cls):
+        layer_strs, bounds_strs = get_layers_str()
+        layer_strs.insert(0, '### New Layer ###')
         return {
             "required": {
                 "images": ("IMAGE", ),
-                "layer_name": (("STRING", {"default": "COMFY RESULT"}))
+                "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
             }
         }
 
@@ -499,7 +473,6 @@ async def get_layers(request):
 NODE_CLASS_MAPPINGS = { 
     'Get Image From Photoshop Layer': GetImageFromPhotoshopLayerNode,
     'Send Images To Photoshop': SendImageToPhotoshopLayerNode,
-    'Send Images To Photoshop Set Layer': SendImageToPhotoshopSetLayerNode,
     'Image Times Opacity': ImageTimesOpacity,
     'Mask Times Opacity': MaskTimesOpacity,
 }
@@ -510,5 +483,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     'Image Times Opacity': 'Image times opacity',
     'Mask Times Opacity': 'Mask times opacity',
 }
-WEB_DIRECTORY = 'comfy/plugins'
+WEB_DIRECTORY = 'comfy/static'
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
