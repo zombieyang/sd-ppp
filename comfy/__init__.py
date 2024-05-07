@@ -4,7 +4,8 @@ import json
 import asyncio
 import threading
 import numpy as np
-
+from .utils import auto_install_ps_plugin
+auto_install_ps_plugin()
 
 from .sdppp import SDPPP
 sdppp = SDPPP(PromptServer)
