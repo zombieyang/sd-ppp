@@ -57,7 +57,7 @@ export function unTrimImageData(
 }
 
 export function getAllSubLayer(layer, level = 0) {
-    if (!layer.layers) return [];
+    if (!layer?.layers) return [];
     return layer.layers.reduce((ret, layer) => {
         ret.push({
             name: '-'.repeat(level) + layer.name,

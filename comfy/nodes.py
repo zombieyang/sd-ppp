@@ -20,7 +20,8 @@ def define_comfyui_nodes(sdppp):
                 return np.random.rand()
             else:
                 photoshopInstance = sdppp.get_ps_instance()
-                id, bounds_id = self.LAYER_BOUNDS_NAME_TO_ID(layer, use_layer_bounds)
+                id = photoshopInstance.layer_name_to_id(layer)
+                bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
                 is_changed, history_state_id = photoshopInstance.check_layer_bounds_combo_changed(id, bounds_id)
                 if is_changed and history_state_id is None:
                     return np.random.rand()
@@ -33,7 +34,8 @@ def define_comfyui_nodes(sdppp):
                 layer_strs = []
                 bounds_strs = []
             else:
-                layer_strs, bounds_strs = sdppp.get_ps_instance().get_layers()
+                layer_strs = sdppp.get_ps_instance().get_base_layers()
+                bounds_strs = sdppp.get_ps_instance().get_bounds_layers()
                 
             return {
                 "required": {
@@ -41,26 +43,6 @@ def define_comfyui_nodes(sdppp):
                     "use_layer_bounds": (bounds_strs, {"default": bounds_strs[0] if len(bounds_strs) > 0 else None}),
                 }
             }
-        
-        @classmethod
-        def LAYER_BOUNDS_NAME_TO_ID(self, layer, use_layer_bounds):
-            id = 0
-            if layer == '### Use canvas ###':
-                id = 0
-            else:
-                layer_name_and_id_split = layer.split('(id:')
-                id = int(layer_name_and_id_split.pop().strip()[:-1])
-            bounds_id = 0
-            if use_layer_bounds == '### Use canvas ###':
-                bounds_id = 0
-            elif use_layer_bounds == '### Use selection ###':
-                bounds_id = -1
-            elif use_layer_bounds == '### Same as layer ###':
-                bounds_id = id
-            else:
-                bounds_layer_name_and_id_split = use_layer_bounds.split('(id:')
-                bounds_id = int(bounds_layer_name_and_id_split.pop().strip()[:-1])
-            return id, bounds_id
 
         RETURN_TYPES = ("IMAGE", "MASK", "FLOAT")
         RETURN_NAMES = ("image_out", "mask_out", "layer_opacity")
@@ -72,7 +54,8 @@ def define_comfyui_nodes(sdppp):
                 raise ValueError('Photoshop is not connected')
             photoshopInstance = sdppp.get_ps_instance()
 
-            id, bounds_id = self.LAYER_BOUNDS_NAME_TO_ID(layer, use_layer_bounds)
+            id = photoshopInstance.layer_name_to_id(layer)
+            bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
             image_id, layer_opacity = photoshopInstance.get_image_from_remote(layer_id=id, bounds_id=bounds_id)
             loadImage = LoadImage()
             (output_image, output_mask) = loadImage.load_image(image_id)
@@ -89,8 +72,7 @@ def define_comfyui_nodes(sdppp):
             if validate_sdppp() is not True:
                 layer_strs = []
             else:
-                layer_strs, b = sdppp.get_ps_instance().get_layers()
-                layer_strs.insert(0, '### New Layer ###')
+                layer_strs = sdppp.get_ps_instance().get_set_layers()
 
             return {
                 "required": {
@@ -110,7 +92,8 @@ def define_comfyui_nodes(sdppp):
             photoshopInstance = sdppp.get_ps_instance()
             
             ret = cache_images(images)
-            photoshopInstance.send_images_to_remote(image_ids=ret, layer_name=layer)
+            layer_id = photoshopInstance.layer_name_to_id(layer)
+            photoshopInstance.send_images_to_remote(image_ids=ret, layer_id=layer_id)
 
             return (None,)
         

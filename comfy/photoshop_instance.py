@@ -1,4 +1,18 @@
+import time
+
+
 class PhotoshopInstance:
+    SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
+    SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
+    SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
+    SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###'
+    SPECIAL_LAYER_NAME_TO_ID = {
+        SPECIAL_LAYER_USE_CANVAS: 0,
+        SPECIAL_LAYER_USE_SELECTION: -1,
+        SPECIAL_LAYER_NEW_LAYER: -2,
+        SPECIAL_LAYER_SAME_AS_LAYER: -3
+    }
+
     def __init__(self, sdppp, sid):
         self.sdppp = sdppp
         self.sid = sid
@@ -10,39 +24,61 @@ class PhotoshopInstance:
             'done': False,
             'result': None
         }
-        self.sdppp.onNextTick(fn, handle)
-        while not handle['done']:
+        self.sdppp.onNextTick(fn, handle, self.sid)
+        start_time = time.time()
+        while not handle['done'] and self.sdppp.check_state_true(self.sid) and time.time() - start_time < 15:
             pass
         return handle['result']
 
     def get_layers(self):
-        layer_strs = []
-        bounds_strs = []
-        
-        layer_strs = list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", self.layers))
-        layer_strs.insert(0, '### Use canvas ###')
+        return list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", self.layers))
+    
+    def get_base_layers(self):
+        raw_layer_strs = self.get_layers()
+        layer_strs = list(raw_layer_strs)
+        layer_strs.insert(0, self.SPECIAL_LAYER_USE_CANVAS)
+        return layer_strs
+    
+    def get_bounds_layers(self):
+        bounds_strs = list(self.get_layers())
+        bounds_strs.insert(0, self.SPECIAL_LAYER_USE_CANVAS)
+        bounds_strs.insert(1, self.SPECIAL_LAYER_USE_SELECTION)
+        bounds_strs.insert(1, self.SPECIAL_LAYER_SAME_AS_LAYER)
+        return bounds_strs
 
-        bounds_strs = list(layer_strs)
-        bounds_strs.insert(1, '### Use selection ###')
-        bounds_strs.insert(1, '### Same as layer ###')
-
-        return layer_strs, bounds_strs
+    def get_set_layers(self):
+        raw_layer_strs = self.get_layers()
+        set_layer_strs = list(raw_layer_strs)
+        set_layer_strs.insert(0, self.SPECIAL_LAYER_NEW_LAYER)
+        return set_layer_strs
+    
+    def layer_name_to_id(self, layer_name, refrence_id=None):
+        id = 0
+        if layer_name == self.SPECIAL_LAYER_SAME_AS_LAYER:
+            id = refrence_id
+        elif self.SPECIAL_LAYER_NAME_TO_ID.get(layer_name, None) is not None:
+            id = self.SPECIAL_LAYER_NAME_TO_ID[layer_name]
+        else:
+            layer_name_and_id_split = layer_name.split('(id:')
+            id = int(layer_name_and_id_split.pop().strip()[:-1])
+        return id
     
     # for nodes call    
     def get_image_from_remote(self, layer_id, bounds_id=False):
         async def _get_image(sio):
             return await sio.call('get_image', data={'layer_id': layer_id, 'use_layer_bounds': bounds_id}, to=self.sid)
         result = self._run_in_next_server_event(_get_image)
-        
+        if not result:
+            return None, None
         history_state_id = self._update_layer_bounds_history_state_id(layer_id, bounds_id)
         self._update_history_state_id_after_internal_change(history_state_id)
 
         return result['upload_name'], result['layer_opacity']
     
     # for nodes call
-    def send_images_to_remote(self, image_ids, layer_name=""):
+    def send_images_to_remote(self, image_ids, layer_id=""):
         async def _send_images(sio):
-            return await sio.call('send_images', data={'image_ids': image_ids, 'layer_name': layer_name}, to=self.sid)
+            return await sio.call('send_images', data={'image_ids': image_ids, 'layer_id': layer_id}, to=self.sid)
         result = self._run_in_next_server_event(_send_images)
         self._update_history_state_id_after_internal_change()
         return result
@@ -50,14 +86,11 @@ class PhotoshopInstance:
     # for nodes call
     def get_active_history_state_id_from_remote(self):
         async def get_active_history_state_id_from_remote(sio):
-            return await sio.call('get_active_history_state_id', data={}, to=self.sid)
+            res = await sio.call('get_active_history_state_id', data={}, to=self.sid)
+            return res
         result = self._run_in_next_server_event(get_active_history_state_id_from_remote)
-        id = result.get('history_state_id', None)
-        return id
-    
-    # for apis call
-    async def async_get_active_history_state_id_from_remote(self):
-        result = await self.sdppp.sio.call('get_active_history_state_id', data={}, to=self.sid)
+        if result is None:
+            return 0
         id = result.get('history_state_id', None)
         return id
     
@@ -65,19 +98,14 @@ class PhotoshopInstance:
     # ===
     # for api calls and initialize
     def reset_change_tracker(self):
-        self.push_data = {}
         self.get_img_state_id = 0
-        self.last_get_img_id = None
         self.change_tracker = {}
         self.comfyui_last_value_tracker = {}
     
     # for apis calls
-    async def is_ps_history_changed(self):
-        push_state_id = await self.async_get_active_history_state_id_from_remote()
-        if push_state_id is not None:
-            return self.get_img_state_id < push_state_id
-        current_id = await self.get_active_history_state_id_from_remote()
-        return self.get_img_state_id != current_id
+    def is_ps_history_changed(self):
+        current_id = self.get_active_history_state_id_from_remote()
+        return self.get_img_state_id != current_id and self.get_img_state_id < current_id
 
     # for nodes calls
     def check_layer_bounds_combo_changed(self, layer, use_layer_bounds):
@@ -85,7 +113,7 @@ class PhotoshopInstance:
         layer_bounds_history_state_id = self.change_tracker.get(layer_bounds_combo, None)
         if layer_bounds_history_state_id is None:
             return True
-        latest_state_id = self._get_push_history_state_id() or self.get_active_history_state_id_from_remote()
+        latest_state_id = self.get_active_history_state_id_from_remote()
         if latest_state_id > layer_bounds_history_state_id:
             return True, latest_state_id
         #didn't change, use last value
@@ -114,7 +142,3 @@ class PhotoshopInstance:
         latest_state_id = self.get_active_history_state_id_from_remote()
         self.change_tracker[layer_bounds_combo] = latest_state_id
         return latest_state_id
-    
-    # for nodes call
-    def _get_push_history_state_id(self):
-        return self.push_data.get('history_state_id', None)

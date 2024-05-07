@@ -3,6 +3,7 @@ import json
 import asyncio
 from socketio import exceptions
 from .photoshop_instance import PhotoshopInstance
+empty_queue = []
 
 class SDPPP:
     def __init__(self, PromptServer):
@@ -16,18 +17,25 @@ class SDPPP:
 
         self.loop = PromptServer.instance.loop
 
-        self.onNextTickQueue = []
+        self.onNextTickQueue = {}
 
     def has_ps_instance(self):
         return len(self.photoshop_instances) > 0
 
-    def get_ps_instance(self, sid = None):
+    def get_ps_instance(self, sid = None) -> PhotoshopInstance:
+        if len(self.photoshop_instances) == 0:
+            return None
         if sid is None:
             sid = list(self.photoshop_instances.keys())[0]
         return self.photoshop_instances[sid]
 
-    def onNextTick(self, fn, handle):
-        self.onNextTickQueue.append((fn, handle))
+    def onNextTick(self, fn, handle, sid):
+        if sid not in self.onNextTickQueue:
+            self.onNextTickQueue[sid] = []
+        self.onNextTickQueue[sid].append((fn, handle))
+
+    def check_state_true(self, sid):
+        return self.state.get(sid, False)
 
     def registerSocketListeners(self):
         sio = self.sio
@@ -56,10 +64,15 @@ class SDPPP:
                 while True:
                     if (self.state[sid] is False):
                         break
-                    while len(self.onNextTickQueue) > 0:
-                        item = self.onNextTickQueue.pop(0)
-                        item[1]['result'] = await item[0](self.sio)
-                        item[1]['done'] = True
+                    sid_queue = self.onNextTickQueue.get(sid, empty_queue)
+                    while len(sid_queue) > 0:
+                        try:
+                            item = sid_queue.pop(0)
+                            item[1]['result'] = await item[0](self.sio)
+                        except Exception as e:
+                            pass
+                        finally:
+                            item[1]['done'] = True
                     await asyncio.sleep(0.5)
             self.loop.create_task(selfEventLoop())
 
@@ -67,25 +80,44 @@ class SDPPP:
         @sio.event
         def disconnect(sid):
             self.state[sid] = False
+            self.onNextTickQueue.pop(sid, None)
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
             elif sid in self.comfyui_instances:
                 self.comfyui_instances.pop(sid, None)
+            sio.disconnect(sid)
 
         # only emit by photoshop instance
         @sio.event
         async def sync_layers(sid, data):
             instance = self.get_ps_instance(sid)
+            if instance is None:
+                return
             instance.layers = data['layers']
 
-            layer_strs, bounds_strs = instance.get_layers()
+            layer_strs = instance.get_base_layers()
+            bounds_strs = instance.get_bounds_layers()
+            set_layer_strs = instance.get_set_layers()
             for sid, instance in self.comfyui_instances.items():
                 await sio.emit('sync_layers', {
                     'layer_strs': layer_strs,
-                    'bound_strs': bounds_strs
+                    'bound_strs': bounds_strs,
+                    'set_layer_strs': set_layer_strs,
                 }, to=sid)
 
         @sio.event
-        def push_data(sid, data):
-            instance = self.get_ps_instance(sid)
-            instance.push_data.update(push_data)
+        def check_changes(sid):
+            instance = self.get_ps_instance()
+            if instance is None:
+                return
+            if not instance.is_ps_history_changed():
+                return
+            sio.emit('trigger_graph_change', to=sid)
+        
+        @sio.event
+        def reset_changes(sid):
+            instance = self.get_ps_instance()
+            if instance is None:
+                return
+            instance.reset_change_tracker()
+
