@@ -47,24 +47,3 @@ def define_http_endpoints(PromptServer, sdppp):
             return web.json_response({
                 'error': str(e)
             })
-        
-    @PromptServer.instance.routes.get("/sd-ppp/checkchanges")
-    async def check_changes(request):
-        is_changed = False
-        if sdppp.has_ps_instance():
-            is_changed = await sdppp.get_ps_instance().is_ps_history_changed()
-        return web.json_response({'is_changed': is_changed}, content_type='application/json')
-
-    @PromptServer.instance.routes.get("/sd-ppp/resetchanges")
-    async def reset_changes(request):
-        if sdppp.has_ps_instance():
-            sdppp.get_ps_instance().reset_change_tracker()
-        return web.json_response({}, content_type='application/json')
-
-    @PromptServer.instance.routes.get("/sd-ppp/getlayers")
-    async def get_layers(request):
-        layer_strs = []
-        bounds_strs = []
-        if sdppp.has_ps_instance():
-            layer_strs, bounds_strs = sdppp.get_ps_instance().get_layers()
-        return web.json_response({'layer_strs': layer_strs, 'bounds_strs': bounds_strs}, content_type='application/json')

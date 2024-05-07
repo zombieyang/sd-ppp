@@ -40,6 +40,7 @@ class ComfyConnection {
         this.connect();
     }
     connect() {
+        console.log('connect')
         if (!this.socket) {
             this._createSocket();
         }
@@ -52,21 +53,10 @@ class ComfyConnection {
         }
     }
 
-    pushData(data) {
-        if (!this.isConnected) {
-            console.error('Connection not open');
-            return;
-        }
-
-        try {
-            this.socket.emit('push_data', {
-                push_data: data,
-            });
-        } catch (e) { console.error(e) }
-    }
-
     _createSocket() {
+        console.log('create socket')
         const socket = this.socket = socketio(this.comfyURL, {
+            autoConnect: false,
             transports: ["websocket"],
             path: '/sd-ppp/',
             query: {
@@ -76,17 +66,22 @@ class ComfyConnection {
         });
         this.interval = setInterval(() => {
             if (!this.isConnected) return;
-            const allLayers = getAllSubLayer(app.activeDocument);
+            const allLayers = getAllSubLayer(app.activeDocument); 
             this.socket.emit('sync_layers',
                 { layers: allLayers }
             )
         }, 3000)
 
         socket.on('connect_error', (error) => {
-            console.error('connect_error', error)
+            if (socket.active) {
+                console.error('connect_error reconnecting...')
+            } else {
+                console.error('connect_error disconnected')
+            }
             ComfyConnection._callConnectStateChange();
         });
         socket.on('connect', () => {
+            console.log('connect')
             storage.secureStorage.setItem('comfyURL', this.comfyURL);
             ComfyConnection._callConnectStateChange();
         });

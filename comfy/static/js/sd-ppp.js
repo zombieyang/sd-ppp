@@ -4,6 +4,8 @@ import socketio from './socket.io.js'
 
 let layerStrs = [];
 let boundsStrs = [];
+let setLayerStrs = [];
+let socket = null;
 
 console.log("[sd-ppp]", "Loading js extension");
 app.registerExtension({
@@ -11,10 +13,9 @@ app.registerExtension({
 	init() {
 	},
 	async setup() {
-		await api.fetchApi(`/sd-ppp/resetchanges`);
 		setInterval(checkChanges, 1000);
 
-        const socket = socketio(location.origin, {
+        socket = socketio(location.origin, {
             transports: ["websocket"],
             path: '/sd-ppp/',
             query: {
@@ -24,6 +25,7 @@ app.registerExtension({
         });
 
 		socket.on('connect', () => {
+			socket.emit('reset_changes');
 		});
 		socket.on('disconnect', () => {
 		});
@@ -33,6 +35,10 @@ app.registerExtension({
 		socket.on('sync_layers', (data) => {
 			layerStrs = data.layer_strs;
 			boundsStrs = data.bound_strs;
+			setLayerStrs = data.set_layer_strs;
+		});
+		socket.on('trigger_graph_change', () => {
+			api.dispatchEvent(new CustomEvent("graphChanged"));
 		});
 	},
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
@@ -51,6 +57,21 @@ app.registerExtension({
 				if(onMouseEnter) await onMouseEnter.call(this, ...args);
 				this_handler.call(this);
 			}
+		} else if (nodeType.comfyClass === 'Send Images To Photoshop') {
+			const onSelected = nodeType.prototype.onSelected;
+			const onMouseEnter = nodeType.prototype.onMouseEnter;
+			let this_handler = function() {
+				this.widgets[0].options.values = setLayerStrs;
+			}
+			nodeType.prototype.onSelected = async function(...args) {
+				if(onSelected) await onSelected.call(this, ...args);
+				this_handler.call(this);
+			}
+			nodeType.prototype.onMouseEnter = async function(...args) {
+				if(onMouseEnter) await onMouseEnter.call(this, ...args);
+				this_handler.call(this);
+			}
+		
 		}
 	}
 });
@@ -58,7 +79,6 @@ app.registerExtension({
 const SDPPPNodes = [
 	'Get Image From Photoshop Layer',
     'Send Images To Photoshop',
-    'Send Images To Photoshop Set Layer',
 ]
 async function checkChanges() {
 	await checkHistoryChanges();
@@ -70,10 +90,7 @@ async function checkHistoryChanges() {
 		const mode0NodeTypes = currentState.nodes.filter(node => node.mode == 0).map(node => node.type);
 		const containsSDPPPNodes = mode0NodeTypes.some(nodeType => SDPPPNodes.includes(nodeType));
 		if (!containsSDPPPNodes) return;
-		const res = await api.fetchApi(`/sd-ppp/checkchanges`);
-		const json = await res.json()
-		if (!json.is_changed) return;
-		api.dispatchEvent(new CustomEvent("graphChanged"));	
+		socket.emit('check_changes')
 	} catch (e) {
 		console.error("[sd-ppp]", "Failed to check changes", e);
 	}
