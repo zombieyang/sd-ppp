@@ -102,8 +102,11 @@ class PhotoshopInstance:
         self.comfyui_last_value_tracker = {}
     
     # for apis calls
-    def is_ps_history_changed(self):
-        current_id = self.get_active_history_state_id_from_remote()
+    async def is_ps_history_changed(self, sio):
+        result = await sio.call('get_active_history_state_id', data={}, to=self.sid)
+        if result is None:
+            return False
+        current_id = result.get('history_state_id', None)
         return self.get_img_state_id != current_id and self.get_img_state_id < current_id
 
     # for nodes calls

@@ -97,14 +97,13 @@ class SDPPP:
                 }, to=sid)
 
         @sio.event
-        def check_changes(sid):
-            # instance = self.get_ps_instance()
-            # if instance is None:
-            #     return
-            # if not instance.is_ps_history_changed():
-            #     return
-            # sio.emit('trigger_graph_change', to=sid)
-            pass
+        async def check_changes(sid):
+            instance = self.get_ps_instance()
+            if instance is None:
+                return
+            if not await instance.is_ps_history_changed(sio):
+                return
+            sio.emit('trigger_graph_change', to=sid)
         
         @sio.event
         def reset_changes(sid):
