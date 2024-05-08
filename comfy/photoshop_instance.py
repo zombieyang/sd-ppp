@@ -24,9 +24,8 @@ class PhotoshopInstance:
             'done': False,
             'result': None
         }
-        self.sdppp.onNextTick(fn, handle, self.sid)
-        start_time = time.time()
-        while not handle['done'] and self.sdppp.check_state_true(self.sid) and time.time() - start_time < 15:
+        self.sdppp.onNextTick(fn, handle)
+        while not handle['done']:
             pass
         return handle['result']
 

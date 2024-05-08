@@ -17,22 +17,20 @@ class SDPPP:
 
         self.loop = PromptServer.instance.loop
 
-        self.onNextTickQueue = {}
+        self.onNextTickQueue = []
 
     def has_ps_instance(self):
         return len(self.photoshop_instances) > 0
 
-    def get_ps_instance(self, sid = None) -> PhotoshopInstance:
+    def get_ps_instance(self, sid = None):
         if len(self.photoshop_instances) == 0:
             return None
         if sid is None:
             sid = list(self.photoshop_instances.keys())[0]
         return self.photoshop_instances[sid]
 
-    def onNextTick(self, fn, handle, sid):
-        if sid not in self.onNextTickQueue:
-            self.onNextTickQueue[sid] = []
-        self.onNextTickQueue[sid].append((fn, handle))
+    def onNextTick(self, fn, handle):
+            self.onNextTickQueue.append((fn, handle))
 
     def check_state_true(self, sid):
         return self.state.get(sid, False)
@@ -64,15 +62,10 @@ class SDPPP:
                 while True:
                     if (self.state[sid] is False):
                         break
-                    sid_queue = self.onNextTickQueue.get(sid, empty_queue)
-                    while len(sid_queue) > 0:
-                        try:
-                            item = sid_queue.pop(0)
-                            item[1]['result'] = await item[0](self.sio)
-                        except Exception as e:
-                            pass
-                        finally:
-                            item[1]['done'] = True
+                    while len(self.onNextTickQueue) > 0:
+                        item = self.onNextTickQueue.pop(0)
+                        item[1]['result'] = await item[0](self.sio)
+                        item[1]['done'] = True
                     await asyncio.sleep(0.5)
             self.loop.create_task(selfEventLoop())
 
@@ -80,12 +73,10 @@ class SDPPP:
         @sio.event
         def disconnect(sid):
             self.state[sid] = False
-            self.onNextTickQueue.pop(sid, None)
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
             elif sid in self.comfyui_instances:
                 self.comfyui_instances.pop(sid, None)
-            sio.disconnect(sid)
 
         # only emit by photoshop instance
         @sio.event
@@ -107,12 +98,13 @@ class SDPPP:
 
         @sio.event
         def check_changes(sid):
-            instance = self.get_ps_instance()
-            if instance is None:
-                return
-            if not instance.is_ps_history_changed():
-                return
-            sio.emit('trigger_graph_change', to=sid)
+            # instance = self.get_ps_instance()
+            # if instance is None:
+            #     return
+            # if not instance.is_ps_history_changed():
+            #     return
+            # sio.emit('trigger_graph_change', to=sid)
+            pass
         
         @sio.event
         def reset_changes(sid):
