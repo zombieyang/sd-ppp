@@ -30,7 +30,7 @@ class SDPPP:
         return self.photoshop_instances[sid]
 
     def onNextTick(self, fn, handle):
-            self.onNextTickQueue.append((fn, handle))
+        self.onNextTickQueue.append((fn, handle))
 
     def check_state_true(self, sid):
         return self.state.get(sid, False)
@@ -64,14 +64,14 @@ class SDPPP:
                         break
                     while len(self.onNextTickQueue) > 0:
                         item = self.onNextTickQueue.pop(0)
-                        item[1]['result'] = await item[0](self.sio)
+                        item[1]['result'] = await item[0]()
                         item[1]['done'] = True
                     await asyncio.sleep(0.5)
             self.loop.create_task(selfEventLoop())
 
         # only emit by photoshop instance
         @sio.event
-        def disconnect(sid):
+        async def disconnect(sid):
             self.state[sid] = False
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
@@ -101,12 +101,12 @@ class SDPPP:
             instance = self.get_ps_instance()
             if instance is None:
                 return
-            if not await instance.is_ps_history_changed(sio):
+            if not await instance.is_ps_history_changed():
                 return
-            sio.emit('trigger_graph_change', to=sid)
+            await sio.emit('trigger_graph_change', to=sid)
         
         @sio.event
-        def reset_changes(sid):
+        async def reset_changes(sid):
             instance = self.get_ps_instance()
             if instance is None:
                 return
