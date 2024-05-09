@@ -252,7 +252,9 @@ class ComfyConnection {
     });
     socket.on('get_image', async (data, callback) => {
       try {
+        const startTime = Date.now();
         const result = await (0,_events_get_image__WEBPACK_IMPORTED_MODULE_5__["default"])(this.comfyURL, data);
+        console.log('get_image cost', Date.now() - startTime, 'ms');
         callback(result);
       } catch (e) {
         console.error(e);
@@ -469,7 +471,7 @@ async function getImage(comfyURL, params) {
       const desireBounds = getDesiredBounds(boundsLayerID);
       const pixelDataFromAPI = await getPixelsData(layer, desireBounds);
       const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds);
-      // console.log('getPixels', Date.now() - startTime, 'ms');
+      console.log('getPixels', Date.now() - startTime, 'ms');
       // log desire size
       const image = await new Promise((resolve, reject) => {
         new (_library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default())({
@@ -480,27 +482,27 @@ async function getImage(comfyURL, params) {
           err ? reject(err) : resolve(image);
         });
       });
+      console.log('new Jimp', Date.now() - startTime, 'ms');
       image.quality(100);
+      console.log('quality', Date.now() - startTime, 'ms');
       const file = await image.getBufferAsync((_library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().MIME_PNG));
-      // console.log('create pngfile', Date.now() - startTime, 'ms');
-
+      console.log('create pngfile', Date.now() - startTime, 'ms');
       const fd = new FormData();
       const PhotoshopBlob = new Blob([file], {
         type: "image/png"
       });
       fd.append('image', PhotoshopBlob, "PhotoshopBlob.png");
       fd.append('overwrite', "true");
-      // console.log('start upload', Date.now() - startTime, 'ms');
+      console.log('start upload', Date.now() - startTime, 'ms');
       const promise = fetch(comfyURL + '/upload/image', {
         method: 'POST',
         body: fd
       }).then(res => {
         if (res.status == 200) return res.json();else throw new Error('HTTP ' + res.status);
       });
-      // console.log('finish upload', Date.now() - startTime, 'ms')
+      console.log('finish upload', Date.now() - startTime, 'ms');
       const result = await promise;
-      // console.log('upload resulted', Date.now() - startTime, 'ms')
-
+      console.log('upload resulted', Date.now() - startTime, 'ms');
       if (result.error) throw new Error(result.error);
       if (!result.name) throw new Error('No upload_name');
       uploadName = result.name;
@@ -514,7 +516,7 @@ async function getImage(comfyURL, params) {
           activeLayers[i].selected = true;
         }
       }
-      if (hostControl && suspensionID) await hostControl.resumeHistory(suspensionID);
+      if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
     }
   }, {
     commandName: "get content of layer " + layerID

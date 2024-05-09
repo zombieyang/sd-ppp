@@ -66,7 +66,7 @@ class SDPPP:
                         item = self.onNextTickQueue.pop(0)
                         item[1]['result'] = await item[0]()
                         item[1]['done'] = True
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(0.02)
             self.loop.create_task(selfEventLoop())
 
         # only emit by photoshop instance
