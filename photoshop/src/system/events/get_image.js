@@ -142,7 +142,7 @@ export default async function getImage(comfyURL, params) {
             const desireBounds = getDesiredBounds(boundsLayerID);
             const pixelDataFromAPI = await getPixelsData(layer, desireBounds)
             const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
-            // console.log('getPixels', Date.now() - startTime, 'ms');
+            console.log('getPixels', Date.now() - startTime, 'ms');
             // log desire size
             const image = await new Promise((resolve, reject) => {
                 new Jimp({
@@ -153,15 +153,17 @@ export default async function getImage(comfyURL, params) {
                     err ? reject(err) : resolve(image);
                 })
             })
+            console.log('new Jimp', Date.now() - startTime, 'ms');
             image.quality(100);
+            console.log('quality', Date.now() - startTime, 'ms');
             const file = await image.getBufferAsync(Jimp.MIME_PNG);
-            // console.log('create pngfile', Date.now() - startTime, 'ms');
+            console.log('create pngfile', Date.now() - startTime, 'ms');
 
             const fd = new FormData();
             const PhotoshopBlob = new Blob([file], { type: "image/png" });
-            fd.append('image', PhotoshopBlob, "PhotoshopBlob.png");
+            fd.append('image', PhotoshopBlob, "PhotoshopBlob.png")              ;
             fd.append('overwrite', "true");
-            // console.log('start upload', Date.now() - startTime, 'ms');
+            console.log('start upload', Date.now() - startTime, 'ms');
             const promise = fetch(comfyURL + '/upload/image', {
                 method: 'POST',
                 body: fd,
@@ -171,9 +173,9 @@ export default async function getImage(comfyURL, params) {
                 else
                     throw new Error('HTTP ' + res.status)
             })
-            // console.log('finish upload', Date.now() - startTime, 'ms')
+            console.log('finish upload', Date.now() - startTime, 'ms')
             const result = await promise
-            // console.log('upload resulted', Date.now() - startTime, 'ms')
+            console.log('upload resulted', Date.now() - startTime, 'ms')
 
             if (result.error) throw new Error(result.error);
             if (!result.name) throw new Error('No upload_name')
@@ -190,7 +192,7 @@ export default async function getImage(comfyURL, params) {
                     activeLayers[i].selected = true;
                 }
             }
-            if (hostControl && suspensionID) await hostControl.resumeHistory(suspensionID);
+            if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
         }
 
     }, { commandName: "get content of layer " + layerID })

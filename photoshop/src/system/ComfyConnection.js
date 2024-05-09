@@ -92,7 +92,9 @@ class ComfyConnection {
 
         socket.on('get_image', async (data, callback) => {
             try {
+                const startTime = Date.now();
                 const result = await getImage(this.comfyURL, data)
+                console.log('get_image cost', Date.now() - startTime, 'ms');
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
