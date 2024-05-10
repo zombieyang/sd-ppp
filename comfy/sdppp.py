@@ -13,11 +13,8 @@ class SDPPP:
         self.sio = socketio.AsyncServer(async_mode='aiohttp', cors_allowed_origins="*")
         self.sio.attach(PromptServer.instance.app, socketio_path='/sd-ppp/')
         self.registerSocketListeners()
-        self.state = dict()
 
         self.loop = PromptServer.instance.loop
-
-        self.onNextTickQueue = []
 
     def has_ps_instance(self):
         return len(self.photoshop_instances) > 0
@@ -28,12 +25,6 @@ class SDPPP:
         if sid is None:
             sid = list(self.photoshop_instances.keys())[0]
         return self.photoshop_instances[sid]
-
-    def onNextTick(self, fn, handle):
-        self.onNextTickQueue.append((fn, handle))
-
-    def check_state_true(self, sid):
-        return self.state.get(sid, False)
 
     def registerSocketListeners(self):
         sio = self.sio
@@ -57,22 +48,10 @@ class SDPPP:
             else:
                 raise exceptions.ConnectionRefusedError('unknown instance type ' + qsobj['type'])
 
-            self.state[sid] = True
-            async def selfEventLoop():
-                while True:
-                    if (self.state[sid] is False):
-                        break
-                    while len(self.onNextTickQueue) > 0:
-                        item = self.onNextTickQueue.pop(0)
-                        item[1]['result'] = await item[0]()
-                        item[1]['done'] = True
-                    await asyncio.sleep(0.02)
-            self.loop.create_task(selfEventLoop())
 
         # only emit by photoshop instance
         @sio.event
         async def disconnect(sid):
-            self.state[sid] = False
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
             elif sid in self.comfyui_instances:

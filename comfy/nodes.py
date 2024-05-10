@@ -9,12 +9,16 @@ def define_comfyui_nodes(sdppp):
             return 'Photoshop is not connected'
         return True
 
-    def call_async_func_in_sdppp_thread(fn, dontwait = False):
+    def call_async_func_in_server_thread(coro, dontwait = False):
         handle = {
             'done': False,
             'result': None
         }
-        sdppp.onNextTick(fn, handle)
+        loop = sdppp.loop
+        async def do_call():
+            handle['result'] = await coro
+            handle['done'] = True
+        loop.call_soon(lambda: loop.create_task(do_call()))
 
         if not dontwait:
             while not handle['done']:
@@ -37,10 +41,8 @@ def define_comfyui_nodes(sdppp):
                 photoshopInstance = sdppp.get_ps_instance()
                 id = photoshopInstance.layer_name_to_id(layer)
                 bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
-                async def do_get_history():
-                    return await photoshopInstance.check_layer_bounds_combo_changed(id, bounds_id)
                 start = time.time()
-                is_changed, history_state_id = call_async_func_in_sdppp_thread(do_get_history)
+                is_changed, history_state_id = call_async_func_in_server_thread(photoshopInstance.check_layer_bounds_combo_changed(id, bounds_id))
                 if is_changed and history_state_id is None:
                     return np.random.rand()
                 photoshopInstance.update_comfyui_last_value(id, bounds_id, history_state_id)
@@ -75,10 +77,8 @@ def define_comfyui_nodes(sdppp):
             id = photoshopInstance.layer_name_to_id(layer)
             bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
 
-            async def do_get_image():
-                return await photoshopInstance.get_image(layer_id=id, bounds_id=bounds_id)
             start = time.time()
-            image_id, layer_opacity = call_async_func_in_sdppp_thread(do_get_image)
+            image_id, layer_opacity = call_async_func_in_server_thread(photoshopInstance.get_image(layer_id=id, bounds_id=bounds_id))
 
             loadImage = LoadImage()
             (output_image, output_mask) = loadImage.load_image(image_id)
@@ -116,9 +116,7 @@ def define_comfyui_nodes(sdppp):
             
             ret = cache_images(images)
             layer_id = photoshopInstance.layer_name_to_id(layer)
-            async def do_send():
-                return await photoshopInstance.send_images(image_ids=ret, layer_id=layer_id)
-            call_async_func_in_sdppp_thread(do_send, True)
+            call_async_func_in_server_thread(photoshopInstance.send_images(image_ids=ret, layer_id=layer_id), True)
 
             return (None,)
         
