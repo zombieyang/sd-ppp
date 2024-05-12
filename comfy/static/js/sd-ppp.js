@@ -52,7 +52,9 @@ app.registerExtension({
             path: '/sd-ppp/',
             query: {
                 version: 1,
-                type: 'comfyui'
+                type: 'comfyui',
+                client_id: api.clientId,
+                user_id: getUserId(),
             }
         });
 

@@ -57,13 +57,13 @@ class SDPPP:
                 self.photoshop_instances[sid] = await PhotoshopManager.instance().new_ps_instance(self, sid, ip, user_id)
 
             elif qsobj['type'] == 'comfyui':
-                self.comfyui_instances[sid] = True
                 client_id = qsobj.get('client_id', None)
                 if not client_id:
                     client_id = 0
                 user_id = qsobj.get('user_id', None)
                 if not user_id:
                     user_id = 0
+                self.comfyui_instances[sid] = client_id
                 PhotoshopManager.instance().instance_from_client_info(ip, client_id, user_id)
 
             else:
@@ -91,7 +91,10 @@ class SDPPP:
             layer_strs = instance.get_base_layers()
             bounds_strs = instance.get_bounds_layers()
             set_layer_strs = instance.get_set_layers()
-            for sid, instance in self.comfyui_instances.items():
+            for sid, client_id in self.comfyui_instances.items():
+                check_instance = PhotoshopManager.instance().instance_from_client_id(client_id)
+                if check_instance != instance:
+                    continue
                 await sio.emit('sync_layers', {
                     'layer_strs': layer_strs,
                     'bound_strs': bounds_strs,
