@@ -42,7 +42,7 @@ class PanelController {
   }
   create() {
     this[_root] = document.createElement("div");
-    this[_root].style.height = "100vh";
+    this[_root].style.height = "130vh";
     this[_root].style.overflow = "auto";
     this[_root].style.padding = "8px";
     react_dom__WEBPACK_IMPORTED_MODULE_0__.render(this[_Component]({
@@ -107,6 +107,15 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         comfyURL: instance ? instance.comfyURL : ''
       });
     });
+    uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('userId').then(value => {
+      if (!value) return;
+      this.setState({
+        userId: Buffer.from(value).toString()
+      });
+      if (this.state.userId) {
+        console.log('userId:', this.state.userId);
+      }
+    });
     uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('comfyURL').then(value => {
       if (!value) return;
       this.setState({
@@ -119,7 +128,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     });
   }
   doConnectOrDisconnect() {
-    if (!_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL);else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();
+    if (!_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL, this.state.userId);else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();
   }
   render() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
@@ -130,6 +139,15 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       },
       value: this.state.comfyURL,
       placeholder: "http://127.0.0.1:8188"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
+      id: "user-id-bar",
+      label: "USER ID",
+      onInput: ev => {
+        this.state.userId = ev.currentTarget.value;
+        if (!this.state.userId) uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.removeItem('userId');else uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.setItem('userId', this.state.userId);
+      },
+      value: this.state.userId,
+      placeholder: "User Name: Change if sharing remote server"
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "button-box"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
@@ -187,20 +205,27 @@ class ComfyConnection {
       }
     });
   }
-  static createInstance(comfyURL) {
+  static createInstance(comfyURL, userId) {
     if (ComfyConnection.instance && ComfyConnection.instance.isConnected) {
       ComfyConnection.instance.disconnect();
     }
-    ComfyConnection.instance = new ComfyConnection(comfyURL);
+    ComfyConnection.instance = new ComfyConnection(comfyURL, userId);
   }
   get isConnected() {
     return this.socket != null && this.socket.connected === true;
   }
   comfyURL = '';
   interval = null;
-  constructor(comfyURL) {
+  constructor(comfyURL, userId) {
     ComfyConnection.instance = this;
+    if (!comfyURL) {
+      comfyURL = 'http://127.0.0.1:8188';
+    }
     this.comfyURL = comfyURL.replace(/\/*$/, '');
+    if (!userId) {
+      userId = '';
+    }
+    this.userId = userId;
     this.connect();
   }
   connect() {
@@ -223,7 +248,8 @@ class ComfyConnection {
       path: '/sd-ppp/',
       query: {
         version: 1,
-        type: 'photoshop'
+        type: 'photoshop',
+        user_id: this.userId
       }
     });
     this.interval = setInterval(() => {
@@ -335,9 +361,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! photoshop */ "photoshop");
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(photoshop__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util.js */ "./src/system/util.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./src/system/util.js");
 /* harmony import */ var _library_jimp_min__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../library/jimp.min */ "./src/system/library/jimp.min.js");
 /* harmony import */ var _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_library_jimp_min__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -412,8 +439,8 @@ function getDesiredBounds(boundsLayerID) {
     width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
     height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
   };
-  // if boundsLayerID == -1, use selection bounds
-  if (boundsLayerID == -1) {
+  // use selection bounds
+  if (boundsLayerID == _util_js__WEBPACK_IMPORTED_MODULE_1__.SPECIAL_LAYER_NAME_TO_ID[_util_js__WEBPACK_IMPORTED_MODULE_1__.SPECIAL_LAYER_USE_SELECTION]) {
     // if no selection use document bounds
     const selectionBounds = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.selection?.bounds;
     if (!selectionBounds) return docBounds;
@@ -459,7 +486,7 @@ async function getImage(comfyURL, params) {
     const startTime = Date.now();
     let layer;
     let isFolder = false;
-    const activeLayers = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.activeLayers;
+    const activeLayers = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument?.activeLayers;
     try {
       hostControl = executionContext.hostControl;
       suspensionID = await hostControl.suspendHistory({
@@ -548,16 +575,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###';
-const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###';
-const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###';
-const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###';
-const SPECIAL_LAYER_NAME_TO_ID = {
-  SPECIAL_LAYER_USE_CANVAS: 0,
-  SPECIAL_LAYER_USE_SELECTION: -1,
-  SPECIAL_LAYER_NEW_LAYER: -2,
-  SPECIAL_LAYER_SAME_AS_LAYER: -3
-};
+
 function autocrop(jimp) {
   let minX = jimp.bitmap.width - 1;
   let minY = jimp.bitmap.height - 1;
@@ -586,7 +604,7 @@ async function sendImages(comfyURL, params) {
     let newLayerName;
     await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async () => {
       try {
-        if (layerId && layerId != SPECIAL_LAYER_NAME_TO_ID[SPECIAL_LAYER_NEW_LAYER]) {
+        if (layerId && layerId != _util_js__WEBPACK_IMPORTED_MODULE_1__.SPECIAL_LAYER_NAME_TO_ID[_util_js__WEBPACK_IMPORTED_MODULE_1__.SPECIAL_LAYER_NEW_LAYER]) {
           layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers.find(l => l.id == layerId);
           // deal with multiple images
           let imageIndexSuffix = "";
@@ -5045,6 +5063,11 @@ function ownKeys(e,r){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SPECIAL_LAYER_NAME_TO_ID: () => (/* binding */ SPECIAL_LAYER_NAME_TO_ID),
+/* harmony export */   SPECIAL_LAYER_NEW_LAYER: () => (/* binding */ SPECIAL_LAYER_NEW_LAYER),
+/* harmony export */   SPECIAL_LAYER_SAME_AS_LAYER: () => (/* binding */ SPECIAL_LAYER_SAME_AS_LAYER),
+/* harmony export */   SPECIAL_LAYER_USE_CANVAS: () => (/* binding */ SPECIAL_LAYER_USE_CANVAS),
+/* harmony export */   SPECIAL_LAYER_USE_SELECTION: () => (/* binding */ SPECIAL_LAYER_USE_SELECTION),
 /* harmony export */   executeAsModalUntilSuccess: () => (/* binding */ executeAsModalUntilSuccess),
 /* harmony export */   findInAllSubLayer: () => (/* binding */ findInAllSubLayer),
 /* harmony export */   getAllSubLayer: () => (/* binding */ getAllSubLayer),
@@ -5053,6 +5076,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! photoshop */ "photoshop");
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(photoshop__WEBPACK_IMPORTED_MODULE_0__);
 
+const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###';
+const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###';
+const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###';
+const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###';
+const SPECIAL_LAYER_NAME_TO_ID = {
+  SPECIAL_LAYER_USE_CANVAS: 0,
+  SPECIAL_LAYER_USE_SELECTION: -1,
+  SPECIAL_LAYER_NEW_LAYER: -2,
+  SPECIAL_LAYER_SAME_AS_LAYER: -3
+};
 function unTrimImageData(intersectImageDataArray, toImageDataArray, fromImageBounds, toImageBounds) {
   const fromLeft = fromImageBounds.left;
   const fromTop = fromImageBounds.top;
@@ -5105,7 +5138,7 @@ function getAllSubLayer(layer, level = 0) {
   }, []);
 }
 function findInAllSubLayer(layer, layerid) {
-  if (!layer.layers) return null;
+  if (!layer?.layers) return null;
   for (let i = 0; i < layer.layers.length; i++) {
     if (layer.layers[i].id === layerid) return layer.layers[i];
     const result = findInAllSubLayer(layer.layers[i], layerid);
@@ -5177,6 +5210,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
 }
 
 #url-bar {
+    width: 100%;
+}
+#user-id-bar {
     width: 100%;
 }
 .button-box {

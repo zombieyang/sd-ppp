@@ -24,6 +24,9 @@
 #url-bar {
     width: 100%;
 }
+#user-id-bar {
+    width: 100%;
+}
 .button-box {
     width: 100%;
     display: flex;

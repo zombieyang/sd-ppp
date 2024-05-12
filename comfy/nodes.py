@@ -2,13 +2,11 @@ import numpy as np
 import time
 from nodes import LoadImage
 from .apis import cache_images
+from .photoshop_manager import PhotoshopManager
+from server import PromptServer
+prompt_server = PromptServer.instance
 
 def define_comfyui_nodes(sdppp):
-    def validate_sdppp():
-        if not sdppp.has_ps_instance():
-            return 'Photoshop is not connected'
-        return True
-
     def call_async_func_in_server_thread(coro, dontwait = False):
         handle = {
             'done': False,
@@ -29,36 +27,32 @@ def define_comfyui_nodes(sdppp):
 
 
     class GetImageFromPhotoshopLayerNode:
-        @classmethod
-        def VALIDATE_INPUTS(s, layer):
-            return validate_sdppp()
+        # !!!!do not validate because there's no client_id when validating, so we validate manually before execution!!!!
+        # @classmethod
+        # def VALIDATE_INPUTS():
+        #    pass
         
         @classmethod
         def IS_CHANGED(self, layer, use_layer_bounds):
-            if not sdppp.has_ps_instance():
+            photoshopInstance = PhotoshopManager.instance().instance_from_client_id(prompt_server.client_id)
+            if not photoshopInstance:
                 return np.random.rand()
             else:
-                photoshopInstance = sdppp.get_ps_instance()
                 id = photoshopInstance.layer_name_to_id(layer)
                 bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
                 start = time.time()
                 is_changed, history_state_id = call_async_func_in_server_thread(photoshopInstance.check_layer_bounds_combo_changed(id, bounds_id))
                 if is_changed and history_state_id is None:
-                    return np.random.rand()
-                photoshopInstance.update_comfyui_last_value(id, bounds_id, history_state_id)
-                return history_state_id
+                    return photoshopInstance.update_comfyui_last_value(id, bounds_id, np.random.rand())
+                return photoshopInstance.update_comfyui_last_value(id, bounds_id, history_state_id)
         
         @classmethod
         def INPUT_TYPES(cls):
-            if validate_sdppp() is not True:
-                layer_strs = []
-                bounds_strs = []
-            else:
-                layer_strs = sdppp.get_ps_instance().get_base_layers()
-                bounds_strs = sdppp.get_ps_instance().get_bounds_layers()
-                
+            layer_strs = []
+            bounds_strs = []
             return {
-                "required": {
+                "required": {},
+                "optional": {
                     "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
                     "use_layer_bounds": (bounds_strs, {"default": bounds_strs[0] if len(bounds_strs) > 0 else None}),
                 }
@@ -70,10 +64,16 @@ def define_comfyui_nodes(sdppp):
         CATEGORY = "Photoshop"
 
         def get_image(self, layer, use_layer_bounds):
-            if validate_sdppp() is not True:
+            photoshopInstance = PhotoshopManager.instance().instance_from_client_id(prompt_server.client_id)
+            if not photoshopInstance:
                 raise ValueError('Photoshop is not connected')
-            photoshopInstance = sdppp.get_ps_instance()
-
+            layer_strs = photoshopInstance.get_base_layers()    
+            if layer not in layer_strs:
+                raise ValueError(f"Layer {layer} not found in Photoshop")
+            bounds_strs = photoshopInstance.get_bounds_layers()
+            if use_layer_bounds not in bounds_strs:
+                raise ValueError(f"Layer {use_layer_bounds} not found in Photoshop")
+            
             id = photoshopInstance.layer_name_to_id(layer)
             bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
 
@@ -86,19 +86,18 @@ def define_comfyui_nodes(sdppp):
 
 
     class SendImageToPhotoshopLayerNode:
-        @classmethod
-        def VALIDATE_INPUTS(s, images):
-            return validate_sdppp()
+        # !!!!do not validate because there's no client_id when validating, so we validate manually before execution!!!!
+        # @classmethod
+        # def VALIDATE_INPUTS():
+        #    pass
         
         @classmethod
         def INPUT_TYPES(cls):
-            if validate_sdppp() is not True:
-                layer_strs = []
-            else:
-                layer_strs = sdppp.get_ps_instance().get_set_layers()
+            layer_strs = []
 
             return {
-                "required": {
+                "required": {},
+                "optional": {
                     "images": ("IMAGE", ),
                     "layer": (layer_strs, {"default": layer_strs[0] if len(layer_strs) > 0 else None}),
                 }
@@ -110,9 +109,9 @@ def define_comfyui_nodes(sdppp):
         OUTPUT_NODE = True
 
         def send_image(self, images, layer):
-            if validate_sdppp() is not True:
+            photoshopInstance = PhotoshopManager.instance().instance_from_client_id(prompt_server.client_id)
+            if not photoshopInstance:
                 raise ValueError('Photoshop is not connected')
-            photoshopInstance = sdppp.get_ps_instance()
             
             ret = cache_images(images)
             layer_id = photoshopInstance.layer_name_to_id(layer)

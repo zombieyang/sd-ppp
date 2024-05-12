@@ -2,13 +2,13 @@ import socketio
 import json
 import asyncio
 from socketio import exceptions
-from .photoshop_instance import PhotoshopInstance
-empty_queue = []
+from .photoshop_manager import PhotoshopManager
 
 class SDPPP:
     def __init__(self, PromptServer):
         self.photoshop_instances = dict()
         self.comfyui_instances = dict()
+        self.sid_to_ip = dict()
 
         self.sio = socketio.AsyncServer(async_mode='aiohttp', cors_allowed_origins="*")
         self.sio.attach(PromptServer.instance.app, socketio_path='/sd-ppp/')
@@ -25,12 +25,25 @@ class SDPPP:
         if sid is None:
             sid = list(self.photoshop_instances.keys())[0]
         return self.photoshop_instances[sid]
+    
+    def get_client_info_from_event(self, sid, data):
+        ip = self.sid_to_ip[sid]
+        if not ip:
+            return
+        client_id = data.get('client_id', None)
+        if not client_id:
+            client_id = 0
+        user_id = data.get('user_id', None)
+        if not user_id:
+            user_id = 0
+        return ip, client_id, user_id
 
     def registerSocketListeners(self):
         sio = self.sio
 
         @sio.event
         async def connect(sid, environ):
+            ip = self.sid_to_ip[sid] = environ['REMOTE_ADDR']
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
@@ -38,12 +51,20 @@ class SDPPP:
                 raise exceptions.ConnectionRefusedError('instance type missed in query')
 
             elif qsobj['type'] == 'photoshop':
-                if len(self.photoshop_instances) > 0:
-                    raise exceptions.ConnectionRefusedError('only 1 instance is allowed now')
-                self.photoshop_instances[sid] = PhotoshopInstance(self, sid)
+                user_id = qsobj.get('user_id', None)
+                if not user_id:
+                    user_id = 0
+                self.photoshop_instances[sid] = await PhotoshopManager.instance().new_ps_instance(self, sid, ip, user_id)
 
             elif qsobj['type'] == 'comfyui':
                 self.comfyui_instances[sid] = True
+                client_id = qsobj.get('client_id', None)
+                if not client_id:
+                    client_id = 0
+                user_id = qsobj.get('user_id', None)
+                if not user_id:
+                    user_id = 0
+                PhotoshopManager.instance().instance_from_client_info(ip, client_id, user_id)
 
             else:
                 raise exceptions.ConnectionRefusedError('unknown instance type ' + qsobj['type'])
@@ -53,9 +74,11 @@ class SDPPP:
         @sio.event
         async def disconnect(sid):
             if sid in self.photoshop_instances:
-                self.photoshop_instances.pop(sid, None)
+                instance = self.photoshop_instances.pop(sid, None)
+                instance.destroy()
             elif sid in self.comfyui_instances:
                 self.comfyui_instances.pop(sid, None)
+            self.sid_to_ip.pop(sid, None)
 
         # only emit by photoshop instance
         @sio.event
@@ -76,8 +99,9 @@ class SDPPP:
                 }, to=sid)
 
         @sio.event
-        async def check_changes(sid):
-            instance = self.get_ps_instance()
+        async def check_changes(sid, data):
+            ip, client_id, user_id = self.get_client_info_from_event(sid, data)
+            instance = PhotoshopManager.instance().instance_from_client_info(ip, client_id, user_id)
             if instance is None:
                 return
             if not await instance.is_ps_history_changed():
@@ -85,8 +109,9 @@ class SDPPP:
             await sio.emit('trigger_graph_change', to=sid)
         
         @sio.event
-        async def reset_changes(sid):
-            instance = self.get_ps_instance()
+        async def init(sid, data):
+            ip, client_id, user_id = self.get_client_info_from_event(sid, data)
+            instance = PhotoshopManager.instance().instance_from_client_info(ip, client_id, user_id)
             if instance is None:
                 return
             instance.reset_change_tracker()
