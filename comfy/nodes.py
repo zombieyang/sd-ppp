@@ -18,7 +18,7 @@ def define_comfyui_nodes(sdppp):
         async def do_call():
             handle['result'] = await coro
             handle['done'] = True
-        loop.call_soon(lambda: loop.create_task(do_call()))
+        loop.create_task(do_call())
 
         if not dontwait:
             while not handle['done']:
