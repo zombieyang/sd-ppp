@@ -5,10 +5,10 @@ export const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
 export const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
 export const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###'
 export const SPECIAL_LAYER_NAME_TO_ID = {
-    SPECIAL_LAYER_USE_CANVAS: 0,
-    SPECIAL_LAYER_USE_SELECTION: -1,
-    SPECIAL_LAYER_NEW_LAYER: -2,
-    SPECIAL_LAYER_SAME_AS_LAYER: -3
+    [SPECIAL_LAYER_USE_CANVAS]: 0,
+    [SPECIAL_LAYER_USE_SELECTION]: -1,
+    [SPECIAL_LAYER_NEW_LAYER]: -2,
+    [SPECIAL_LAYER_SAME_AS_LAYER]: -3
 }
 
 export function unTrimImageData(
