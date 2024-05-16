@@ -11,6 +11,7 @@
     }
   ],
   "requiredPermissions": {
+    "enableUserInfo": true,  
     "network": {
         "domains": "all"
     },
@@ -41,19 +42,19 @@
       },
       "minimumSize": {
         "width": 300,
-        "height": 130
+        "height": 160
       },
       "maximumSize": {
         "width": 400,
-        "height": 130
+        "height": 160
       },
       "preferredDockedSize": {
         "width": 300,
-        "height": 130
+        "height": 160
       },
       "preferredFloatingSize": {
         "width": 300,
-        "height": 130
+        "height": 160
       },
       "icons": [
         {

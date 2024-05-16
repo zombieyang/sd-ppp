@@ -96,7 +96,9 @@ __webpack_require__.r(__webpack_exports__);
 class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
   state = {
     comfyURL: '',
-    isConnected: false
+    isConnected: false,
+    userId: uxp__WEBPACK_IMPORTED_MODULE_2__.userInfo.userId().slice(0, 10),
+    ui_ExpandMore: false
   };
   componentDidMount() {
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onConnectStateChange(() => {
@@ -131,6 +133,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     if (!_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL, this.state.userId);else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();
   }
   render() {
+    const expandMore = this.state.ui_ExpandMore;
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
       id: "url-bar",
       label: "ComfyURL",
@@ -139,16 +142,39 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       },
       value: this.state.comfyURL,
       placeholder: "http://127.0.0.1:8188"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
-      id: "user-id-bar",
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-divider", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      id: "connection-more",
+      className: expandMore ? "expand-menu expand" : "expand-menu collapse"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      class: "expand-menu-title",
+      onClick: () => {
+        this.setState({
+          ui_ExpandMore: !expandMore
+        });
+      }
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
+      class: "expand-menu-arrow"
+    }, expandMore ? "▼" : "▶️"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "more")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      class: "content"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      class: "input-row"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "user-id:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      class: "input-label",
+      id: "user-id-bar"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, this.state.userId), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
       label: "USER ID",
       onInput: ev => {
-        this.state.userId = ev.currentTarget.value;
-        if (!this.state.userId) uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.removeItem('userId');else uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.setItem('userId', this.state.userId);
+        const userID = ev.currentTarget.value;
+        if (!userID) uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.removeItem('userId');else {
+          uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.setItem('userId', this.state.userId);
+          this.setState({
+            userId: userID
+          });
+        }
       },
       value: this.state.userId,
       placeholder: "User Name: Change if sharing remote server"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    }))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "button-box"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
       id: "connect-btn",
@@ -5224,6 +5250,61 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
 }
 #connect-btn {
     text-align: center;
+}
+.input-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+}
+
+.input-label {
+    position: relative;
+}
+.input-label sp-label {
+    width: calc(100% - 15px);
+    height: 100%;
+    margin-left: 15px;
+}
+.input-label sp-textfield {
+    position: absolute;
+    width: 100%;
+    top: -5px;
+    left: 0;
+    visibility: hidden;
+    z-index: 5;
+}
+.input-label sp-textfield:focus {
+    visibility: visible;
+} 
+.input-label:hover sp-textfield{
+    visibility: visible;
+}
+.expand-menu .expand-menu-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.expand-menu .expand-menu-arrow {
+    font-weight: bold;
+    width: 15px;
+}
+.expand-menu .expand-menu-title sp-icon {
+    height: 15px;
+    width: 20px;
+    color: #ccc;
+}
+.expand-menu .content {
+    margin-left: 15px
+}
+.expand-menu.collapse .content {
+    display: none;
+}
+.expand-menu.expand .content {
+    display: flex;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);

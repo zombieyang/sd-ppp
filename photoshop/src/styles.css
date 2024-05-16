@@ -37,3 +37,58 @@
 #connect-btn {
     text-align: center;
 }
+.input-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+}
+
+.input-label {
+    position: relative;
+}
+.input-label sp-label {
+    width: calc(100% - 15px);
+    height: 100%;
+    margin-left: 15px;
+}
+.input-label sp-textfield {
+    position: absolute;
+    width: 100%;
+    top: -5px;
+    left: 0;
+    visibility: hidden;
+    z-index: 5;
+}
+.input-label sp-textfield:focus {
+    visibility: visible;
+} 
+.input-label:hover sp-textfield{
+    visibility: visible;
+}
+.expand-menu .expand-menu-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.expand-menu .expand-menu-arrow {
+    font-weight: bold;
+    width: 15px;
+}
+.expand-menu .expand-menu-title sp-icon {
+    height: 15px;
+    width: 20px;
+    color: #ccc;
+}
+.expand-menu .content {
+    margin-left: 15px
+}
+.expand-menu.collapse .content {
+    display: none;
+}
+.expand-menu.expand .content {
+    display: flex;
+}
