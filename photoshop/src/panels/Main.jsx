@@ -58,14 +58,12 @@ export default class Main extends React.Component {
                 <sp-divider />
                 <div id="connection-more" className={expandMore ? "expand-menu expand" : "expand-menu collapse"}>
                     <div class="expand-menu-title" onClick={() => { this.setState({ui_ExpandMore: !expandMore}) }}>
-                        <sp-label class="expand-menu-arrow">{expandMore ? "▼" : "▶️"}</sp-label>
-                        {/* <sp-icon size="s" name={expandMore ? "ui:ChevronDownSmall" : "ui:ChevronRightSmall"}></sp-icon> */}
-                        <sp-label>more</sp-label>
+                        <sp-label>{expandMore ? "▼ more" : "▶ more"}</sp-label>
                     </div>
                     <div class="content">
-                        <div class="input-row">
-                            <sp-label>user-id:</sp-label>
-                            <div class="input-label" id="user-id-bar">
+                        <div class="input-row" id="user-id-bar">
+                            <sp-label>user-name:</sp-label>
+                            <div class="input-label">
                                 <sp-label>{this.state.userId}</sp-label>
                                 <sp-textfield 
                                     label="USER ID" 

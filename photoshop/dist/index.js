@@ -152,15 +152,13 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
           ui_ExpandMore: !expandMore
         });
       }
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
-      class: "expand-menu-arrow"
-    }, expandMore ? "▼" : "▶️"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "more")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, expandMore ? "▼ more" : "▶ more")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       class: "content"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-      class: "input-row"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "user-id:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-      class: "input-label",
+      class: "input-row",
       id: "user-id-bar"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "user-name:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      class: "input-label"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, this.state.userId), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
       label: "USER ID",
       onInput: ev => {
@@ -5256,10 +5254,12 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     flex-direction: row;
     align-items: center;
     height: 30px;
+    width: 100%;
 }
 
 .input-label {
     position: relative;
+    flex: 1;
 }
 .input-label sp-label {
     width: calc(100% - 15px);
@@ -5284,13 +5284,12 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 20px;
+    height: 15px;
     padding: 5px;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 .expand-menu .expand-menu-arrow {
     font-weight: bold;
-    width: 15px;
+    text-align: center;
 }
 .expand-menu .expand-menu-title sp-icon {
     height: 15px;

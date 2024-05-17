@@ -42,10 +42,12 @@
     flex-direction: row;
     align-items: center;
     height: 30px;
+    width: 100%;
 }
 
 .input-label {
     position: relative;
+    flex: 1;
 }
 .input-label sp-label {
     width: calc(100% - 15px);
@@ -70,13 +72,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 20px;
+    height: 15px;
     padding: 5px;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 .expand-menu .expand-menu-arrow {
     font-weight: bold;
-    width: 15px;
+    text-align: center;
 }
 .expand-menu .expand-menu-title sp-icon {
     height: 15px;
