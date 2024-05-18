@@ -22,8 +22,5 @@
 
     ![in-comfy](doc/image/in-comfy.png)
 
-    > In the current version, each time you add/remove layers in Photoshop, you need to refresh the ComfyUI webpage to get the new layer names for selection.
-
-
 ### Thanks to 
 AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin
