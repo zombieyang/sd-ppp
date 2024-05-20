@@ -1,6 +1,7 @@
 import { app, imaging } from "photoshop";
 import { executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
 import Jimp from "../library/jimp.min";
+import { SPECIAL_LAYER_NAME_TO_ID, SPECIAL_LAYER_USE_SELECTION } from "../util";
 
 function isLayerFolder(layer){
     return layer.layers && layer.layers.length > 0;
@@ -81,8 +82,8 @@ function getDesiredBounds(boundsLayerID) {
         width: app.activeDocument.width,
         height: app.activeDocument.height
     };
-    // if boundsLayerID == -1, use selection bounds
-    if (boundsLayerID == -1) {
+    // use selection bounds
+    if (boundsLayerID == SPECIAL_LAYER_NAME_TO_ID[SPECIAL_LAYER_USE_SELECTION]) {
         // if no selection use document bounds
         const selectionBounds = app.activeDocument.selection?.bounds;
         if (!selectionBounds) return docBounds;
@@ -130,7 +131,7 @@ export default async function getImage(comfyURL, params) {
         const startTime = Date.now();
         let layer;
         let isFolder = false;
-        const activeLayers = app.activeDocument.activeLayers;
+        const activeLayers = app.activeDocument?.activeLayers;
         try {
             hostControl = executionContext.hostControl;
             suspensionID = await hostControl.suspendHistory({

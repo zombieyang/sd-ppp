@@ -8,24 +8,61 @@ let setLayerStrs = [];
 let socket = null;
 
 console.log("[sd-ppp]", "Loading js extension");
+
+const DEFAULT_USER_ID = "Change if sharing remote server"
+
+function getUserId() {
+	let userId = app.ui.settings.getSettingValue("SD-PPP.userId");
+	if (!userId || userId == DEFAULT_USER_ID) {
+		userId = "";
+	}
+	return userId;
+}
+
 app.registerExtension({
 	name: "Comfy.SD-PPP",
 	init() {
 	},
 	async setup() {
+		// set change query loop
 		setInterval(checkChanges, 1000);
+		// add setting for using remote server
+		const userName = localStorage["Comfy.userName"];
+		const emptyValue = app.multiUserServer ? userName : DEFAULT_USER_ID
+		app.ui.settings.addSetting({
+			id: "SD-PPP.userId",
+			name: "SD-PPP: User ID",
+			defaultValue: emptyValue,
+			onChange: async (value, oldValue) => {
+				if (!value) {
+					setTimeout(() => {
+						app.ui.settings.setSettingValue("SD-PPP.userId", emptyValue);
+						if (!app.multiUserServer) return;
+						// Change empty text box to user name immediately when in multi-user mode, it's recommanded in multi-user environment
+						const input = document.querySelector("#SD-PPP-userId")
+						if (input) input.value = emptyValue;
+					}, 0.01);;
+				}
+			},
+			type: "text",
+		});
 
         socket = socketio(location.origin, {
             transports: ["websocket"],
             path: '/sd-ppp/',
             query: {
                 version: 1,
-                type: 'comfyui'
+                type: 'comfyui',
+                client_id: api.clientId,
+                user_id: getUserId(),
             }
         });
 
 		socket.on('connect', () => {
-			socket.emit('reset_changes');
+			socket.emit('init', {
+				client_id: api.clientId,
+				user_id: getUserId(),
+			});
 		});
 		socket.on('disconnect', () => {
 		});
@@ -71,7 +108,6 @@ app.registerExtension({
 				if(onMouseEnter) await onMouseEnter.call(this, ...args);
 				this_handler.call(this);
 			}
-		
 		}
 	}
 });
@@ -90,7 +126,10 @@ async function checkHistoryChanges() {
 		const mode0NodeTypes = currentState.nodes.filter(node => node.mode == 0).map(node => node.type);
 		const containsSDPPPNodes = mode0NodeTypes.some(nodeType => SDPPPNodes.includes(nodeType));
 		if (!containsSDPPPNodes) return;
-		socket.emit('check_changes')
+		socket.emit('check_changes', {
+			client_id: api.clientId,
+			user_id: getUserId(),
+		})
 	} catch (e) {
 		console.error("[sd-ppp]", "Failed to check changes", e);
 	}

@@ -30,7 +30,7 @@ export class PanelController {
 
     create() {
         this[_root] = document.createElement("div");
-        this[_root].style.height = "100vh";
+        this[_root].style.height = "130vh";
         this[_root].style.overflow = "auto";
         this[_root].style.padding = "8px";
 

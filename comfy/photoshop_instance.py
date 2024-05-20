@@ -13,11 +13,17 @@ class PhotoshopInstance:
         SPECIAL_LAYER_SAME_AS_LAYER: -3
     }
 
-    def __init__(self, sdppp, sid):
+    def __init__(self, sdppp, sid, uid):
         self.sdppp = sdppp
         self.sid = sid
+        self.uid = uid
         self.layers = []
+        self.on_destroy = None
         self.reset_change_tracker()
+    
+    def destroy(self):
+        if self.on_destroy:
+            self.on_destroy(self)
 
     def get_layers(self):
         return list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", self.layers))
@@ -83,6 +89,8 @@ class PhotoshopInstance:
     # for apis calls
     async def is_ps_history_changed(self):
         current_id = await self.get_active_history_state_id()
+        if self.get_img_state_id is None or current_id is None:
+            return False
         return self.get_img_state_id != current_id and self.get_img_state_id < current_id
 
     async def check_layer_bounds_combo_changed(self, layer, use_layer_bounds):
@@ -102,6 +110,7 @@ class PhotoshopInstance:
     def update_comfyui_last_value(self, layer, use_layer_bounds, value):
         layer_bounds_combo = f"{layer}{use_layer_bounds}"
         self.comfyui_last_value_tracker[layer_bounds_combo] = value
+        return value
     
     # need to update history id after internal operation otherwise it might cause infinite change loop
     async def _update_history_state_id_after_internal_change(self, history_state_id=None):

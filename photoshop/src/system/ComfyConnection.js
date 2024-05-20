@@ -21,11 +21,11 @@ class ComfyConnection {
         });
     }
 
-    static createInstance(comfyURL) {
+    static createInstance(comfyURL, userId) {
         if (ComfyConnection.instance && ComfyConnection.instance.isConnected) {
             ComfyConnection.instance.disconnect();
         }
-        ComfyConnection.instance = new ComfyConnection(comfyURL);
+        ComfyConnection.instance = new ComfyConnection(comfyURL, userId);
     }
 
     get isConnected() {
@@ -34,9 +34,16 @@ class ComfyConnection {
 
     comfyURL = '';
     interval = null;
-    constructor(comfyURL) {
+    constructor(comfyURL, userId) {
         ComfyConnection.instance = this;
+        if (!comfyURL) {
+            comfyURL = 'http://127.0.0.1:8188';
+        }
         this.comfyURL = comfyURL.replace(/\/*$/, '');
+        if (!userId) {
+            userId = '';
+        }
+        this.userId = userId;
         this.connect();
     }
     connect() {
@@ -61,7 +68,8 @@ class ComfyConnection {
             path: '/sd-ppp/',
             query: {
                 version: 1,
-                type: 'photoshop'
+                type: 'photoshop',
+                user_id: this.userId,
             }
         });
         this.interval = setInterval(() => {

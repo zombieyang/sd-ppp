@@ -2,16 +2,7 @@ import { app, imaging } from "photoshop";
 import { executeAsModalUntilSuccess} from '../util.js';
 import Jimp from "../library/jimp.min";
 
-const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
-const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
-const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
-const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###'
-const SPECIAL_LAYER_NAME_TO_ID = {
-    SPECIAL_LAYER_USE_CANVAS: 0,
-    SPECIAL_LAYER_USE_SELECTION: -1,
-    SPECIAL_LAYER_NEW_LAYER: -2,
-    SPECIAL_LAYER_SAME_AS_LAYER: -3
-}
+import { SPECIAL_LAYER_NAME_TO_ID, SPECIAL_LAYER_NEW_LAYER } from '../util.js';
 
 function autocrop(jimp) {
     let minX = jimp.bitmap.width - 1;
