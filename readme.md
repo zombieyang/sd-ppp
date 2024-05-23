@@ -22,5 +22,8 @@
 
     ![in-comfy](doc/image/in-comfy.png)
 
+## Ask for help
+[Discord](https://discord.gg/5wmUQ3aZ)
+
 ### Thanks to 
 AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin
