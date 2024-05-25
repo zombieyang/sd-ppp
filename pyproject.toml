@@ -9,6 +9,6 @@ Repository = "https://github.com/zombieyang/sd-ppp"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "zombieyang"
 DisplayName = "sd-ppp"
 Icon = ""
