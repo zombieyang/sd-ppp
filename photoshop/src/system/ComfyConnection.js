@@ -22,7 +22,7 @@ class ComfyConnection {
     }
 
     static createInstance(comfyURL) {
-        if (ComfyConnection.instance && ComfyConnection.instance.isConnected) {
+        if (ComfyConnection.instance) {
             ComfyConnection.instance.disconnect();
         }
         ComfyConnection.instance = new ComfyConnection(comfyURL);
@@ -40,7 +40,6 @@ class ComfyConnection {
         this.connect();
     }
     connect() {
-        console.log('connect')
         if (!this.socket) {
             this._createSocket();
         }
@@ -49,7 +48,7 @@ class ComfyConnection {
  
     disconnect() {
         if (this.socket) {
-            this.socket.disconnect();
+            this.socket.close()
         }
     }
 
@@ -74,9 +73,9 @@ class ComfyConnection {
 
         socket.on('connect_error', (error) => {
             if (socket.active) {
-                console.error('connect_error reconnecting...')
+                console.error(`connect_error ${error} reconnecting...`)
             } else {
-                console.error('connect_error disconnected')
+                console.error(`connect_error ${error} disconnected`)
             }
             ComfyConnection._callConnectStateChange();
         });
