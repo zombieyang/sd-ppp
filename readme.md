@@ -18,7 +18,7 @@
 
     ![connect](doc/image/connect.png)
 
-   > if your comfyUI is running locally. make sure you are using `http` instead of `https`
+   > if you cannot connect ComfyUI via `https`, use `http` instead
 
 5. add get/send node in ComfyUI
 
