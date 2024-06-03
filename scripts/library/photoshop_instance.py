@@ -1,6 +1,5 @@
 import time
 
-
 class PhotoshopInstance:
     SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
     SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
@@ -56,6 +55,8 @@ class PhotoshopInstance:
         result = await self.sdppp.sio.call('get_image', data={'layer_id': layer_id, 'use_layer_bounds': bounds_id}, to=self.sid)
         if not result:
             return None, None
+        if 'error' in result:
+            raise Exception('sdppp PS side error:' + result['error'])
         history_state_id = await self._update_layer_bounds_history_state_id(layer_id, bounds_id)
         await self._update_history_state_id_after_internal_change(history_state_id)
 

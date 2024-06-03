@@ -117,17 +117,27 @@ function getDesiredBounds(boundsLayerID) {
     };
     return desireBounds
 }
+function arrayBufferToBase64(buffer) {
+    var binary = ''
+    var bytes = new Uint8Array(buffer)
+    var len = bytes.byteLength
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i])
+    }
+    return window.btoa(binary)
+}
 
-export default async function getImage(comfyURL, params) {
+export default async function getImage(serverURL, params) {
     const layerID = params.layer_id
     const boundsLayerID = params.use_layer_bounds
-    let uploadName = 0;
+    const desireBounds = getDesiredBounds(boundsLayerID);
+    let pixelDataForReturn = null;
     let layerOpacity = 100;
-
+    
+    const startTime = Date.now();
     await executeAsModalUntilSuccess(async (executionContext) => {
         let hostControl;
         let suspensionID;
-        const startTime = Date.now();
         let layer;
         let isFolder = false;
         const activeLayers = app.activeDocument.activeLayers;
@@ -139,48 +149,9 @@ export default async function getImage(comfyURL, params) {
             });
             [layer, isFolder] = await findLayer(layerID);
             layerOpacity = layer?.opacity ?? 100;
-            const desireBounds = getDesiredBounds(boundsLayerID);
             const pixelDataFromAPI = await getPixelsData(layer, desireBounds)
-            const pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
+            pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
             console.log('getPixels', Date.now() - startTime, 'ms');
-            // log desire size
-            const image = await new Promise((resolve, reject) => {
-                new Jimp({
-                    data: pixelDataForReturn,
-                    width: desireBounds.width,
-                    height: desireBounds.height
-                }, (err, image) => {
-                    err ? reject(err) : resolve(image);
-                })
-            })
-            console.log('new Jimp', Date.now() - startTime, 'ms');
-            image.quality(100);
-            console.log('quality', Date.now() - startTime, 'ms');
-            const file = await image.getBufferAsync(Jimp.MIME_PNG);
-            console.log('create pngfile', Date.now() - startTime, 'ms');
-
-            const fd = new FormData();
-            const PhotoshopBlob = new Blob([file], { type: "image/png" });
-            fd.append('image', PhotoshopBlob, "PhotoshopBlob.png")              ;
-            fd.append('overwrite', "true");
-            console.log('start upload', Date.now() - startTime, 'ms');
-            const promise = fetch(comfyURL + '/upload/image', {
-                method: 'POST',
-                body: fd,
-            }).then(res => {
-                if (res.status == 200)
-                    return res.json()
-                else
-                    throw new Error('HTTP ' + res.status)
-            })
-            console.log('finish upload', Date.now() - startTime, 'ms')
-            const result = await promise
-            console.log('upload resulted', Date.now() - startTime, 'ms')
-
-            if (result.error) throw new Error(result.error);
-            if (!result.name) throw new Error('No upload_name')
-            uploadName = result.name
-
         } catch (e) {
             console.error(e);
             throw e
@@ -197,8 +168,49 @@ export default async function getImage(comfyURL, params) {
 
     }, { commandName: "get content of layer " + layerID })
 
-    return {
-        upload_name: uploadName,
-        layer_opacity: layerOpacity,
+    try {
+        // log desire size
+        const image = await new Promise((resolve, reject) => {
+            new Jimp({
+                data: pixelDataForReturn,
+                width: desireBounds.width,
+                height: desireBounds.height
+            }, (err, image) => {
+                err ? reject(err) : resolve(image);
+            })
+        })
+        image.quality(100);
+        const file = await image.getBufferAsync(Jimp.MIME_PNG);
+        console.log('create pngfile', Date.now() - startTime, 'ms');
+    
+        const fd = new FormData();
+        const PhotoshopBlob = new Blob([file], { type: "image/png" });
+        fd.append('image', PhotoshopBlob, "PhotoshopBlob.png")              ;
+        fd.append('overwrite', "true"); 
+        console.log('start upload', Date.now() - startTime, 'ms');
+        let endpoint = params.isComfy ? '/upload/image' : '/sdppp_upload'
+        const promise = fetch(serverURL + endpoint, {
+            method: 'POST',
+            body: fd,
+        }).then(res => {
+            if (res.status == 200)
+                return res.json()
+            else
+                throw new Error('HTTP ' + res.status)
+        })
+        console.log('finish upload', Date.now() - startTime, 'ms')
+        const result = await promise
+        console.log('upload resulted', Date.now() - startTime, 'ms')
+    
+        if (result.error) throw new Error(result.error);
+        if (!result.name) throw new Error('No upload_name')
+    
+        return {
+            upload_name: result.name,
+            layer_opacity: layerOpacity,
+        }
+    } catch(e) {
+        console.error(e);
+        throw e
     }
 }
