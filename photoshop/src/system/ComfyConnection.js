@@ -33,6 +33,7 @@ class ComfyConnection {
     }
 
     comfyURL = '';
+    serverType = '';
     interval = null;
     constructor(comfyURL) {
         ComfyConnection.instance = this;
@@ -66,7 +67,7 @@ class ComfyConnection {
         this.interval = setInterval(() => {
             if (!this.isConnected) return;
             const allLayers = getAllSubLayer(app.activeDocument); 
-            this.socket.emit('sync_layers',
+            this.socket.emit('b_sync_layers',
                 { layers: allLayers }
             )
         }, 3000)
@@ -84,7 +85,7 @@ class ComfyConnection {
             storage.secureStorage.setItem('comfyURL', this.comfyURL);
             ComfyConnection._callConnectStateChange();
         });
-        socket.on('disconnect', () => {
+        socket.on('disconnect', (...args) => {
             console.log('disconnect')
             ComfyConnection._callConnectStateChange();
         });
@@ -92,14 +93,14 @@ class ComfyConnection {
         socket.on('get_image', async (data, callback) => {
             try {
                 const startTime = Date.now();
-                const result = await getImage(this.comfyURL, data)
+                const result = await getImage(this.comfyURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 console.log('get_image cost', Date.now() - startTime, 'ms');
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
         socket.on('send_images', async (data, callback) => {
             try {
-                const result = await sendImages(this.comfyURL, data)
+                const result = await sendImages(this.comfyURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
@@ -109,6 +110,9 @@ class ComfyConnection {
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
+        socket.on('s_confirm', (data) => {
+            this.serverType = data.server_type
+        }) 
     }
 }
 

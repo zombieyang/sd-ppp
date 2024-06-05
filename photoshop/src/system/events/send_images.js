@@ -49,29 +49,26 @@ export default async function sendImages(comfyURL, params) {
                         layer = await app.activeDocument.layers.find(l => l.id == layerId)
                         // deal with multiple images
                         let imageIndexSuffix = ""
-                        console.log("imageIds.length: ", imageIds.length)
                         if (imageIds.length > 1){
                             index = imageIds.indexOf(imageId)
-                            console.log("imageIds.index: ", index)
                             if (index > 0)
                                 imageIndexSuffix = ` ${index}`
                         }
                         if (imageIndexSuffix != "" && layer != null){
                             const layerName = layer?.name;
                             existingLayerName = layerName + imageIndexSuffix
-                            console.log("existingLayerName: ", existingLayerName)
                             layer = await app.activeDocument.layers.find(l => l.name == existingLayerName)
                         }
                     }
                     // deal with new layer or id/name not found layer
                     if (!layer) {
                         newLayerName = existingLayerName ?? 'Comfy Images ' + imageId
-                        console.log("newLayerName: ", newLayerName)
                         layer = await app.activeDocument.createLayer("pixel", {
                             name: newLayerName
                         })
                     }
-                    const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
+                    const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
+                    // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
                     autocrop(jimp)
                     console.log("layer name ", layer.name)
                     let putPixelsOptions = {

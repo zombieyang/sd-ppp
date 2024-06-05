@@ -1,0 +1,40 @@
+/* styles for stable-diffusion */
+.gradio-image:hover .sdppp-get-widget,
+.gradio-gallery:hover .sdppp-send-widget {
+    display: flex;
+}
+.sdppp-get-widget, .sdppp-send-widget  {
+    display: none;
+    position: absolute;
+    width: 84px;
+    height: 40px;
+    top: 40px;
+    right: 0;
+    border-radius: 5px;
+    overflow: hidden;
+    line-height: 12px;
+    font-size: 12px;
+    flex-direction: row-reverse;
+    z-index: 50;
+}
+.sdppp-get-widget button, .sdppp-send-widget button {
+    height: 30px;
+    width: 42px;
+    border: var(--button-border-width) solid var(--button-secondary-border-color);
+    background: var(--button-secondary-background-fill);
+}
+.sdppp-get-widget .sdppp-setting-button, .sdppp-send-widget .sdppp-setting-button {
+    height: 30px;
+    width: 30px;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.sdppp-svelte-mock1 {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    border: none;
+    min-width: min-content;
+}
