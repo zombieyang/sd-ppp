@@ -3,7 +3,7 @@
 ## How to use
 
 <details>
-<summary>ComfyUI</summary>
+<summary><b>ComfyUI</b></summary>
 
 1. Use ComfyManager to install `sd-ppp`
 
@@ -29,7 +29,7 @@
     ![in-comfy](doc/image/in-comfy.png)
 </details>
 <details>
-<summary>StableDiffusion or SD-Forge</summary>
+<summary><b>StableDiffusion or SD-Forge</b></summary>
 
 1. install in `extension` tab or clone this repository into `<your-sd-directory>/extensions`
 
