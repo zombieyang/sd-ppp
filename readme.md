@@ -5,7 +5,7 @@
 <details>
 <summary><b>ComfyUI</b></summary>
 
-1. Use ComfyManager to install `sd-ppp`
+1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp`
 
     ![cmanager](doc/image/comfymanager.png)
 
