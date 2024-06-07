@@ -61,5 +61,8 @@
 ## Ask for help
 [Discord](https://discord.gg/5wmUQ3aZ)
 
+## Concept
+I think SD/Comfy will keep growing fast in the future. So, instead of running SD/Comfy in Photoshop, this tool provides a option that make Photoshop become a widget of SD/ComfyUI. To help you use SD/ComfyUI more easily.
+
 ### Thanks to 
 AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin
