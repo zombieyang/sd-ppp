@@ -1,4 +1,4 @@
-# SD-PPP: Easily use photoshop in yourfor StableDiffusion/ComfyUI
+# SD-PPP: Easily use photoshop in your StableDiffusion/ComfyUI
 > ppp for Professional Photoshop transPorter 
 
 ## How to use
