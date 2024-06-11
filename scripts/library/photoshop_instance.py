@@ -71,6 +71,8 @@ class PhotoshopInstance:
         result = await self.sdppp.sio.call('get_active_history_state_id', data={}, to=self.sid)
         if result is None:
             return 0
+        if 'error' in result:
+            raise Exception('sdppp get_active_history_state_id PS side error:' + result['error'])
         id = result.get('history_state_id', None)
         return id
     
