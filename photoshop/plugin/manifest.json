@@ -7,7 +7,7 @@
   "host": [
     {
       "app": "PS",
-      "minVersion": "25.4.0"
+      "minVersion": "24.0.0"
     }
   ],
   "requiredPermissions": {
@@ -37,7 +37,7 @@
       "type": "panel",
       "id": "comfy-connect",
       "label": {
-        "default": "Connect ComfyUI"
+        "default": "Connect SD or ComfyUI"
       },
       "minimumSize": {
         "width": 300,
