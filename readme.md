@@ -4,7 +4,7 @@
 ## How to use
 
 <details>
-<summary><b>ComfyUI</b></summary>
+<summary><a href="javascript:"><b>ComfyUI</b></a></summary>
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
@@ -59,11 +59,11 @@
     
 </details>
 
-## Ask for help
+-----------------------------
+
+#### Ask for help
 [Discord](https://discord.gg/5wmUQ3aZ)
 
-## Concept
-I think SD/Comfy will keep growing fast in the future. So, instead of running SD/Comfy in Photoshop, this tool provides a option that make Photoshop become a widget of SD/ComfyUI. To help you use SD/ComfyUI more easily.
-
-### Thanks to 
-AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin
+#### Concept
+In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin](https://github.com/AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin), which "runs" the SD/Comfy in Photoshop. This tool provides another option that makes Photoshop a helper of SD/ComfyUI. Because I think SD/Comfy will keep growing fast in the future, it is hard to inject the entire SD/Comfy Ecology into Photoshop with a plugin. 
+Still, shout out to AbdullahAlfaraj's plugin and I inherited some of the code using Photoshop's API in it.
