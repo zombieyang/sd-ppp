@@ -73,7 +73,7 @@ class PhotoshopInstance:
             return 0
         if 'error' in result:
             raise Exception('sdppp get_active_history_state_id PS side error:' + result['error'])
-        id = result.get('history_state_id', None)
+        id = result.get('history_state_id', 0)
         return id
     
     

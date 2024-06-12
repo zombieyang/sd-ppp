@@ -1,10 +1,6 @@
 import socketio
-try:
-    from .photoshop_instance import PhotoshopInstance
-    from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
-except Exception as e:
-    from scripts.photoshop_instance import PhotoshopInstance
-    from scripts.sd_apis import registerSocketEvents, registerSDHTTPEndpoints
+from .photoshop_instance import PhotoshopInstance
+from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
 
 class SDPPP:
     def __init__(self):

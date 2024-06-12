@@ -1,8 +1,8 @@
 # sd script init
 from modules import script_callbacks
 from modules.ui_components import ToolButton
-from scripts.library.sdppp import SDPPP
-from scripts.library.apis import consumeImageCache
+from sdppp_python.sdppp import SDPPP
+from sdppp_python.apis import consumeImageCache
 import gradio as gr
 
 refresh_symbol = '\U0001f504'  # 🔄

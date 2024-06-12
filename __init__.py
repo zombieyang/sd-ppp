@@ -1,3 +1,4 @@
+# entry for ComfyUI
 import sys
 import threading
 import subprocess
@@ -37,12 +38,36 @@ def run_script(cmd, cwd='.'):
     return process.wait()
 # end copy from comfyUI-Manager
 
-try:
-    import socketio
-except:
-    run_script([sys.executable, "-m", "pip", "install", 'python-socketio'])
-
-if (__file__.find('custom_nodes') != -1):
-    from .scripts.comfy_init import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS, WEB_DIRECTORY, __all__
-else:
+if __file__.find('custom_nodes') == -1:
     print('sd-PPP import failed, it does not being placed in custom_nodes')
+else:
+    try:
+        import socketio
+    except:
+        run_script([sys.executable, "-m", "pip", "install", 'python-socketio'])
+
+
+    from server import PromptServer
+
+    from .sdppp_python.sdppp import SDPPP
+    sdppp = SDPPP()
+    sdppp.attach_to_comfyui(PromptServer)
+
+    from .sdppp_python.comfy_nodes import define_comfyui_nodes
+    export_nodes = define_comfyui_nodes(sdppp)
+
+    NODE_CLASS_MAPPINGS = { 
+        'Get Image From Photoshop Layer': export_nodes['GetImageFromPhotoshopLayerNode'],
+        'Send Images To Photoshop': export_nodes['SendImageToPhotoshopLayerNode'],
+        'Image Times Opacity': export_nodes['ImageTimesOpacity'],
+        'Mask Times Opacity': export_nodes['MaskTimesOpacity'],
+    }
+    NODE_DISPLAY_NAME_MAPPINGS = { 
+        'Get Image From Photoshop Layer': 'Get image from Photoshop layer',
+        'Send Images To Photoshop': 'Send images to Photoshop',
+        'Image Times Opacity': 'Image times opacity',
+        'Mask Times Opacity': 'Mask times opacity',
+    }
+    WEB_DIRECTORY = 'javascript'
+    __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
+    
