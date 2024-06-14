@@ -1,5 +1,6 @@
 # SD-PPP: Easily use photoshop in your StableDiffusion/ComfyUI
-> ppp for Professional Photoshop transPorter 
+> ppp for Professional Photoshop transPorter
+this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
 
 ## How to use
 
@@ -65,5 +66,6 @@
 [Discord](https://discord.gg/5wmUQ3aZ)
 
 ### Concept
-In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin](https://github.com/AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin), which "runs" the SD/Comfy in Photoshop. This tool provides another option that makes Photoshop a helper of SD/ComfyUI. Because I think SD/Comfy will keep growing fast in the future, it is hard to inject the entire SD/Comfy Ecology into Photoshop with a plugin. 
+In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin](https://github.com/AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin), which "runs" the SD/Comfy in Photoshop. This tool provides another option that makes Photoshop a helper of SD/ComfyUI. Because I think SD/Comfy will keep growing fast in the future, it is hard to inject the entire SD/Comfy Ecology into Photoshop with a single plugin.
+
 Still, shout out to AbdullahAlfaraj's plugin and I inherited some of the code using Photoshop's API in it.
