@@ -26,12 +26,14 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
-    ![cmanager](doc/image/comfymanager.png)
+    <img width=400 src="doc/image/comfymanager.png" />
 
 2. install Photoshop plugin
     1. by CCX:
-        1. download `http://<your-comfy-url>/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`. (for example: `http://127.0.0.1:8188/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`)
-        2. double click the `.ccx` file. Or place it into photoshop's plugin directory.
+        1. download `http://<your-comfy-url>/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`.
+           > for example: `http://127.0.0.1:8188/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`
+       
+        3. double click the `.ccx` file. Or place it into photoshop's plugin directory.
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
         2. [optional] Run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
@@ -53,12 +55,13 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 <summary><b>StableDiffusion or SD-Forge</b></summary>
 
 1. install in SD's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
-![image](https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb)
+    <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb" />
 
 2. install Photoshop plugin
     1. by CCX:
-        1. download `http://<your-sd-url>/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`. (for example: `http://127.0.0.1:7860/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`)
-        2. double click the `.ccx` file. Or place it into photoshop's plugin directory.
+        1. download `http://<your-sd-url>/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`.
+           > for example: `http://127.0.0.1:7860/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`
+        3. double click the `.ccx` file. Or place it into photoshop's plugin directory.
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
         2. [optional] Run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
