@@ -3,10 +3,26 @@
 
 this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
 
-## How to use
+<details>
+<summary>ComfyUI Showcase</summary>
+    
+![comfy_get](https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c)
+![comfy_send](https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a)
+
+</details>
 
 <details>
-<summary><a href="javascript:"><b>ComfyUI</b></a></summary>
+<summary>SD/SDForge Showcase</summary>
+    
+![sd-get](https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63)
+![sd-set](https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a)
+
+</details>
+    
+## How to install
+
+<details>
+<summary><b>ComfyUI</b></summary>
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
@@ -31,14 +47,13 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
     ![in-comfy](doc/image/in-comfy.png)
 
-![comfy_get](https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c)
-![comfy_send](https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a)
 
 </details>
 <details>
 <summary><b>StableDiffusion or SD-Forge</b></summary>
 
-1. install in `extension` tab or clone this repository into `<your-sd-directory>/extensions`
+1. install in SD's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
+![image](https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb)
 
 2. install Photoshop plugin
     1. by CCX:
@@ -63,8 +78,6 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
     1. <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/60864fea-2ef0-4ada-8aca-4db3cf44598e" />
 
-![sd-get](https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63)
-![sd-set](https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a)
 </details>
 
 -----------------------------
