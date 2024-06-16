@@ -128,6 +128,9 @@ function arrayBufferToBase64(buffer) {
 }
 
 export default async function getImage(serverURL, params) {
+    if (!app.activeDocument) {
+        throw new Error('no active document'); 
+    }
     const layerID = params.layer_id
     const boundsLayerID = params.use_layer_bounds
     const desireBounds = getDesiredBounds(boundsLayerID);

@@ -1,13 +1,13 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "main": "index.html",
   "manifestVersion": 5,
   "host": [
     {
       "app": "PS",
-      "minVersion": "24.0.0"
+      "minVersion": "24.4.0"
     }
   ],
   "requiredPermissions": {
@@ -35,7 +35,7 @@
   "entrypoints": [
     {
       "type": "panel",
-      "id": "comfy-connect",
+      "id": "sdppp-connect",
       "label": {
         "default": "Connect SD or ComfyUI"
       },

@@ -13,18 +13,26 @@ def define_comfyui_nodes(sdppp):
     def call_async_func_in_server_thread(coro, dontwait = False):
         handle = {
             'done': False,
-            'result': None
+            'result': None,
+            'error': None
         }
         loop = sdppp.loop
         async def do_call():
-            handle['result'] = await coro
-            handle['done'] = True
+            try: 
+                handle['result'] = await coro
+            except Exception as e:
+                handle['error'] = e
+            finally:
+                handle['done'] = True
         loop.create_task(do_call())
 
         if not dontwait:
             while not handle['done']:
                 pass
-            return handle['result']
+            if handle['error'] is not None:
+                raise handle['error']
+            else:
+                return handle['result']
         else:
             return None
 

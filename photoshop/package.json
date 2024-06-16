@@ -1,6 +1,6 @@
 {
-  "name": "com.adobe.uxp.starter.react",
-  "version": "1.0.0",
+  "name": "sdppp",
+  "version": "0.0.3",
   "scripts": {
     "watch": "nodemon -w src -e js,jsx,json,css,html -w webpack.config.js -x npm run build",
     "build": "webpack --mode development",

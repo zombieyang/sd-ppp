@@ -465,6 +465,9 @@ function arrayBufferToBase64(buffer) {
   return window.btoa(binary);
 }
 async function getImage(serverURL, params) {
+  if (!photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument) {
+    throw new Error('no active document');
+  }
   const layerID = params.layer_id;
   const boundsLayerID = params.use_layer_bounds;
   const desireBounds = getDesiredBounds(boundsLayerID);
@@ -34272,7 +34275,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const demosController = new _controllers_PanelController_jsx__WEBPACK_IMPORTED_MODULE_2__.PanelController(() => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_panels_Main_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), {
-  id: "comfy-connect",
+  id: "sdppp-connect",
   menuItems: [
     // { id: "reload1", label: "Reload Plugin", enabled: true, checked: false, oninvoke: () => location.reload() },
     // { id: "dialog1", label: "About this Plugin", enabled: true, checked: false, oninvoke: () => aboutController.run() },
@@ -34288,7 +34291,7 @@ uxp__WEBPACK_IMPORTED_MODULE_4__.entrypoints.setup({
     }
   },
   panels: {
-    'comfy-connect': demosController
+    'sdppp-connect': demosController
   }
 });
 })();

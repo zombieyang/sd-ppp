@@ -1,7 +1,6 @@
 import React from "react";
 import ComfyConnection from "../system/ComfyConnection";
 import { storage } from "uxp";
-
 export default class Main extends React.Component {
     state = {
         comfyURL: '', 
