@@ -26,7 +26,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
-    <img width=400 src="doc/image/comfymanager.png" />
+    <img width=800 src="doc/image/comfymanager.png" />
 
 2. install Photoshop plugin
     1. by CCX:
@@ -41,13 +41,13 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 3. connect to comfyUI in Photoshop
 
-    ![connect](doc/image/connect.png)
+    <img width=300 src="https://github.com/zombieyang/sd-ppp/assets/5595819/98c4f81d-100d-4393-af5e-feed67a1b822" />
 
    > If you cannot connect ComfyUI via `https`, use `http` instead
 
 5. add get/send node in ComfyUI
 
-    ![in-comfy](doc/image/in-comfy.png)
+    <img width=600 src="doc/image/in-comfy.png" />
 
 
 </details>
@@ -55,7 +55,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 <summary><b>StableDiffusion or SD-Forge</b></summary>
 
 1. install in SD's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
-    <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb" />
+    <img width=800 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb" />
 
 2. install Photoshop plugin
     1. by CCX:
@@ -69,7 +69,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 4. connect to Stable diffusion in Photoshop
 
-    ![image](https://github.com/zombieyang/sd-ppp/assets/5595819/98c4f81d-100d-4393-af5e-feed67a1b822)
+    <img width=300 src="https://github.com/zombieyang/sd-ppp/assets/5595819/98c4f81d-100d-4393-af5e-feed67a1b822" />
 
 5. Select a specific layer to get pictures from Photoshop in any image element.
 
