@@ -3,21 +3,15 @@
 
 this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
 
-<details>
-<summary>ComfyUI Showcase</summary>
+#### ComfyUI Showcase
     
-![comfy_get](https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c)
-![comfy_send](https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a)
+<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
+<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a" />
 
-</details>
-
-<details>
-<summary>SD/SDForge Showcase</summary>
+#### SD/SDForge Showcase
     
-![sd-get](https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63)
-![sd-set](https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a)
-
-</details>
+<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63" />
+<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a" />
     
 ## How to install
 
@@ -33,7 +27,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
         1. download `http://<your-comfy-url>/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`.
            > for example: `http://127.0.0.1:8188/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`
        
-        3. double click the `.ccx` file. Or rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
+        3. double click the `.ccx` file. OR rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
         2. [optional] Run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
@@ -61,7 +55,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
     1. by CCX:
         1. download `http://<your-sd-url>/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`.
            > for example: `http://127.0.0.1:7860/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`
-        3. double click the `.ccx` file. Or rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
+        3. double click the `.ccx` file. OR rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
 
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
