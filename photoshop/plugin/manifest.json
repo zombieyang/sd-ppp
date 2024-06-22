@@ -4,12 +4,10 @@
   "version": "0.0.3",
   "main": "index.html",
   "manifestVersion": 5,
-  "host": [
-    {
-      "app": "PS",
-      "minVersion": "24.4.0"
-    }
-  ],
+  "host": {
+    "app": "PS",
+    "minVersion": "24.4.0"
+  },
   "requiredPermissions": {
     "network": {
         "domains": "all"
