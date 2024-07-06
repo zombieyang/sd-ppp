@@ -3,7 +3,7 @@ import { executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '
 import Jimp from "../library/jimp.min";
 
 function isLayerFolder(layer){
-    return layer.layers && layer.layers.length > 0;
+    return layer.kind == "group"
 }
 
 async function findLayer(layerID) {

@@ -349,7 +349,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function isLayerFolder(layer) {
-  return layer.layers && layer.layers.length > 0;
+  return layer.kind == "group";
 }
 async function findLayer(layerID) {
   let layer;
@@ -628,11 +628,13 @@ async function sendImages(comfyURL, params) {
           }
         }
         // deal with new layer or id/name not found layer
-        if (!layer) {
+        if (!layer || layer.kind == "group") {
           newLayerName = existingLayerName ?? 'Comfy Images ' + imageId;
-          layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
+          const newLayer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
             name: newLayerName
           });
+          if (layer) newLayer.move(layer, "placeInside");else newLayer.move(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers[0], 'placeBefore');
+          layer = newLayer;
         }
         const jimp = await _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().read(comfyURL + '/sdppp_download?name=' + imageId);
         // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))

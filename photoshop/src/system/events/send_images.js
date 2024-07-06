@@ -61,11 +61,14 @@ export default async function sendImages(comfyURL, params) {
                         }
                     }
                     // deal with new layer or id/name not found layer
-                    if (!layer) {
+                    if (!layer || (layer.kind == "group")) {
                         newLayerName = existingLayerName ?? 'Comfy Images ' + imageId
-                        layer = await app.activeDocument.createLayer("pixel", {
-                            name: newLayerName
+                        const newLayer = await app.activeDocument.createLayer("pixel", {
+                            name: newLayerName,
                         })
+                        if (layer) newLayer.move(layer, "placeInside")
+                        else newLayer.move(app.activeDocument.layers[0], 'placeBefore')
+                        layer = newLayer
                     }
                     const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
                     // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
