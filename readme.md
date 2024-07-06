@@ -3,6 +3,8 @@
 
 this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
 
+> attention: only PS 24.4.0+ is supported
+
 #### ComfyUI Showcase
     
 <img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
