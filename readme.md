@@ -3,8 +3,6 @@
 
 this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
 
-> attention: only PS 24.4.0+ is supported
-
 #### ComfyUI Showcase
     
 <img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
@@ -87,5 +85,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 ### Concept
 In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin](https://github.com/AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin), which "runs" the SD/Comfy in Photoshop. This tool provides another option that makes Photoshop a helper of SD/ComfyUI. Because I think SD/Comfy will keep growing fast in the future, it is hard to inject the entire SD/Comfy Ecology into Photoshop with a single plugin.
+
+> attention: only PS 24.4.0+ is supported by now.
 
 Still, shout out to AbdullahAlfaraj's plugin and I inherited some of the code using Photoshop's API in it.
