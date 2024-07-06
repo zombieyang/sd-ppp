@@ -160,10 +160,15 @@ export default async function getImage(serverURL, params) {
             throw e
 
         } finally {
-            if (layer && isFolder) layer.delete();
+            if (layer && isFolder) {
+                layer.selected = false;
+                layer.delete();
+            }
             if (activeLayers && activeLayers.length > 0) {
                 for (let i = 0; i < activeLayers.length; i++) {
+                    const visible = activeLayers[i].visible;
                     activeLayers[i].selected = true;
+                    activeLayers[i].visible = visible;
                 }
             }
             if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
