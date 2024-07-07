@@ -88,4 +88,6 @@ In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photos
 
 Still, shout out to AbdullahAlfaraj's plugin and I inherited some of the code using Photoshop's API in it.
 
+-----------------------------
+
 > attention: only PS 24.4.0+ is supported by now.
