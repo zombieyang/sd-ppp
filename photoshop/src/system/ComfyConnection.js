@@ -16,7 +16,7 @@ class ComfyConnection {
     static _callConnectStateChange() {
         ComfyConnection._connectStateCallbacks.forEach(cb => {
             try {
-                cb(ComfyConnection.instance?.isConnected)
+                cb()
             } catch (e) { console.error(e) }
         });
     }
@@ -30,6 +30,9 @@ class ComfyConnection {
 
     get isConnected() {
         return this.socket != null && this.socket.connected === true;
+    }
+    get isReconnecting() {
+        return this.socket != null && this.socket.connected === false && this.socket.active === true;
     }
 
     comfyURL = '';
@@ -48,8 +51,11 @@ class ComfyConnection {
     }
  
     disconnect() {
+        console.log('disconnect' + this.socket);
         if (this.socket) {
             this.socket.close()
+            this.socket = null; 
+            ComfyConnection._callConnectStateChange();
         }
     }
 

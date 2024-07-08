@@ -96,7 +96,8 @@ __webpack_require__.r(__webpack_exports__);
 class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
   state = {
     comfyURL: '',
-    isConnected: false
+    isConnected: false,
+    isReconnecting: false
   };
   componentDidMount() {
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onConnectStateChange(() => {
@@ -104,6 +105,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       console.log('isConnected：', instance?.isConnected);
       this.setState({
         isConnected: instance?.isConnected,
+        isReconnecting: instance?.isReconnecting,
         comfyURL: instance ? instance.comfyURL : ''
       });
     });
@@ -119,7 +121,8 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     });
   }
   doConnectOrDisconnect() {
-    if (!_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL);else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();
+    console.log(_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected, _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isReconnecting);
+    if (_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected || _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isReconnecting) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL);
   }
   render() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
@@ -131,12 +134,18 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       value: this.state.comfyURL,
       placeholder: "http://127.0.0.1:8188"
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-      className: "button-box"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
+      className: "connect-box"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      className: "status-bar " + (this.state.isConnected ? 'connected' : this.state.isReconnecting ? 'reconnecting' : 'disconnected')
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      className: "status-icon"
+    }, "\u2B24"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      className: "status-text"
+    }, this.state.isConnected ? 'connected' : this.state.isReconnecting ? 'reconnecting...' : 'disconnected')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
       id: "connect-btn",
       variant: "primary",
       onClick: this.doConnectOrDisconnect.bind(this)
-    }, this.state.isConnected ? 'disconnect' : 'connect')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-divider", {
+    }, this.state.isConnected || this.state.isReconnecting ? 'disconnect' : 'connect')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-divider", {
       size: "small"
     }));
   }
@@ -181,7 +190,7 @@ class ComfyConnection {
   static _callConnectStateChange() {
     ComfyConnection._connectStateCallbacks.forEach(cb => {
       try {
-        cb(ComfyConnection.instance?.isConnected);
+        cb();
       } catch (e) {
         console.error(e);
       }
@@ -195,6 +204,9 @@ class ComfyConnection {
   }
   get isConnected() {
     return this.socket != null && this.socket.connected === true;
+  }
+  get isReconnecting() {
+    return this.socket != null && this.socket.connected === false && this.socket.active === true;
   }
   comfyURL = '';
   serverType = '';
@@ -211,8 +223,11 @@ class ComfyConnection {
     this.socket.connect();
   }
   disconnect() {
+    console.log('disconnect' + this.socket);
     if (this.socket) {
       this.socket.close();
+      this.socket = null;
+      ComfyConnection._callConnectStateChange();
     }
   }
   _createSocket() {
@@ -5205,15 +5220,38 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
 #url-bar {
     width: 100%;
 }
-.button-box {
+.status-bar {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.status-bar.connected { color: lightgreen; }
+.status-bar.reconnecting { color: lightyellow; }
+.status-bar.disconnected { color: lightcoral; }
+.status-icon {
+    margin: 0 5px;
+}
+.connect-box {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-top: 10px;
 }
 #connect-btn {
     text-align: center;
+    margin-right: 10px;
+}
+.client-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.client-list-item .client-name {
+    margin-left: 10px;
+}
+.client-list-item sp-link {
+    margin-right: 20px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);

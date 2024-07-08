@@ -24,13 +24,36 @@
 #url-bar {
     width: 100%;
 }
-.button-box {
+.status-bar {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.status-bar.connected { color: lightgreen; }
+.status-bar.reconnecting { color: lightyellow; }
+.status-bar.disconnected { color: lightcoral; }
+.status-icon {
+    margin: 0 5px;
+}
+.connect-box {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-top: 10px;
 }
 #connect-btn {
     text-align: center;
+    margin-right: 10px;
+}
+.client-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.client-list-item .client-name {
+    margin-left: 10px;
+}
+.client-list-item sp-link {
+    margin-right: 20px;
 }
