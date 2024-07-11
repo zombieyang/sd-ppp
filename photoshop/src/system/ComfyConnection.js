@@ -21,11 +21,23 @@ class ComfyConnection {
         });
     }
 
-    static createInstance(comfyURL) {
+    static _pageInstancesCallbacks = [];
+    static onPageInstancesChange(callback) {
+        ComfyConnection._pageInstancesCallbacks.push(callback);
+    }
+    static _callPageInstancesChange(data) {
+        ComfyConnection._pageInstancesCallbacks.forEach(cb => {
+            try {
+                cb(data)
+            } catch (e) { console.error(e) }
+        });
+    }
+
+    static createInstance(backendURL) {
         if (ComfyConnection.instance) {
             ComfyConnection.instance.disconnect();
         }
-        ComfyConnection.instance = new ComfyConnection(comfyURL);
+        ComfyConnection.instance = new ComfyConnection(backendURL);
     }
 
     get isConnected() {
@@ -35,12 +47,12 @@ class ComfyConnection {
         return this.socket != null && this.socket.connected === false && this.socket.active === true;
     }
 
-    comfyURL = '';
+    backendURL = '';
     serverType = '';
     interval = null;
-    constructor(comfyURL) {
+    constructor(backendURL) {
         ComfyConnection.instance = this;
-        this.comfyURL = comfyURL.replace(/\/*$/, '');
+        this.backendURL = backendURL.replace(/\/*$/, '');
         this.connect();
     }
     connect() {
@@ -49,19 +61,19 @@ class ComfyConnection {
         }
         this.socket.connect();
     }
- 
+
     disconnect() {
         console.log('disconnect' + this.socket);
         if (this.socket) {
             this.socket.close()
-            this.socket = null; 
+            this.socket = null;
             ComfyConnection._callConnectStateChange();
         }
     }
 
     _createSocket() {
-        console.log('create socket')
-        const socket = this.socket = socketio(this.comfyURL, {
+        console.log('create socket', this.backendURL)
+        const socket = this.socket = socketio(this.backendURL, {
             autoConnect: false,
             transports: ["websocket"],
             path: '/sd-ppp/',
@@ -72,7 +84,7 @@ class ComfyConnection {
         });
         this.interval = setInterval(() => {
             if (!this.isConnected) return;
-            const allLayers = getAllSubLayer(app.activeDocument); 
+            const allLayers = getAllSubLayer(app.activeDocument);
             this.socket.emit('b_sync_layers',
                 { layers: allLayers }
             )
@@ -88,7 +100,7 @@ class ComfyConnection {
         });
         socket.on('connect', () => {
             console.log('connect')
-            storage.secureStorage.setItem('comfyURL', this.comfyURL);
+            storage.secureStorage.setItem('backendURL', this.backendURL);
             ComfyConnection._callConnectStateChange();
         });
         socket.on('disconnect', (...args) => {
@@ -99,14 +111,14 @@ class ComfyConnection {
         socket.on('get_image', async (data, callback) => {
             try {
                 const startTime = Date.now();
-                const result = await getImage(this.comfyURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
+                const result = await getImage(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 console.log('get_image cost', Date.now() - startTime, 'ms');
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
         socket.on('send_images', async (data, callback) => {
             try {
-                const result = await sendImages(this.comfyURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
+                const result = await sendImages(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
@@ -118,7 +130,16 @@ class ComfyConnection {
         })
         socket.on('s_confirm', (data) => {
             this.serverType = data.server_type
-        }) 
+        })
+        setInterval(() => {
+            socket.emit('b_get_pages', (data) => {
+                ComfyConnection._callPageInstancesChange(data);
+            })
+        }, 1500);
+    }
+
+    pageInstanceRun(sid) {
+        this.socket.emit('b_page_run', { sid });
     }
 }
 

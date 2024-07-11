@@ -65,6 +65,7 @@ def registerSDHTTPEndpoints(sdppp, app):
         return {'name': name}
 
 def registerSocketEvents(sdppp, sio):
+    # only emit by web instance
     @sio.event
     async def c_get_image(sid, data={}):
         if not sdppp.has_ps_instance():
@@ -82,6 +83,7 @@ def registerSocketEvents(sdppp, sio):
         addImageCache(res, sd_elem_id)
         return {}
 
+    # only emit by web instance
     @sio.event
     async def c_send_image(sid, data={}):
         if not sdppp.has_ps_instance():
@@ -101,6 +103,7 @@ def registerSocketEvents(sdppp, sio):
         image_ids = [load_image(image_url) for image_url in image_urls]
         await photoshopInstance.send_images(layer_id=layer_id, image_ids=image_ids)
 
+    # only emit by web instance
     @sio.event
     async def c_get_layers(sid, data = {}):
         if not sdppp.has_ps_instance():
@@ -124,6 +127,25 @@ def registerSocketEvents(sdppp, sio):
             return
         instance.layers = data['layers']
 
+    # only emit by photoshop instance
+    @sio.event
+    async def b_get_pages(sid, data = {}):
+        pages = []
+        if sdppp.server_type == "comfy":
+            pages = list(sdppp.comfyui_instances.keys())
+        elif sdppp.server_type == "SD":
+            pages = list(sdppp.sd_instances.keys())
+
+        pages.reverse()
+        return {
+            'pages': pages
+        }
+
+    # only emit by photoshop instance
+    @sio.event
+    async def b_page_run(sid, data = {}):
+        await sdppp.sio.emit('s_run', to=data['sid'])
+
     @sio.event
     async def check_changes(sid):
         instance = sdppp.get_ps_instance()
@@ -131,7 +153,7 @@ def registerSocketEvents(sdppp, sio):
             return
         if not await instance.is_ps_history_changed():
             return
-        await sio.emit('trigger_graph_change', to=sid)
+        await sio.emit('s_trigger_graph_change', to=sid)
     
     @sio.event
     async def reset_changes(sid):

@@ -28,14 +28,17 @@
 			});
 	
 			socket.on('connect', () => {
-				socket.emit('reset_changes');
+				socket.emit('c_reset_changes');
 			});
 			socket.on('disconnect', () => {
 			});
 			socket.on('connect_error', () => {
 				console.error('sdppp socket connect_error')
 			});
-			socket.on('trigger_graph_change', () => {
+			socket.on('s_run', () => {
+				document.getElementById('queue-button').click()
+			});
+			socket.on('s_trigger_graph_change', () => {
 				api.dispatchEvent(new CustomEvent("graphChanged"));
 			});
 			setInterval(() => {
@@ -93,7 +96,7 @@
 			const mode0NodeTypes = currentState.nodes.filter(node => node.mode == 0).map(node => node.type);
 			const containsSDPPPNodes = mode0NodeTypes.some(nodeType => SDPPPNodes.includes(nodeType));
 			if (!containsSDPPPNodes) return;
-			socket.emit('check_changes')
+			socket.emit('c_check_changes')
 		} catch (e) {
 			console.error("[sd-ppp]", "Failed to check changes", e);
 		}

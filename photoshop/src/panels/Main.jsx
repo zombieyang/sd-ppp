@@ -3,9 +3,10 @@ import ComfyConnection from "../system/ComfyConnection";
 import { storage } from "uxp";
 export default class Main extends React.Component {
     state = {
-        comfyURL: '', 
+        backendURL: '',
         isConnected: false,
         isReconnecting: false,
+        pageInstances: []
     }
 
     componentDidMount() {
@@ -15,68 +16,80 @@ export default class Main extends React.Component {
             this.setState({
                 isConnected: instance?.isConnected,
                 isReconnecting: instance?.isReconnecting,
-                comfyURL: instance ? instance.comfyURL : ''
+                backendURL: instance ? instance.backendURL : ''
             })
         });
-        storage.secureStorage.getItem('comfyURL').then((value) => {
+        ComfyConnection.onPageInstancesChange((data) => {
+            this.setState({ pageInstances: data.pages || [] });
+        });
+        storage.secureStorage.getItem('backendURL').then((value) => {
             if (!value) return
-            this.setState({ comfyURL: Buffer.from(value).toString() })
-            if (this.state.comfyURL) {
-                console.log('comfyURL:', this.state.comfyURL)
+            this.setState({ backendURL: Buffer.from(value).toString() })
+            if (this.state.backendURL) {
+                console.log('backendURL:', this.state.backendURL)
                 this.doConnectOrDisconnect()
             }
         })
     }
 
     doConnectOrDisconnect() {
-        console.log(ComfyConnection.instance?.isConnected, ComfyConnection.instance?.isReconnecting)
-        if (ComfyConnection.instance?.isConnected || ComfyConnection.instance?.isReconnecting) 
+        if (ComfyConnection.instance?.isConnected || ComfyConnection.instance?.isReconnecting)
             ComfyConnection.instance.disconnect();
-        else 
-            ComfyConnection.createInstance(this.state.comfyURL);
+        else
+            ComfyConnection.createInstance(this.state.backendURL);
     }
 
     render() {
+        let inputDisable = { };
+        if (this.state.isConnected || this.state.isReconnecting) inputDisable = { disabled: true };
+        console.log(this.state.backendURL)
         return (
-            <> 
-                <sp-textfield 
-                    id="url-bar" 
-                    label="ComfyURL" 
-                    onInput={(ev) => { this.state.comfyURL = ev.currentTarget.value }} 
-                    value={this.state.comfyURL} 
+            <>
+                <sp-textfield
+                    id="url-bar"
+                    label="backendURL"
+                    onInput={(ev) => { console.log('onInput', ev.currentTarget.value); this.state.backendURL = ev.currentTarget.value }}
+                    {...inputDisable}
+                    value={this.state.backendURL}
                     placeholder="http://127.0.0.1:8188"
                 ></sp-textfield>
                 <div className="connect-box">
                     <div className={"status-bar " + (
-                            this.state.isConnected ? 'connected' : (
-                                this.state.isReconnecting ? 'reconnecting' :
+                        this.state.isConnected ? 'connected' : (
+                            this.state.isReconnecting ? 'reconnecting' :
                                 'disconnected'
-                            )
-                        )}>
+                        )
+                    )}>
                         <div className="status-icon">⬤</div>
                         <div className="status-text">{(
                             this.state.isConnected ? 'connected' : (
                                 this.state.isReconnecting ? 'reconnecting...' :
-                                'disconnected'
+                                    'disconnected'
                             )
                         )}</div>
                     </div>
-                    <sp-button 
+                    <sp-button
                         id="connect-btn"
                         variant="primary"
                         onClick={this.doConnectOrDisconnect.bind(this)}
                     >{this.state.isConnected || this.state.isReconnecting ? 'disconnect' : 'connect'}</sp-button>
-                </div> 
+                </div>
 
                 <sp-divider size="small"></sp-divider>
 
-                {/* <sp-label>webpage-list</sp-label>
+                <sp-label>webpage-list</sp-label>
                 <ul className="client-list">
-                    <li className="client-list-item">
-                        <sp-label class="client-name">AE231DDEB64C</sp-label>
-                        <sp-link>Run</sp-link>
-                    </li>
-                </ul> */}
+                    {
+                        this.state.pageInstances.map((item) => {
+                            return (
+                                <li key={item} className="client-list-item">
+                                    <sp-label class="client-name">{item.slice(0, 6)}</sp-label>
+                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item) }}>Run</sp-link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
             </>
         )
     }

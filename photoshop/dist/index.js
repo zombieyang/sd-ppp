@@ -90,14 +90,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../system/ComfyConnection */ "./src/system/ComfyConnection.js");
 /* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uxp */ "uxp");
 /* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(uxp__WEBPACK_IMPORTED_MODULE_2__);
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 
 
 class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
   state = {
-    comfyURL: '',
+    backendURL: '',
     isConnected: false,
-    isReconnecting: false
+    isReconnecting: false,
+    pageInstances: []
   };
   componentDidMount() {
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onConnectStateChange(() => {
@@ -106,34 +108,45 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       this.setState({
         isConnected: instance?.isConnected,
         isReconnecting: instance?.isReconnecting,
-        comfyURL: instance ? instance.comfyURL : ''
+        backendURL: instance ? instance.backendURL : ''
       });
     });
-    uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('comfyURL').then(value => {
+    _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onPageInstancesChange(data => {
+      this.setState({
+        pageInstances: data.pages || []
+      });
+    });
+    uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('backendURL').then(value => {
       if (!value) return;
       this.setState({
-        comfyURL: Buffer.from(value).toString()
+        backendURL: Buffer.from(value).toString()
       });
-      if (this.state.comfyURL) {
-        console.log('comfyURL:', this.state.comfyURL);
+      if (this.state.backendURL) {
+        console.log('backendURL:', this.state.backendURL);
         this.doConnectOrDisconnect();
       }
     });
   }
   doConnectOrDisconnect() {
-    console.log(_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected, _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isReconnecting);
-    if (_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected || _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isReconnecting) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.comfyURL);
+    if (_system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isConnected || _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.isReconnecting) _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance.disconnect();else _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].createInstance(this.state.backendURL);
   }
   render() {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", {
+    let inputDisable = {};
+    if (this.state.isConnected || this.state.isReconnecting) inputDisable = {
+      disabled: true
+    };
+    console.log(this.state.backendURL);
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", _extends({
       id: "url-bar",
-      label: "ComfyURL",
+      label: "backendURL",
       onInput: ev => {
-        this.state.comfyURL = ev.currentTarget.value;
-      },
-      value: this.state.comfyURL,
+        console.log('onInput', ev.currentTarget.value);
+        this.state.backendURL = ev.currentTarget.value;
+      }
+    }, inputDisable, {
+      value: this.state.backendURL,
       placeholder: "http://127.0.0.1:8188"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "connect-box"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "status-bar " + (this.state.isConnected ? 'connected' : this.state.isReconnecting ? 'reconnecting' : 'disconnected')
@@ -147,7 +160,20 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       onClick: this.doConnectOrDisconnect.bind(this)
     }, this.state.isConnected || this.state.isReconnecting ? 'disconnect' : 'connect')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-divider", {
       size: "small"
-    }));
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "webpage-list"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
+      className: "client-list"
+    }, this.state.pageInstances.map(item => {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("li", {
+        key: item,
+        className: "client-list-item"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
+        class: "client-name"
+      }, item.slice(0, 6)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
+        onClick: () => {
+          _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item);
+        }
+      }, "Run"));
+    })));
   }
 }
 
@@ -196,11 +222,24 @@ class ComfyConnection {
       }
     });
   }
-  static createInstance(comfyURL) {
+  static _pageInstancesCallbacks = [];
+  static onPageInstancesChange(callback) {
+    ComfyConnection._pageInstancesCallbacks.push(callback);
+  }
+  static _callPageInstancesChange(data) {
+    ComfyConnection._pageInstancesCallbacks.forEach(cb => {
+      try {
+        cb(data);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+  static createInstance(backendURL) {
     if (ComfyConnection.instance) {
       ComfyConnection.instance.disconnect();
     }
-    ComfyConnection.instance = new ComfyConnection(comfyURL);
+    ComfyConnection.instance = new ComfyConnection(backendURL);
   }
   get isConnected() {
     return this.socket != null && this.socket.connected === true;
@@ -208,12 +247,12 @@ class ComfyConnection {
   get isReconnecting() {
     return this.socket != null && this.socket.connected === false && this.socket.active === true;
   }
-  comfyURL = '';
+  backendURL = '';
   serverType = '';
   interval = null;
-  constructor(comfyURL) {
+  constructor(backendURL) {
     ComfyConnection.instance = this;
-    this.comfyURL = comfyURL.replace(/\/*$/, '');
+    this.backendURL = backendURL.replace(/\/*$/, '');
     this.connect();
   }
   connect() {
@@ -231,8 +270,8 @@ class ComfyConnection {
     }
   }
   _createSocket() {
-    console.log('create socket');
-    const socket = this.socket = _library_socket_io_js__WEBPACK_IMPORTED_MODULE_3___default()(this.comfyURL, {
+    console.log('create socket', this.backendURL);
+    const socket = this.socket = _library_socket_io_js__WEBPACK_IMPORTED_MODULE_3___default()(this.backendURL, {
       autoConnect: false,
       transports: ["websocket"],
       path: '/sd-ppp/',
@@ -258,7 +297,7 @@ class ComfyConnection {
     });
     socket.on('connect', () => {
       console.log('connect');
-      uxp__WEBPACK_IMPORTED_MODULE_1__.storage.secureStorage.setItem('comfyURL', this.comfyURL);
+      uxp__WEBPACK_IMPORTED_MODULE_1__.storage.secureStorage.setItem('backendURL', this.backendURL);
       ComfyConnection._callConnectStateChange();
     });
     socket.on('disconnect', (...args) => {
@@ -268,7 +307,7 @@ class ComfyConnection {
     socket.on('get_image', async (data, callback) => {
       try {
         const startTime = Date.now();
-        const result = await (0,_events_get_image__WEBPACK_IMPORTED_MODULE_5__["default"])(this.comfyURL, Object.assign(data, {
+        const result = await (0,_events_get_image__WEBPACK_IMPORTED_MODULE_5__["default"])(this.backendURL, Object.assign(data, {
           isComfy: this.serverType == "comfy"
         }));
         console.log('get_image cost', Date.now() - startTime, 'ms');
@@ -282,7 +321,7 @@ class ComfyConnection {
     });
     socket.on('send_images', async (data, callback) => {
       try {
-        const result = await (0,_events_send_images__WEBPACK_IMPORTED_MODULE_4__["default"])(this.comfyURL, Object.assign(data, {
+        const result = await (0,_events_send_images__WEBPACK_IMPORTED_MODULE_4__["default"])(this.backendURL, Object.assign(data, {
           isComfy: this.serverType == "comfy"
         }));
         callback(result);
@@ -306,6 +345,16 @@ class ComfyConnection {
     });
     socket.on('s_confirm', data => {
       this.serverType = data.server_type;
+    });
+    setInterval(() => {
+      socket.emit('b_get_pages', data => {
+        ComfyConnection._callPageInstancesChange(data);
+      });
+    }, 1500);
+  }
+  pageInstanceRun(sid) {
+    this.socket.emit('b_page_run', {
+      sid
     });
   }
 }

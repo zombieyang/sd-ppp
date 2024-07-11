@@ -23,6 +23,10 @@
             this.$refreshSendLayer = null;
             this.$getterSaveAndClose = null;
             this.$senderSaveAndClose = null;
+
+            setTimeout(()=> {
+                this.initSocket();
+            })
         }
 
         initDOM() {
@@ -109,6 +113,13 @@
                 this.socket.on('connect', resolve);
                 this.socket.on('disconnect', () => {
                     this.socketInited = false;
+                });
+                this.socket.on('s_run', () => {
+                    const tab = document.getElementById('tabs').querySelector('button.selected');
+                    const activeTabIndex = Array.prototype.indexOf.call(tab.parentElement.children, tab)
+                    if (activeTabIndex == 0) document.getElementById('txt2img_generate').click()
+                    if (activeTabIndex == 1) document.getElementById('img2img_generate').click()
+                    if (activeTabIndex == 2) document.getElementById('extras_generate').click()
                 });
             });
         }
