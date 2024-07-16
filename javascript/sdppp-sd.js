@@ -103,7 +103,7 @@
                 transports: ["websocket"],
                 path: '/sd-ppp/',
                 query: {
-                    version: 1,
+                    api_level: 2,
                     type: 'sd'
                 }
             });

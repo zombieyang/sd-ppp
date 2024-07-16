@@ -37,8 +37,10 @@ class SDPPP:
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
+            if 'api_level' not in qsobj or qsobj['api_level'] != "2":
+                raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
             if 'type' not in qsobj:
-                raise socketio.exceptions.ConnectionRefusedError('instance type missed in query')
+                raise socketio.exceptions.ConnectionRefusedError('instance type not recognized')
 
             elif qsobj['type'] == 'photoshop':
                 if len(self.photoshop_instances) > 0:

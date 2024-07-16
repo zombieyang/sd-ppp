@@ -6,6 +6,7 @@ export default class Main extends React.Component {
         backendURL: '',
         isConnected: false,
         isReconnecting: false,
+        lastConnectErrorMessage: '',
         pageInstances: []
     }
 
@@ -16,7 +17,8 @@ export default class Main extends React.Component {
             this.setState({
                 isConnected: instance?.isConnected,
                 isReconnecting: instance?.isReconnecting,
-                backendURL: instance ? instance.backendURL : ''
+                backendURL: instance ? instance.backendURL : '',
+                lastConnectErrorMessage: instance?.lastErrorMessage
             })
         });
         ComfyConnection.onPageInstancesChange((data) => {
@@ -63,7 +65,7 @@ export default class Main extends React.Component {
                         <div className="status-text">{(
                             this.state.isConnected ? 'connected' : (
                                 this.state.isReconnecting ? 'reconnecting...' :
-                                    'disconnected'
+                                    (this.state.lastConnectErrorMessage?.toString() || 'disconnected')
                             )
                         )}</div>
                     </div>

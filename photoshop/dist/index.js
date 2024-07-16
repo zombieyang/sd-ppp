@@ -99,6 +99,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     backendURL: '',
     isConnected: false,
     isReconnecting: false,
+    lastConnectErrorMessage: '',
     pageInstances: []
   };
   componentDidMount() {
@@ -108,7 +109,8 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       this.setState({
         isConnected: instance?.isConnected,
         isReconnecting: instance?.isReconnecting,
-        backendURL: instance ? instance.backendURL : ''
+        backendURL: instance ? instance.backendURL : '',
+        lastConnectErrorMessage: instance?.lastErrorMessage
       });
     });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onPageInstancesChange(data => {
@@ -153,7 +155,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       className: "status-icon"
     }, "\u2B24"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "status-text"
-    }, this.state.isConnected ? 'connected' : this.state.isReconnecting ? 'reconnecting...' : 'disconnected')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
+    }, this.state.isConnected ? 'connected' : this.state.isReconnecting ? 'reconnecting...' : this.state.lastConnectErrorMessage?.toString() || 'disconnected')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-button", {
       id: "connect-btn",
       variant: "primary",
       onClick: this.doConnectOrDisconnect.bind(this)
@@ -249,6 +251,7 @@ class ComfyConnection {
   backendURL = '';
   serverType = '';
   interval = null;
+  lastErrorMessage = '';
   constructor(backendURL) {
     ComfyConnection.instance = this;
     this.backendURL = backendURL.replace(/\/*$/, '');
@@ -275,7 +278,7 @@ class ComfyConnection {
       transports: ["websocket"],
       path: '/sd-ppp/',
       query: {
-        version: 1,
+        api_level: 2,
         type: 'photoshop'
       }
     });
@@ -286,10 +289,12 @@ class ComfyConnection {
         layers: allLayers
       });
     }, 3000);
+    this.lastErrorMessage = '';
     socket.on('connect_error', error => {
       if (socket.active) {
         console.error(`connect_error ${error} reconnecting...`);
       } else {
+        this.lastErrorMessage = error;
         console.error(`connect_error ${error} disconnected`);
       }
       ComfyConnection._callConnectStateChange();

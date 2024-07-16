@@ -50,6 +50,7 @@ class ComfyConnection {
     backendURL = '';
     serverType = '';
     interval = null;
+    lastErrorMessage = '';
     constructor(backendURL) {
         ComfyConnection.instance = this;
         this.backendURL = backendURL.replace(/\/*$/, '');
@@ -78,7 +79,7 @@ class ComfyConnection {
             transports: ["websocket"],
             path: '/sd-ppp/',
             query: {
-                version: 1,
+                api_level: 2,
                 type: 'photoshop'
             }
         });
@@ -90,10 +91,12 @@ class ComfyConnection {
             )
         }, 3000)
 
+        this.lastErrorMessage = '';
         socket.on('connect_error', (error) => {
             if (socket.active) {
                 console.error(`connect_error ${error} reconnecting...`)
             } else {
+                this.lastErrorMessage = error
                 console.error(`connect_error ${error} disconnected`)
             }
             ComfyConnection._callConnectStateChange();
