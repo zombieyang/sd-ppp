@@ -131,12 +131,9 @@ def registerSocketEvents(sdppp, sio):
     @sio.event
     async def b_get_pages(sid, data = {}):
         pages = []
-        if sdppp.server_type == "comfy":
-            pages = list(sdppp.comfyui_instances.keys())
-        elif sdppp.server_type == "SD":
-            pages = list(sdppp.sd_instances.keys())
-
+        pages = list(sdppp.page_instances.values())
         pages.reverse()
+
         return {
             'pages': pages
         }
@@ -147,7 +144,7 @@ def registerSocketEvents(sdppp, sio):
         await sdppp.sio.emit('s_run', to=data['sid'])
 
     @sio.event
-    async def check_changes(sid):
+    async def c_check_changes(sid):
         instance = sdppp.get_ps_instance()
         if instance is None:
             return
@@ -156,8 +153,14 @@ def registerSocketEvents(sdppp, sio):
         await sio.emit('s_trigger_graph_change', to=sid)
     
     @sio.event
-    async def reset_changes(sid):
+    async def c_reset_changes(sid):
         instance = sdppp.get_ps_instance()
         if instance is None:
             return
         instance.reset_change_tracker()
+
+    @sio.event
+    async def c_reset_instance_name(sid, data):
+        instance = sdppp.page_instances[sid]
+        instance["name"] = data["name"]
+        

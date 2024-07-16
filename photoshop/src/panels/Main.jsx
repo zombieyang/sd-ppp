@@ -42,7 +42,6 @@ export default class Main extends React.Component {
     render() {
         let inputDisable = { };
         if (this.state.isConnected || this.state.isReconnecting) inputDisable = { disabled: true };
-        console.log(this.state.backendURL)
         return (
             <>
                 <sp-textfield
@@ -83,8 +82,8 @@ export default class Main extends React.Component {
                         this.state.pageInstances.map((item) => {
                             return (
                                 <li key={item} className="client-list-item">
-                                    <sp-label class="client-name">{item.slice(0, 6)}</sp-label>
-                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item) }}>Run</sp-link>
+                                    <sp-label class="client-name">{item.name}</sp-label>
+                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Execute"}</sp-link>
                                 </li>
                             )
                         })

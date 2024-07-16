@@ -5,8 +5,7 @@ from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHT
 class SDPPP:
     def __init__(self):
         self.photoshop_instances = dict()
-        self.comfyui_instances = dict()
-        self.sd_instances = dict()
+        self.page_instances = dict()
 
     def attach_to_comfyui(self, PromptServer):
         self.sio = socketio.AsyncServer(async_mode='aiohttp', cors_allowed_origins="*")
@@ -47,10 +46,18 @@ class SDPPP:
                 self.photoshop_instances[sid] = PhotoshopInstance(self, sid)
 
             elif qsobj['type'] == 'comfyui':
-                self.comfyui_instances[sid] = True
+                self.page_instances[sid] = {
+                    "sid": sid,
+                    "type": "comfy",
+                    "name": ""
+                }
 
             elif qsobj['type'] == 'sd':
-                self.sd_instances[sid] = True
+                self.page_instances[sid] = {
+                    "sid": sid,
+                    "type": "sd",
+                    "name": ""
+                }
 
             else:
                 raise socketio.exceptions.ConnectionRefusedError('unknown instance type ' + qsobj['type'])
@@ -59,13 +66,11 @@ class SDPPP:
                 "server_type": self.server_type
             })
 
-        # only emit by photoshop instance
-        @sio.event
         async def disconnect(sid):
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
-            elif sid in self.comfyui_instances:
-                self.comfyui_instances.pop(sid, None)
+            elif sid in self.page_instances:
+                self.page_instances.pop(sid, None)
 
         registerSocketEvents(self, self.sio)
                 

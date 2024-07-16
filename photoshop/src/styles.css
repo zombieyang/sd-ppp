@@ -52,8 +52,8 @@
     align-items: center;
 }
 .client-list-item .client-name {
-    margin-left: 10px;
+    margin-left: 5px;
 }
 .client-list-item sp-link {
-    margin-right: 20px;
+    margin-right: 10px;
 }

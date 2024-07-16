@@ -135,7 +135,6 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     if (this.state.isConnected || this.state.isReconnecting) inputDisable = {
       disabled: true
     };
-    console.log(this.state.backendURL);
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-textfield", _extends({
       id: "url-bar",
       label: "backendURL",
@@ -168,11 +167,11 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         className: "client-list-item"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
         class: "client-name"
-      }, item.slice(0, 6)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
+      }, item.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
         onClick: () => {
-          _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item);
+          _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item.sid);
         }
-      }, "Run"));
+      }, item.type == "comfy" ? "Queue Prompt" : "Execute"));
     })));
   }
 }
@@ -5297,10 +5296,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     align-items: center;
 }
 .client-list-item .client-name {
-    margin-left: 10px;
+    margin-left: 5px;
 }
 .client-list-item sp-link {
-    margin-right: 20px;
+    margin-right: 10px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);

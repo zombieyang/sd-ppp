@@ -29,6 +29,9 @@
 	
 			socket.on('connect', () => {
 				socket.emit('c_reset_changes');
+				socket.emit('c_reset_instance_name', {
+					name: document.title
+				})
 			});
 			socket.on('disconnect', () => {
 			});
@@ -47,6 +50,9 @@
 					layerStrs = data.layer_strs;
 					boundsStrs = data.bound_strs;
 					setLayerStrs = data.set_layer_strs;
+				})
+				socket.emit('c_reset_instance_name', {
+					name: document.title
 				})
 			}, 2000);
 		},
