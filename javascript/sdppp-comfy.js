@@ -1,3 +1,4 @@
+import { $el } from "../../../scripts/ui.js";
 
 (async function() {
 	if (typeof gradioApp != 'undefined') return;
@@ -12,8 +13,32 @@
 	let socket = null;
 	
 	console.log("[sd-ppp]", "Loading js extension");
+	const id = "Comfy.SD-PPP"
+	app.ui.settings.addSetting({
+		id,
+		name: "Download SD-PPP plugin",
+		type: (name, setter, value) => {
+			return $el("tr", [
+				$el("td", [
+					$el("label", {
+						for: id.replaceAll(".", "-"),
+						textContent: "Download SD-PPP plugin",
+					}),
+				]),
+				$el("td", [
+					$el("input", {
+						type: "button",
+						value: "Photoshop .ccx",
+						onclick: async () => {
+							location.href = "/extensions/sd-ppp/plugins/sd-ppp_PS.ccx"
+						},
+					})
+				])
+			])
+		}
+	})
 	app.registerExtension({
-		name: "Comfy.SD-PPP",
+		name: id,
 		init() {
 		},
 		async setup() {
@@ -86,7 +111,6 @@
 					if(onMouseEnter) await onMouseEnter.call(this, ...args);
 					this_handler.call(this);
 				}
-			
 			}
 		}
 	});

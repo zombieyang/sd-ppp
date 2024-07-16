@@ -24,10 +24,10 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 2. install Photoshop plugin
     1. by CCX:
-        1. download `http://<your-comfy-url>/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`.
-           > for example: `http://127.0.0.1:8188/extensions/sd-ppp/plugins/sd-ppp_PS.ccx`
-       
-        3. double click the `.ccx` file. OR rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
+        1. download .ccx in ComfyUI's setting UI.
+
+            <img width=600 src="https://github.com/user-attachments/assets/26d108a1-cad3-46d1-ba7d-294a5e57c6d1" />
+        2. double click the `.ccx` file. OR rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
         2. [optional] Run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
