@@ -2,22 +2,29 @@ import { app, imaging } from "photoshop";
 import { executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
 import Jimp from "../library/jimp.min";
 
-function isLayerFolder(layer){
+function isFolder(layer){
     return layer.kind == "group"
 }
 
 async function findLayer(layerID) {
     let layer;
-    let isFolder = false;
-    if (layerID <= 0) return [layer, isFolder];
+    let layerIsFolder = false;
+    if (layerID <= 0) return [layer, layerIsFolder];
     layer = findInAllSubLayer(app.activeDocument, layerID)
     if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
-    if (!isLayerFolder(layer)) return [layer, isFolder];
+    if (!isFolder(layer)) return [layer, layerIsFolder];
+
     // layer is folder
+    let visibleOriginal = true;
+    if (!layer.visible) {
+        layer.visible = true;
+        visibleOriginal = false;
+    }
     const dupLayer = await layer.duplicate();
     const mergedLayer = await dupLayer.merge()
-    isFolder = true;
-    return [mergedLayer, isFolder];
+    layerIsFolder = true;
+    if (!visibleOriginal) layer.visible = false
+    return [mergedLayer, layerIsFolder];
 }
 
 // ps returns trimmed data so need padding

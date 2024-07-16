@@ -68,6 +68,7 @@ class SDPPP:
                 "server_type": self.server_type
             })
 
+        @sio.event
         async def disconnect(sid):
             if sid in self.photoshop_instances:
                 self.photoshop_instances.pop(sid, None)
