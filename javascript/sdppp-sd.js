@@ -121,11 +121,11 @@
                     if (activeTabIndex == 1) document.getElementById('img2img_generate').click()
                     if (activeTabIndex == 2) document.getElementById('extras_generate').click()
                 });
-				socket.emit('c_reset_instance_name', {
+				this.socket.emit('c_reset_instance_name', {
 					name: document.title
 				})
                 setInterval(() => {
-                    socket.emit('c_reset_instance_name', {
+                    this.socket.emit('c_reset_instance_name', {
                         name: document.title
                     })
                 }, 3000)

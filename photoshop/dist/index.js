@@ -173,7 +173,7 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         onClick: () => {
           _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item.sid);
         }
-      }, item.type == "comfy" ? "Queue Prompt" : "Execute"));
+      }, item.type == "comfy" ? "Queue Prompt" : "Generate"));
     })));
   }
 }

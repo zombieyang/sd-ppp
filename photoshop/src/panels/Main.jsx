@@ -85,7 +85,7 @@ export default class Main extends React.Component {
                             return (
                                 <li key={item} className="client-list-item">
                                     <sp-label class="client-name">{item.name}</sp-label>
-                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Execute"}</sp-link>
+                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Generate"}</sp-link>
                                 </li>
                             )
                         })

@@ -1,9 +1,8 @@
-import { $el } from "../../../scripts/ui.js";
-
 (async function() {
 	if (typeof gradioApp != 'undefined') return;
 	const { app } = await import("../../../scripts/app.js")
 	const { api } = await import("../../../scripts/api.js")
+	const { $el } = await import('../../../scripts/ui.js')
 	await import('./socket.io.js') 
 	const socketio = globalThis.io
 
@@ -111,6 +110,10 @@ import { $el } from "../../../scripts/ui.js";
 					if(onMouseEnter) await onMouseEnter.call(this, ...args);
 					this_handler.call(this);
 				}
+				nodeType.prototype.onDrawBackground = async function(...args) {
+					console.log(args);
+				}
+			
 			}
 		}
 	});
