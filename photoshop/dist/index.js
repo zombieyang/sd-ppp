@@ -114,9 +114,20 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       });
     });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onPageInstancesChange(data => {
-      this.setState({
-        pageInstances: data.pages || []
-      });
+      if (data.pages) {
+        this.setState({
+          pageInstances: data.pages || []
+        });
+      } else if (data.progress) {
+        this.state.pageInstances.forEach(instance => {
+          if (instance.sid == data.sid) {
+            instance.progress = data.progress == 100 ? 0 : data.progress;
+          }
+        });
+        this.setState({
+          pageInstances: this.state.pageInstances
+        });
+      }
     });
     uxp__WEBPACK_IMPORTED_MODULE_2__.storage.secureStorage.getItem('backendURL').then(value => {
       if (!value) return;
@@ -167,13 +178,19 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("li", {
         key: item,
         className: "client-list-item"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        className: "client-list-item-left"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
         class: "client-name"
-      }, item.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
+      }, item.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        className: "client-list-item-right"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
+        class: "client-progress"
+      }, item.progress ? `${item.progress}%` : ""), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
         onClick: () => {
           _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item.sid);
         }
-      }, item.type == "comfy" ? "Queue Prompt" : "Generate"));
+      }, item.type == "comfy" ? "Queue Prompt" : "Generate")));
     })));
   }
 }
@@ -349,6 +366,9 @@ class ComfyConnection {
     });
     socket.on('s_confirm', data => {
       this.serverType = data.server_type;
+    });
+    socket.on('c_progress', data => {
+      ComfyConnection._callPageInstancesChange(data);
     });
     setInterval(() => {
       socket.emit('b_get_pages', data => {
@@ -5307,11 +5327,18 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     justify-content: space-between;
     align-items: center;
 }
-.client-list-item .client-name {
+.client-list-item .client-list-item-left {
     margin-left: 5px;
 }
-.client-list-item sp-link {
+.client-list-item .client-progress {
+    margin-right: 5px;
+    text-align: right;
+    display: flex;
+    justify-content: end;
+}
+.client-list-item .client-list-item-right {
     margin-right: 10px;
+    display: flex;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);

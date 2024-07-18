@@ -163,4 +163,12 @@ def registerSocketEvents(sdppp, sio):
     async def c_reset_instance_name(sid, data):
         instance = sdppp.page_instances[sid]
         instance["name"] = data["name"]
+
+    @sio.event
+    async def c_progress(sid, data):
+        photoshop_sid = sdppp.get_ps_instance().sid
+        await sio.emit('c_progress', {
+            'progress': data['progress'],
+            'sid': sid
+        }, to=photoshop_sid)
         

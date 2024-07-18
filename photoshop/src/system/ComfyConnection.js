@@ -134,6 +134,9 @@ class ComfyConnection {
         socket.on('s_confirm', (data) => {
             this.serverType = data.server_type
         })
+        socket.on('c_progress', (data) => {
+            ComfyConnection._callPageInstancesChange(data);
+        })
         setInterval(() => {
             socket.emit('b_get_pages', (data) => {
                 ComfyConnection._callPageInstancesChange(data);

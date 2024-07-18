@@ -9,7 +9,20 @@
 	let layerStrs = [];
 	let boundsStrs = [];
 	let setLayerStrs = [];
-	let socket = null;
+	let socket = socketio(location.origin, {
+		transports: ["websocket"],
+		path: '/sd-ppp/',
+		query: {
+			api_level: 2,
+			type: 'comfyui'
+		}
+	});
+	api.addEventListener("progress", ({ detail }) => {
+		if (!detail || isNaN(detail.value / detail.max)) return;
+		socket.emit('c_progress', {
+			progress: Math.round(detail.value / detail.max * 100)
+		});
+	});
 	
 	console.log("[sd-ppp]", "Loading js extension");
 	const id = "Comfy.SD-PPP"
@@ -42,14 +55,6 @@
 		},
 		async setup() {
 	
-			socket = socketio(location.origin, {
-				transports: ["websocket"],
-				path: '/sd-ppp/',
-				query: {
-					api_level: 2,
-					type: 'comfyui'
-				}
-			});
 	
 			socket.on('connect', () => {
 				socket.emit('c_reset_changes');

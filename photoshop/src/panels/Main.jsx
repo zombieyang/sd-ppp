@@ -22,7 +22,19 @@ export default class Main extends React.Component {
             })
         });
         ComfyConnection.onPageInstancesChange((data) => {
-            this.setState({ pageInstances: data.pages || [] });
+            if (data.pages) {
+                this.setState({ pageInstances: data.pages || [] });
+
+            } else if (data.progress) {
+                this.state.pageInstances.forEach(instance => {
+                    if (instance.sid == data.sid) {
+                        instance.progress = data.progress == 100 ? 0 : data.progress;
+                    }
+                })
+                this.setState({
+                    pageInstances: this.state.pageInstances
+                })
+            }
         });
         storage.secureStorage.getItem('backendURL').then((value) => {
             if (!value) return
@@ -84,8 +96,13 @@ export default class Main extends React.Component {
                         this.state.pageInstances.map((item) => {
                             return (
                                 <li key={item} className="client-list-item">
-                                    <sp-label class="client-name">{item.name}</sp-label>
-                                    <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Generate"}</sp-link>
+                                    <div className="client-list-item-left">
+                                        <sp-label class="client-name">{item.name}</sp-label>
+                                    </div>
+                                    <div className="client-list-item-right">
+                                        <sp-label class="client-progress">{item.progress ? `${item.progress}%` : ""}</sp-label>
+                                        <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Generate"}</sp-link>
+                                    </div>
                                 </li>
                             )
                         })
