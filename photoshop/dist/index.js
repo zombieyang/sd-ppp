@@ -90,7 +90,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../system/ComfyConnection */ "./src/system/ComfyConnection.js");
 /* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uxp */ "uxp");
 /* harmony import */ var uxp__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(uxp__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _system_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../system/model */ "./src/system/model.js");
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
 
 
 
@@ -100,9 +102,22 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     isConnected: false,
     isReconnecting: false,
     lastConnectErrorMessage: '',
-    pageInstances: []
+    pageInstances: [],
+    autoRunning: ''
   };
   componentDidMount() {
+    const model = new _system_model__WEBPACK_IMPORTED_MODULE_3__["default"]();
+    let cooldown = false;
+    model.onHistoryChange(() => {
+      const anyRunning = this.state.pageInstances.filter(item => item.progress && item.progress > 0).length;
+      if (this.state.autoRunning && !anyRunning && !cooldown) {
+        _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(this.state.autoRunning);
+        cooldown = true;
+        setTimeout(() => {
+          cooldown = false;
+        }, 1000);
+      }
+    });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onConnectStateChange(() => {
       const instance = _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance;
       console.log('isConnected：', instance?.isConnected);
@@ -110,7 +125,9 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         isConnected: instance?.isConnected,
         isReconnecting: instance?.isReconnecting,
         backendURL: instance ? instance.backendURL : '',
-        lastConnectErrorMessage: instance?.lastErrorMessage
+        lastConnectErrorMessage: instance?.lastErrorMessage,
+        autoRunning: '',
+        pageInstances: []
       });
     });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onPageInstancesChange(data => {
@@ -175,12 +192,24 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", null, "webpage-list"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
       className: "client-list"
     }, this.state.pageInstances.map(item => {
+      const checkAttr = {
+        title: 'autorun'
+      };
+      if (this.state.autoRunning == item.sid) checkAttr['checked'] = true;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("li", {
-        key: item,
+        key: item.sid,
         className: "client-list-item"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "client-list-item-left"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-checkbox", _extends({}, checkAttr, {
+        onClick: e => {
+          e.preventDefault();
+          e.target.checked = !e.target.checked;
+          this.setState({
+            autoRunning: e.target.checked ? '' : item.sid
+          });
+        }
+      })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
         class: "client-name"
       }, item.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "client-list-item-right"
@@ -191,7 +220,9 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
           _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item.sid);
         }
       }, item.type == "comfy" ? "Queue Prompt" : "Generate")));
-    })));
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
+      class: "autorun-desc"
+    }, this.state.autoRunning ? `auto run page [${this.state.pageInstances.find(item => item.sid == this.state.autoRunning)?.name || ''}] after change..` : ''));
   }
 }
 
@@ -218,6 +249,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _events_send_images__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./events/send_images */ "./src/system/events/send_images.js");
 /* harmony import */ var _events_get_image__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./events/get_image */ "./src/system/events/get_image.js");
 /* harmony import */ var _events_get_active_history_state_id__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./events/get_active_history_state_id */ "./src/system/events/get_active_history_state_id.js");
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./model.js */ "./src/system/model.js");
+
 
 
 
@@ -227,6 +260,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class ComfyConnection {
   static instance = null;
+
+  // todo move to Model.js
   static _connectStateCallbacks = [];
   static onConnectStateChange(callback) {
     ComfyConnection._connectStateCallbacks.push(callback);
@@ -240,6 +275,7 @@ class ComfyConnection {
       }
     });
   }
+  // todo move to Model.js
   static _pageInstancesCallbacks = [];
   static onPageInstancesChange(callback) {
     ComfyConnection._pageInstancesCallbacks.push(callback);
@@ -355,8 +391,9 @@ class ComfyConnection {
     });
     socket.on('get_active_history_state_id', async (data, callback) => {
       try {
-        const result = await (0,_events_get_active_history_state_id__WEBPACK_IMPORTED_MODULE_6__["default"])(data);
-        callback(result);
+        callback({
+          history_state_id: _model_js__WEBPACK_IMPORTED_MODULE_7__["default"].instance.historyStateId
+        });
       } catch (e) {
         console.error(e);
         callback({
@@ -667,6 +704,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util.js */ "./src/system/util.js");
 /* harmony import */ var _library_jimp_min__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../library/jimp.min */ "./src/system/library/jimp.min.js");
 /* harmony import */ var _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_library_jimp_min__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model.js */ "./src/system/model.js");
+
 
 
 
@@ -725,16 +764,19 @@ async function sendImages(comfyURL, params) {
         // deal with new layer or id/name not found layer
         if (!layer || layer.kind == "group") {
           newLayerName = existingLayerName ?? 'Comfy Images ' + imageId;
+          const activeLayers = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.activeLayers;
           const newLayer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
             name: newLayerName
           });
           if (layer) newLayer.move(layer, "placeInside");else newLayer.move(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers[0], 'placeBefore');
           layer = newLayer;
+          activeLayers.forEach(layer => layer.selected = true);
+          layer.selected = false;
+          _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
         }
         const jimp = await _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().read(comfyURL + '/sdppp_download?name=' + imageId);
         // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
         autocrop(jimp);
-        console.log("layer name ", layer.name);
         let putPixelsOptions = {
           layerID: layer.id,
           imageData: await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.createImageDataFromBuffer(jimp.bitmap.data, {
@@ -764,6 +806,7 @@ async function sendImages(comfyURL, params) {
           putPixelsOptions.targetBounds = bounds;
         }
         await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels(putPixelsOptions);
+        _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
       } catch (e) {
         console.error(e);
         throw e;
@@ -5157,6 +5200,61 @@ function ownKeys(e,r){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var 
 
 /***/ }),
 
+/***/ "./src/system/model.js":
+/*!*****************************!*\
+  !*** ./src/system/model.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Model)
+/* harmony export */ });
+/* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! photoshop */ "photoshop");
+/* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(photoshop__WEBPACK_IMPORTED_MODULE_0__);
+
+class Model {
+  static instance;
+  historyStateId = 0;
+  historyCallbacks = [];
+  onHistoryChange(callback) {
+    this.historyCallbacks.push(callback);
+  }
+  _callHistoryChange(data) {
+    this.historyCallbacks.forEach(cb => {
+      try {
+        cb(data);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+  _ignoreNext = false;
+  ignoreNextHistoryChange() {
+    this._ignoreNext = true;
+  }
+  constructor() {
+    if (Model.instance) throw new Error('Model already inited');
+    Model.instance = this;
+    setInterval(() => {
+      const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument?.historyStates;
+      if (historyStates && historyStates.length > 0) {
+        const historyState = historyStates[historyStates.length - 1];
+        if (this.historyStateId != historyState.id && !this._ignoreNext && historyState.name != 'Image To ComfyUI') {
+          this.historyStateId = historyState.id;
+          this._callHistoryChange();
+        } else {
+          this._ignoreNext = false;
+          this.historyStateId = historyState.id;
+        }
+      }
+    }, 250);
+  }
+}
+
+/***/ }),
+
 /***/ "./src/system/util.js":
 /*!****************************!*\
   !*** ./src/system/util.js ***!
@@ -5326,9 +5424,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 24px;
 }
 .client-list-item .client-list-item-left {
     margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+.client-list-item sp-checkbox {
+    margin-right: 2px;
 }
 .client-list-item .client-progress {
     margin-right: 5px;
@@ -5339,6 +5443,13 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
 .client-list-item .client-list-item-right {
     margin-right: 10px;
     display: flex;
+    align-items: center;
+}
+.client-list-item .client-list-item-right sp-link:active {
+    color: white;
+}
+.autorun-desc {
+    font-size: 10px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);

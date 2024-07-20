@@ -50,9 +50,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 24px;
 }
 .client-list-item .client-list-item-left {
     margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+.client-list-item sp-checkbox {
+    margin-right: 2px;
 }
 .client-list-item .client-progress {
     margin-right: 5px;
@@ -63,4 +69,11 @@
 .client-list-item .client-list-item-right {
     margin-right: 10px;
     display: flex;
+    align-items: center;
+}
+.client-list-item .client-list-item-right sp-link:active {
+    color: white;
+}
+.autorun-desc {
+    font-size: 10px;
 }

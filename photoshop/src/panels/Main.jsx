@@ -1,16 +1,28 @@
 import React from "react";
 import ComfyConnection from "../system/ComfyConnection";
 import { storage } from "uxp";
+import Model from "../system/model";
 export default class Main extends React.Component {
     state = {
         backendURL: '',
         isConnected: false,
         isReconnecting: false,
         lastConnectErrorMessage: '',
-        pageInstances: []
+        pageInstances: [],
+        autoRunning: ''
     }
 
     componentDidMount() {
+        const model = new Model();
+        let cooldown = false;
+        model.onHistoryChange(() => {
+            const anyRunning = this.state.pageInstances.filter(item => item.progress && item.progress > 0).length;
+            if (this.state.autoRunning && !anyRunning && !cooldown) {
+                ComfyConnection.instance?.pageInstanceRun(this.state.autoRunning)
+                cooldown = true;
+                setTimeout(() => { cooldown = false }, 1000)
+            }
+        })
         ComfyConnection.onConnectStateChange(() => {
             const instance = ComfyConnection.instance
             console.log('isConnected：', instance?.isConnected)
@@ -18,7 +30,9 @@ export default class Main extends React.Component {
                 isConnected: instance?.isConnected,
                 isReconnecting: instance?.isReconnecting,
                 backendURL: instance ? instance.backendURL : '',
-                lastConnectErrorMessage: instance?.lastErrorMessage
+                lastConnectErrorMessage: instance?.lastErrorMessage,
+                autoRunning: '',
+                pageInstances: []
             })
         });
         ComfyConnection.onPageInstancesChange((data) => {
@@ -54,7 +68,7 @@ export default class Main extends React.Component {
     }
 
     render() {
-        let inputDisable = { };
+        let inputDisable = {};
         if (this.state.isConnected || this.state.isReconnecting) inputDisable = { disabled: true };
         return (
             <>
@@ -94,9 +108,18 @@ export default class Main extends React.Component {
                 <ul className="client-list">
                     {
                         this.state.pageInstances.map((item) => {
+                            const checkAttr = { title: 'autorun' };
+                            if (this.state.autoRunning == item.sid) checkAttr['checked'] = true
                             return (
-                                <li key={item} className="client-list-item">
+                                <li key={item.sid} className="client-list-item">
                                     <div className="client-list-item-left">
+                                        <sp-checkbox {...checkAttr} onClick={(e) => {
+                                            e.preventDefault();
+                                            e.target.checked = !e.target.checked;
+                                            this.setState({
+                                                autoRunning: e.target.checked ? '' : item.sid
+                                            })
+                                        }}></sp-checkbox>
                                         <sp-label class="client-name">{item.name}</sp-label>
                                     </div>
                                     <div className="client-list-item-right">
@@ -108,6 +131,9 @@ export default class Main extends React.Component {
                         })
                     }
                 </ul>
+                <sp-label class="autorun-desc">{this.state.autoRunning ? `auto run page [${this.state.pageInstances.find(item =>
+                    item.sid == this.state.autoRunning
+                )?.name || ''}] after change..` : ''}</sp-label>
             </>
         )
     }

@@ -1,6 +1,7 @@
 import { app, imaging } from "photoshop";
 import { executeAsModalUntilSuccess} from '../util.js';
 import Jimp from "../library/jimp.min";
+import Model from "../model.js";
 
 const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
 const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
@@ -63,17 +64,20 @@ export default async function sendImages(comfyURL, params) {
                     // deal with new layer or id/name not found layer
                     if (!layer || (layer.kind == "group")) {
                         newLayerName = existingLayerName ?? 'Comfy Images ' + imageId
+                        const activeLayers = app.activeDocument.activeLayers;
                         const newLayer = await app.activeDocument.createLayer("pixel", {
                             name: newLayerName,
                         })
                         if (layer) newLayer.move(layer, "placeInside")
                         else newLayer.move(app.activeDocument.layers[0], 'placeBefore')
                         layer = newLayer
+                        activeLayers.forEach(layer => layer.selected = true);
+                        layer.selected = false;
+                        Model.instance.ignoreNextHistoryChange()
                     }
                     const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
                     // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
                     autocrop(jimp)
-                    console.log("layer name ", layer.name)
                     let putPixelsOptions = {
                         layerID: layer.id,
                         imageData: await imaging.createImageDataFromBuffer(
@@ -106,6 +110,7 @@ export default async function sendImages(comfyURL, params) {
                         putPixelsOptions.targetBounds = bounds
                     }
                     await imaging.putPixels(putPixelsOptions)
+                    Model.instance.ignoreNextHistoryChange()
                 } catch(e) {
                     console.error(e)
                     throw e

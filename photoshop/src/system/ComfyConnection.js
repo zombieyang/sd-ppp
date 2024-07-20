@@ -5,10 +5,12 @@ import socketio from './library/socket.io.js'
 import sendImages from "./events/send_images";
 import getImage from "./events/get_image";
 import getActiveHistoryStateId from "./events/get_active_history_state_id";
+import Model from "./model.js";
 
 class ComfyConnection {
     static instance = null;
 
+    // todo move to Model.js
     static _connectStateCallbacks = [];
     static onConnectStateChange(callback) {
         ComfyConnection._connectStateCallbacks.push(callback);
@@ -20,7 +22,7 @@ class ComfyConnection {
             } catch (e) { console.error(e) }
         });
     }
-
+    // todo move to Model.js
     static _pageInstancesCallbacks = [];
     static onPageInstancesChange(callback) {
         ComfyConnection._pageInstancesCallbacks.push(callback);
@@ -127,8 +129,9 @@ class ComfyConnection {
         })
         socket.on('get_active_history_state_id', async (data, callback) => {
             try {
-                const result = await getActiveHistoryStateId(data)
-                callback(result)
+                callback({
+                    history_state_id: Model.instance.historyStateId
+                })
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
         socket.on('s_confirm', (data) => {
