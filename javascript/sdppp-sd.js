@@ -114,12 +114,49 @@
                 this.socket.on('disconnect', () => {
                     this.socketInited = false;
                 });
-                this.socket.on('s_run', () => {
+                this.socket.on('s_run', async () => {
                     const tab = document.getElementById('tabs').querySelector('button.selected');
                     const activeTabIndex = Array.prototype.indexOf.call(tab.parentElement.children, tab)
-                    if (activeTabIndex == 0) document.getElementById('txt2img_generate').click()
-                    if (activeTabIndex == 1) document.getElementById('img2img_generate').click()
-                    if (activeTabIndex == 2) document.getElementById('extras_generate').click()
+                    
+                    const actions = []
+                    for (let getWidgetRef of insertedGetWidgets) {
+                        const widget = getWidgetRef.deref();
+                        if (widget && widget.layerValue && widget.boundValue) {
+                            actions.push(widget.action());
+                        }
+                    }
+                    if (actions.length) await Promise.all(actions)
+                        
+                    let skipButton = null;
+                    if (activeTabIndex == 0) {
+                        document.getElementById('txt2img_generate').click();
+                        skipButton = document.getElementById('txt2img_skip')
+                    }
+                    if (activeTabIndex == 1) {
+                        document.getElementById('img2img_generate').click();
+                        skipButton = document.getElementById('img2img_skip')
+                    }
+                    if (activeTabIndex == 2) {
+                        document.getElementById('extras_generate').click();
+                        skipButton = document.getElementById('extras_skip')
+                    }
+
+                    await new Promise(resolve => {
+                        const interval = setInterval(checkProgress, 500)
+                        function checkProgress() {
+                            if (skipButton.style.display == 'none') {
+                                clearInterval(interval)
+                                resolve()
+                            }
+                        }
+                    })
+
+                    for (let sendWidgetRef of insertedSendWidgets) {
+                        const widget = sendWidgetRef.deref();
+                        if (widget && widget.sendLayerValue) {
+                            widget.action()
+                        }
+                    }
                 });
 				this.socket.emit('c_reset_instance_name', {
 					name: document.title
@@ -296,21 +333,25 @@
 
     }
 
-    const insertedGetWidget = new WeakMap();
-    const insertedSendWidget = new WeakMap();
+    const insertedGetWidgetsByElem = new WeakMap();
+    const insertedSendWidgetsByElem = new WeakMap();
+    const insertedGetWidgets = new Set();
+    const insertedSendWidgets = new Set();
 
     onUiUpdate(() => {
         gradioApp().querySelectorAll(".gradio-image").forEach((el) => {
-            if (insertedGetWidget.has(el)) return;
+            if (insertedGetWidgetsByElem.has(el)) return;
             const widget = new GetterWidget(el);
             el.appendChild(widget.$el);
-            insertedGetWidget.set(el, widget);
+            insertedGetWidgetsByElem.set(el, widget);
+            insertedGetWidgets.add(new WeakRef(widget))
         })
         gradioApp().querySelectorAll(".gradio-gallery").forEach((el) => {
-            if (insertedSendWidget.has(el)) return;
+            if (insertedSendWidgetsByElem.has(el)) return;
             const widget = new SenderWidget(el);
             el.appendChild(widget.$el);
-            insertedSendWidget.set(el, widget);
+            insertedSendWidgetsByElem.set(el, widget);
+            insertedSendWidgets.add(new WeakRef(widget))
         })
     })
 })();
