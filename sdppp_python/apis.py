@@ -65,33 +65,36 @@ def registerSDHTTPEndpoints(sdppp, app):
         return {'name': name}
 
 def registerSocketEvents(sdppp, sio):
-    # only emit by web instance
+    # only emit by sd webui instance
     @sio.event
     async def c_get_image(sid, data={}):
         if not sdppp.has_ps_instance():
             return
         photoshopInstance = sdppp.get_ps_instance()
-        layer = data['layer_id']
+        document = data['document']
+        layer = data['layer']
         use_layer_bounds = data['use_layer_bounds']
         sd_elem_id = data['sd']['elem_id']
 
-        id = photoshopInstance.layer_name_to_id(layer)
-        bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
+        # id = photoshopInstance.layer_name_to_id(layer)
+        # bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
 
-        upload_name, opacity = await photoshopInstance.get_image(layer_id=id, bounds_id=bounds_id)
+        upload_name, opacity = await photoshopInstance.get_image(
+            document_identify=document, layer_identify=layer, bound_layer_identify=use_layer_bounds
+        )
         res = consumeImageCache(upload_name)
         addImageCache(res, sd_elem_id)
         return {}
 
-    # only emit by web instance
+    # only emit by sd webui instance
     @sio.event
     async def c_send_image(sid, data={}):
         if not sdppp.has_ps_instance():
             return
         photoshopInstance = sdppp.get_ps_instance()
 
+        document = data['document']
         layer = data['layer']
-        layer_id = photoshopInstance.layer_name_to_id(layer)
         image_urls = data['sd']['image_urls']
 
         def load_image(image_url):
@@ -101,23 +104,7 @@ def registerSocketEvents(sdppp, sio):
                 raise Exception('Invalid image url')
             return addImageCache(image_url)
         image_ids = [load_image(image_url) for image_url in image_urls]
-        await photoshopInstance.send_images(layer_id=layer_id, image_ids=image_ids)
-
-    # only emit by web instance
-    @sio.event
-    async def c_get_layers(sid, data = {}):
-        if not sdppp.has_ps_instance():
-            return {}
-        instance = sdppp.get_ps_instance()
-        
-        layer_strs = instance.get_base_layers()
-        bounds_strs = instance.get_bounds_layers()
-        set_layer_strs = instance.get_set_layers()
-        return {
-            'layer_strs': layer_strs,
-            'bound_strs': bounds_strs,
-            'set_layer_strs': set_layer_strs,
-        }
+        await photoshopInstance.send_images(document_identify=document, layer_identify=layer, image_ids=image_ids)
 
     # only emit by photoshop instance
     @sio.event
@@ -166,9 +153,20 @@ def registerSocketEvents(sdppp, sio):
 
     @sio.event
     async def c_progress(sid, data):
-        photoshop_sid = sdppp.get_ps_instance().sid
+        instance = sdppp.get_ps_instance()
+        if instance is None:
+            return
+        photoshop_sid = instance.sid
         await sio.emit('c_progress', {
             'progress': data['progress'],
             'sid': sid
         }, to=photoshop_sid)
+
+    @sio.event
+    async def c_get_documents(sid, data = {}):
+        instance = sdppp.get_ps_instance()
+        if instance is None:
+            return {}
+        photoshop_sid = instance.sid
+        return await sio.call('c_get_documents', data, to=photoshop_sid)
         

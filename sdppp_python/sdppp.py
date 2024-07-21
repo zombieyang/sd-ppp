@@ -44,7 +44,7 @@ class SDPPP:
 
             elif qsobj['type'] == 'photoshop':
                 if len(self.photoshop_instances) > 0:
-                    raise socketio.exceptions.ConnectionRefusedError('only 1 instance is allowed now')
+                    raise socketio.exceptions.ConnectionRefusedError('only 1 instance is allowed now, or try to restart comfyUI')
                 self.photoshop_instances[sid] = PhotoshopInstance(self, sid)
 
             elif qsobj['type'] == 'comfyui':

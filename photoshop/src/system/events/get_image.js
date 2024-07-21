@@ -1,16 +1,16 @@
 import { app, imaging } from "photoshop";
-import { executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
+import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
 import Jimp from "../library/jimp.min";
 
-function isFolder(layer){
+function isFolder(layer) {
     return layer.kind == "group"
 }
 
-async function findLayer(layerID) {
+async function findLayer(document, layerID) {
     let layer;
     let layerIsFolder = false;
     if (layerID <= 0) return [layer, layerIsFolder];
-    layer = findInAllSubLayer(app.activeDocument, layerID)
+    layer = findInAllSubLayer(document, layerID)
     if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
     if (!isFolder(layer)) return [layer, layerIsFolder];
 
@@ -28,7 +28,7 @@ async function findLayer(layerID) {
 }
 
 // ps returns trimmed data so need padding
-function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds) {
+function padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds) {
     if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
         return pixelDataFromAPI;
     }
@@ -36,22 +36,22 @@ function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds
     let bounds = {
         left: 0,
         top: 0,
-        right: app.activeDocument.width,
-        bottom: app.activeDocument.height,
+        right: document.width,
+        bottom: document.height,
     }
     if (layer) bounds = layer.bounds;
     unTrimImageData(
         pixelDataFromAPI,
-        pixelDataForReturn, 
+        pixelDataForReturn,
         bounds,
         desireBounds
     )
     return pixelDataForReturn;
 }
 
-async function getPixelsDataHelper(layer, desireBounds) {
+async function getPixelsDataHelper(document, layer, desireBounds) {
     let options = {
-        documentID: app.activeDocument.id,
+        documentID: document.id,
         applyAlpha: false,
         sourceBounds: desireBounds,
     }
@@ -69,29 +69,36 @@ async function getPixelsDataHelper(layer, desireBounds) {
     return pixelDataFromAPI
 }
 
-async function getPixelsData(layer, desireBounds) {
+async function getPixelsData(document, layer, desireBounds) {
     // layer null = document data
     if (!layer) {
-        return await getPixelsDataHelper(null, desireBounds);
+        return await getPixelsDataHelper(document, null, desireBounds);
     }
     // normal layer
-    return await getPixelsDataHelper(layer, desireBounds);
+    return await getPixelsDataHelper(document, layer, desireBounds);
 }
 
 
-function getDesiredBounds(boundsLayerID) {
+function getDesiredBounds(document, boundLayerIdentify, layerIdentify) {
+    const boundsLayerID = boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_SAME_AS_LAYER ?
+        SpeicialIDManager.getLayerID(layerIdentify) :
+        SpeicialIDManager.getLayerID(boundLayerIdentify)
+
     const docBounds = {
-        left: 0, 
-        top: 0, 
-        right: app.activeDocument.width, 
-        bottom: app.activeDocument.height,
-        width: app.activeDocument.width,
-        height: app.activeDocument.height
+        left: 0,
+        top: 0,
+        right: document.width,
+        bottom: document.height,
+        width: document.width,
+        height: document.height
     };
-    // if boundsLayerID == -1, use selection bounds
-    if (boundsLayerID == -1) {
+    if (boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS) {
+        return docBounds;
+    }
+    // use selection bounds
+    if (boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION) {
         // if no selection use document bounds
-        const selectionBounds = app.activeDocument.selection?.bounds;
+        const selectionBounds = document.selection?.bounds;
         if (!selectionBounds) return docBounds;
         return {
             left: selectionBounds.left,
@@ -104,12 +111,9 @@ function getDesiredBounds(boundsLayerID) {
     }
     let boundsLayer;
     if (boundsLayerID > 0) {
-        boundsLayer = findInAllSubLayer(app.activeDocument, boundsLayerID)
-        if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
+        boundsLayer = findInAllSubLayer(document, boundsLayerID)
     }
-    // null boundsLayer = document bounds
-    if (!boundsLayer) return docBounds;
-    // empty boundsLayer = document bounds
+    if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
     const boundsLayerBounds = boundsLayer.bounds
     const isEmptyBoundsLayer = boundsLayerBounds.left == 0 && boundsLayerBounds.top == 0 && boundsLayerBounds.right == 0 && boundsLayerBounds.bottom == 0;
     if (isEmptyBoundsLayer) return docBounds;
@@ -124,43 +128,39 @@ function getDesiredBounds(boundsLayerID) {
     };
     return desireBounds
 }
-function arrayBufferToBase64(buffer) {
-    var binary = ''
-    var bytes = new Uint8Array(buffer)
-    var len = bytes.byteLength
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i])
-    }
-    return window.btoa(binary)
-}
 
 export default async function getImage(serverURL, params) {
-    if (!app.activeDocument) {
-        throw new Error('no active document'); 
-    }
-    const layerID = params.layer_id
-    const boundsLayerID = params.use_layer_bounds
-    const desireBounds = getDesiredBounds(boundsLayerID);
+    const documentIdentify = params.document_identify
+    let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ?
+        app.activeDocument :
+        app.documents.find(document => document.id == SpeicialIDManager.getDocumentID(documentIdentify))
+    if (!document) throw new Error('document not found');
+
+    const layerIdentify = params.layer_identify
+    const boundLayerIdentify = params.bound_layer_identify
+    const desireBounds = getDesiredBounds(document, boundLayerIdentify, layerIdentify)
+        ;
     let pixelDataForReturn = null;
     let layerOpacity = 100;
-    
+    const layerID = SpeicialIDManager.getLayerID(layerIdentify); 
+
     const startTime = Date.now();
     await executeAsModalUntilSuccess(async (executionContext) => {
         let hostControl;
         let suspensionID;
         let layer;
         let isFolder = false;
-        const activeLayers = app.activeDocument.activeLayers;
+        const activeLayers = document.activeLayers;
         try {
             hostControl = executionContext.hostControl;
             suspensionID = await hostControl.suspendHistory({
-                "documentID": app.activeDocument.id,
+                "documentID": document.id,
                 "name": "Image To ComfyUI"
             });
-            [layer, isFolder] = await findLayer(layerID);
+            [layer, isFolder] = await findLayer(document, layerID);
             layerOpacity = layer?.opacity ?? 100;
-            const pixelDataFromAPI = await getPixelsData(layer, desireBounds)
-            pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds)
+            const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds)
+            pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds)
             console.log('getPixels', Date.now() - startTime, 'ms');
         } catch (e) {
             console.error(e);
@@ -172,16 +172,16 @@ export default async function getImage(serverURL, params) {
                 layer.delete();
             }
             if (activeLayers && activeLayers.length > 0) {
-                for (let i = 0; i < activeLayers.length; i++) {
-                    const visible = activeLayers[i].visible;
-                    activeLayers[i].selected = true;
-                    activeLayers[i].visible = visible;
-                }
+                activeLayers.forEach(layer => {
+                    const visible = layer.visible;
+                    layer.selected = true;
+                    layer.visible = visible;
+                })
             }
             if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
         }
 
-    }, { commandName: "get content of layer " + layerID })
+    }, { commandName: "get content of layer " + layerIdentify })
 
     try {
         // log desire size
@@ -197,11 +197,11 @@ export default async function getImage(serverURL, params) {
         image.quality(100);
         const file = await image.getBufferAsync(Jimp.MIME_PNG);
         console.log('create pngfile', Date.now() - startTime, 'ms');
-    
+
         const fd = new FormData();
         const PhotoshopBlob = new Blob([file], { type: "image/png" });
-        fd.append('image', PhotoshopBlob, "PhotoshopBlob.png")              ;
-        fd.append('overwrite', "true"); 
+        fd.append('image', PhotoshopBlob, "PhotoshopBlob.png");
+        fd.append('overwrite', "true");
         console.log('start upload', Date.now() - startTime, 'ms');
         let endpoint = params.isComfy ? '/upload/image' : '/sdppp_upload'
         const promise = fetch(serverURL + endpoint, {
@@ -216,15 +216,15 @@ export default async function getImage(serverURL, params) {
         console.log('finish upload', Date.now() - startTime, 'ms')
         const result = await promise
         console.log('upload resulted', Date.now() - startTime, 'ms')
-    
+
         if (result.error) throw new Error(result.error);
         if (!result.name) throw new Error('No upload_name')
-    
+
         return {
             upload_name: result.name,
             layer_opacity: layerOpacity,
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         throw e
     }

@@ -1,6 +1,49 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "../javascript/sdppp-util.js":
+/*!***********************************!*\
+  !*** ../javascript/sdppp-util.js ***!
+  \***********************************/
+/***/ (() => {
+
+(function () {
+  class SpeicialIDManager {
+    static SPECIAL_DOCUMENT_CURRENT = '### Active Document ###';
+    static SPECIAL_LAYER_USE_CANVAS = '### The Canvas ###';
+    static SPECIAL_LAYER_USE_SELECTION = '### Selection ###';
+    static SPECIAL_LAYER_NEW_LAYER = '### New Layer ###';
+    static SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###';
+    static getDocumentID(name) {
+      if (name == this.SPECIAL_DOCUMENT_CURRENT) {
+        return -1;
+      }
+      const split = name.split('(id:');
+      return parseInt(split.pop().trim().slice(0, -1));
+    }
+    static getLayerID(name) {
+      if (name == this.SPECIAL_LAYER_USE_CANVAS) return 0;
+      if (name == this.SPECIAL_LAYER_USE_SELECTION) return -1;
+      if (name == this.SPECIAL_LAYER_NEW_LAYER) return -2;
+      if (name == this.SPECIAL_LAYER_SAME_AS_LAYER) return -3;
+      const split = name.split('(id:');
+      return parseInt(split.pop().trim().slice(0, -1));
+    }
+    static getSpecialLayerForGet() {
+      return [SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS];
+    }
+    static getSpecialLayerForGetBounds() {
+      return [SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS, SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION, SpeicialIDManager.SPECIAL_LAYER_SAME_AS_LAYER];
+    }
+    static getSpecialLayerForSend() {
+      return [SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER];
+    }
+  }
+  globalThis.SDPPPSpeicialIDManager = SpeicialIDManager;
+})();
+
+/***/ }),
+
 /***/ "./src/controllers/PanelController.jsx":
 /*!*********************************************!*\
   !*** ./src/controllers/PanelController.jsx ***!
@@ -337,10 +380,6 @@ class ComfyConnection {
     });
     this.interval = setInterval(() => {
       if (!this.isConnected) return;
-      const allLayers = (0,_util__WEBPACK_IMPORTED_MODULE_2__.getAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument);
-      this.socket.emit('b_sync_layers', {
-        layers: allLayers
-      });
     }, 3000);
     this.lastErrorMessage = '';
     socket.on('connect_error', error => {
@@ -361,7 +400,7 @@ class ComfyConnection {
       console.log('disconnect');
       ComfyConnection._callConnectStateChange();
     });
-    socket.on('get_image', async (data, callback) => {
+    socket.on('s_get_image', async (data, callback) => {
       try {
         const startTime = Date.now();
         const result = await (0,_events_get_image__WEBPACK_IMPORTED_MODULE_5__["default"])(this.backendURL, Object.assign(data, {
@@ -376,7 +415,7 @@ class ComfyConnection {
         });
       }
     });
-    socket.on('send_images', async (data, callback) => {
+    socket.on('s_send_images', async (data, callback) => {
       try {
         const result = await (0,_events_send_images__WEBPACK_IMPORTED_MODULE_4__["default"])(this.backendURL, Object.assign(data, {
           isComfy: this.serverType == "comfy"
@@ -389,7 +428,7 @@ class ComfyConnection {
         });
       }
     });
-    socket.on('get_active_history_state_id', async (data, callback) => {
+    socket.on('s_get_active_history_state_id', async (data, callback) => {
       try {
         callback({
           history_state_id: _model_js__WEBPACK_IMPORTED_MODULE_7__["default"].instance.historyStateId
@@ -406,6 +445,20 @@ class ComfyConnection {
     });
     socket.on('c_progress', data => {
       ComfyConnection._callPageInstancesChange(data);
+    });
+    socket.on('c_get_documents', (d, callback) => {
+      callback(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.documents.reduce((ret, document) => {
+        ret[document.name + ` (id:${document.id})`] = {
+          name: document.name + ` (id:${document.id})`,
+          layers: (0,_util__WEBPACK_IMPORTED_MODULE_2__.getAllSubLayer)(document)
+        };
+        return ret;
+      }, {
+        '### Active Document ###': {
+          name: '### Active Document ###',
+          layers: (0,_util__WEBPACK_IMPORTED_MODULE_2__.getAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument)
+        }
+      }));
     });
     setInterval(() => {
       socket.emit('b_get_pages', data => {
@@ -476,11 +529,11 @@ __webpack_require__.r(__webpack_exports__);
 function isFolder(layer) {
   return layer.kind == "group";
 }
-async function findLayer(layerID) {
+async function findLayer(document, layerID) {
   let layer;
   let layerIsFolder = false;
   if (layerID <= 0) return [layer, layerIsFolder];
-  layer = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, layerID);
+  layer = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(document, layerID);
   if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
   if (!isFolder(layer)) return [layer, layerIsFolder];
 
@@ -498,7 +551,7 @@ async function findLayer(layerID) {
 }
 
 // ps returns trimmed data so need padding
-function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds) {
+function padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds) {
   if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
     return pixelDataFromAPI;
   }
@@ -506,16 +559,16 @@ function padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds
   let bounds = {
     left: 0,
     top: 0,
-    right: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-    bottom: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
+    right: document.width,
+    bottom: document.height
   };
   if (layer) bounds = layer.bounds;
   (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.unTrimImageData)(pixelDataFromAPI, pixelDataForReturn, bounds, desireBounds);
   return pixelDataForReturn;
 }
-async function getPixelsDataHelper(layer, desireBounds) {
+async function getPixelsDataHelper(document, layer, desireBounds) {
   let options = {
-    documentID: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.id,
+    documentID: document.id,
     applyAlpha: false,
     sourceBounds: desireBounds
   };
@@ -534,27 +587,31 @@ async function getPixelsDataHelper(layer, desireBounds) {
   });
   return pixelDataFromAPI;
 }
-async function getPixelsData(layer, desireBounds) {
+async function getPixelsData(document, layer, desireBounds) {
   // layer null = document data
   if (!layer) {
-    return await getPixelsDataHelper(null, desireBounds);
+    return await getPixelsDataHelper(document, null, desireBounds);
   }
   // normal layer
-  return await getPixelsDataHelper(layer, desireBounds);
+  return await getPixelsDataHelper(document, layer, desireBounds);
 }
-function getDesiredBounds(boundsLayerID) {
+function getDesiredBounds(document, boundLayerIdentify, layerIdentify) {
+  const boundsLayerID = boundLayerIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_SAME_AS_LAYER ? _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getLayerID(layerIdentify) : _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getLayerID(boundLayerIdentify);
   const docBounds = {
     left: 0,
     top: 0,
-    right: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-    bottom: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height,
-    width: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.width,
-    height: photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.height
+    right: document.width,
+    bottom: document.height,
+    width: document.width,
+    height: document.height
   };
-  // if boundsLayerID == -1, use selection bounds
-  if (boundsLayerID == -1) {
+  if (boundLayerIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS) {
+    return docBounds;
+  }
+  // use selection bounds
+  if (boundLayerIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION) {
     // if no selection use document bounds
-    const selectionBounds = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.selection?.bounds;
+    const selectionBounds = document.selection?.bounds;
     if (!selectionBounds) return docBounds;
     return {
       left: selectionBounds.left,
@@ -567,12 +624,9 @@ function getDesiredBounds(boundsLayerID) {
   }
   let boundsLayer;
   if (boundsLayerID > 0) {
-    boundsLayer = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument, boundsLayerID);
-    if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
+    boundsLayer = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(document, boundsLayerID);
   }
-  // null boundsLayer = document bounds
-  if (!boundsLayer) return docBounds;
-  // empty boundsLayer = document bounds
+  if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
   const boundsLayerBounds = boundsLayer.bounds;
   const isEmptyBoundsLayer = boundsLayerBounds.left == 0 && boundsLayerBounds.top == 0 && boundsLayerBounds.right == 0 && boundsLayerBounds.bottom == 0;
   if (isEmptyBoundsLayer) return docBounds;
@@ -587,41 +641,33 @@ function getDesiredBounds(boundsLayerID) {
   };
   return desireBounds;
 }
-function arrayBufferToBase64(buffer) {
-  var binary = '';
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}
 async function getImage(serverURL, params) {
-  if (!photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument) {
-    throw new Error('no active document');
-  }
-  const layerID = params.layer_id;
-  const boundsLayerID = params.use_layer_bounds;
-  const desireBounds = getDesiredBounds(boundsLayerID);
+  const documentIdentify = params.document_identify;
+  let document = documentIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument : photoshop__WEBPACK_IMPORTED_MODULE_0__.app.documents.find(document => document.id == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(documentIdentify));
+  if (!document) throw new Error('document not found');
+  const layerIdentify = params.layer_identify;
+  const boundLayerIdentify = params.bound_layer_identify;
+  const desireBounds = getDesiredBounds(document, boundLayerIdentify, layerIdentify);
   let pixelDataForReturn = null;
   let layerOpacity = 100;
+  const layerID = _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getLayerID(layerIdentify);
   const startTime = Date.now();
   await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async executionContext => {
     let hostControl;
     let suspensionID;
     let layer;
     let isFolder = false;
-    const activeLayers = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.activeLayers;
+    const activeLayers = document.activeLayers;
     try {
       hostControl = executionContext.hostControl;
       suspensionID = await hostControl.suspendHistory({
-        "documentID": photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.id,
+        "documentID": document.id,
         "name": "Image To ComfyUI"
       });
-      [layer, isFolder] = await findLayer(layerID);
+      [layer, isFolder] = await findLayer(document, layerID);
       layerOpacity = layer?.opacity ?? 100;
-      const pixelDataFromAPI = await getPixelsData(layer, desireBounds);
-      pixelDataForReturn = padAndTrimLayerDataToDesireBounds(layer, pixelDataFromAPI, desireBounds);
+      const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds);
+      pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds);
       console.log('getPixels', Date.now() - startTime, 'ms');
     } catch (e) {
       console.error(e);
@@ -632,16 +678,16 @@ async function getImage(serverURL, params) {
         layer.delete();
       }
       if (activeLayers && activeLayers.length > 0) {
-        for (let i = 0; i < activeLayers.length; i++) {
-          const visible = activeLayers[i].visible;
-          activeLayers[i].selected = true;
-          activeLayers[i].visible = visible;
-        }
+        activeLayers.forEach(layer => {
+          const visible = layer.visible;
+          layer.selected = true;
+          layer.visible = visible;
+        });
       }
       if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
     }
   }, {
-    commandName: "get content of layer " + layerID
+    commandName: "get content of layer " + layerIdentify
   });
   try {
     // log desire size
@@ -740,45 +786,55 @@ function autocrop(jimp) {
 }
 async function sendImages(comfyURL, params) {
   const imageIds = params.image_ids;
-  const layerId = params.layer_id;
+  const documentIdentify = params.document_identify;
+  const layerIdentify = params.layer_identify;
+  let document = documentIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument : photoshop__WEBPACK_IMPORTED_MODULE_0__.app.documents.find(document => document.id == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(documentIdentify));
+  if (!document) throw new Error('document not found');
   await Promise.all(imageIds.map(async imageId => {
-    let layer;
+    let layerOrGroup;
     let existingLayerName;
     let newLayerName;
+    const layerId = _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(layerIdentify);
     await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async () => {
       try {
-        if (layerId && layerId != SPECIAL_LAYER_NAME_TO_ID[SPECIAL_LAYER_NEW_LAYER]) {
-          layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers.find(l => l.id == layerId);
-          // deal with multiple images
-          let imageIndexSuffix = "";
-          if (imageIds.length > 1) {
-            index = imageIds.indexOf(imageId);
-            if (index > 0) imageIndexSuffix = ` ${index}`;
-          }
-          if (imageIndexSuffix != "" && layer != null) {
-            const layerName = layer?.name;
-            existingLayerName = layerName + imageIndexSuffix;
-            layer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers.find(l => l.name == existingLayerName);
-          }
+        if (layerIdentify && layerIdentify != _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
+          layerOrGroup = await document.layers.find(l => l.id == layerId);
+          // // deal with multiple images
+          // let imageIndexSuffix = ""
+          // if (imageIds.length > 1){
+          //     index = imageIds.indexOf(imageId)
+          //     if (index > 0)
+          //         imageIndexSuffix = ` ${index}`
+          // }
+          // if (imageIndexSuffix != "" && layerOrGroup != null){
+          //     const layerName = layerOrGroup?.name;
+          //     existingLayerName = layerName + imageIndexSuffix
+          //     layerOrGroup = await app.activeDocument.layers.find(l => l.name == existingLayerName)
+          // }
         }
         // deal with new layer or id/name not found layer
-        if (!layer || layer.kind == "group") {
-          newLayerName = existingLayerName ?? 'Comfy Images ' + imageId;
-          const activeLayers = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.activeLayers;
-          const newLayer = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.createLayer("pixel", {
+        if (!layerOrGroup || layerOrGroup.kind == "group") {
+          newLayerName = existingLayerName ?? 'Images ' + imageId;
+          const activeLayers = document.activeLayers;
+          const newLayer = await document.createLayer("pixel", {
             name: newLayerName
           });
-          if (layer) newLayer.move(layer, "placeInside");else newLayer.move(photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument.layers[0], 'placeBefore');
-          layer = newLayer;
-          activeLayers.forEach(layer => layer.selected = true);
-          layer.selected = false;
+          if (layerOrGroup) newLayer.move(layerOrGroup, "placeInside");else newLayer.move(document.layers[0], 'placeBefore');
+          layerOrGroup = newLayer;
+          activeLayers.forEach(layerOrGroup => {
+            const visible = layerOrGroup.visible;
+            layerOrGroup.selected = true;
+            layerOrGroup.visible = visible;
+          });
+          layerOrGroup.selected = false;
           _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
         }
         const jimp = await _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().read(comfyURL + '/sdppp_download?name=' + imageId);
         // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
         autocrop(jimp);
         let putPixelsOptions = {
-          layerID: layer.id,
+          documentID: document.id,
+          layerID: layerOrGroup.id,
           imageData: await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.createImageDataFromBuffer(jimp.bitmap.data, {
             width: jimp.bitmap.width,
             height: jimp.bitmap.height,
@@ -5264,6 +5320,7 @@ class Model {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SpeicialIDManager: () => (/* binding */ SpeicialIDManager),
 /* harmony export */   executeAsModalUntilSuccess: () => (/* binding */ executeAsModalUntilSuccess),
 /* harmony export */   findInAllSubLayer: () => (/* binding */ findInAllSubLayer),
 /* harmony export */   getAllSubLayer: () => (/* binding */ getAllSubLayer),
@@ -5271,6 +5328,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! photoshop */ "photoshop");
 /* harmony import */ var photoshop__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(photoshop__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _javascript_sdppp_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../javascript/sdppp-util */ "../javascript/sdppp-util.js");
+/* harmony import */ var _javascript_sdppp_util__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_javascript_sdppp_util__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const SpeicialIDManager = globalThis.SDPPPSpeicialIDManager;
 
 function unTrimImageData(intersectImageDataArray, toImageDataArray, fromImageBounds, toImageBounds) {
   const fromLeft = fromImageBounds.left;
@@ -5317,7 +5379,7 @@ function getAllSubLayer(layer, level = 0) {
   if (!layer?.layers) return [];
   return layer.layers.reduce((ret, layer) => {
     ret.push({
-      name: '-'.repeat(level) + layer.name,
+      name: '-'.repeat(level) + layer.name + ` (id:${layer['id']})`,
       id: layer.id
     });
     return ret.concat(getAllSubLayer(layer, level + 1));

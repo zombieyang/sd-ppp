@@ -1,14 +1,13 @@
-(async function() {
+(async function () {
 	if (typeof gradioApp != 'undefined') return;
 	const { app } = await import("../../../scripts/app.js")
 	const { api } = await import("../../../scripts/api.js")
 	const { $el } = await import('../../../scripts/ui.js')
-	await import('./socket.io.js') 
+	await import('./socket.io.js')
+	await import('./sdppp-util.js')
 	const socketio = globalThis.io
 
-	let layerStrs = [];
-	let boundsStrs = [];
-	let setLayerStrs = [];
+	let documentData = null;
 	let socket = socketio(location.origin, {
 		transports: ["websocket"],
 		path: '/sd-ppp/',
@@ -23,7 +22,7 @@
 			progress: Math.round(detail.value / detail.max * 100)
 		});
 	});
-	
+
 	console.log("[sd-ppp]", "Loading js extension");
 	const id = "Comfy.SD-PPP"
 	app.ui.settings.addSetting({
@@ -54,8 +53,8 @@
 		init() {
 		},
 		async setup() {
-	
-	
+
+
 			socket.on('connect', () => {
 				socket.emit('c_reset_changes');
 				socket.emit('c_reset_instance_name', {
@@ -75,11 +74,11 @@
 			});
 			setInterval(() => {
 				checkHistoryChanges();
-				socket.emit('c_get_layers', (data) => {
-					layerStrs = data.layer_strs;
-					boundsStrs = data.bound_strs;
-					setLayerStrs = data.set_layer_strs;
-				})
+				// socket.emit('c_get_layers', (data) => {
+				// 	layerStrs = data.layer_strs;
+				// 	boundsStrs = data.bound_strs;
+				// 	setLayerStrs = data.set_layer_strs;
+				// })
 				socket.emit('c_reset_instance_name', {
 					name: document.title
 				})
@@ -89,45 +88,80 @@
 			if (nodeType.comfyClass === 'Get Image From Photoshop Layer') {
 				const onSelected = nodeType.prototype.onSelected;
 				const onMouseEnter = nodeType.prototype.onMouseEnter;
-				let this_handler = function() {
-					this.widgets[0].options.values = layerStrs;
-					this.widgets[1].options.values = boundsStrs;
+				const onAdded = nodeType.prototype.onAdded;
+				const resetWidget12 = function () {
+					const documentName = this.widgets[0].value
+					this.widgets[1].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForGet().concat(documentData[documentName].layers.map(layer => layer.name));
+					this.widgets[2].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForGetBounds().concat(documentData[documentName].layers.map(layer => layer.name));
+					if (!this.widgets[1].value || this.widgets[1].options.values.indexOf(this.widgets[1].value) == -1) this.widgets[1].value = this.widgets[1].options.values[0]
+					if (!this.widgets[2].value || this.widgets[2].options.values.indexOf(this.widgets[2].value) == -1) this.widgets[2].value = this.widgets[2].options.values[0]
 				}
-				nodeType.prototype.onSelected = async function(...args) {
-					if(onSelected) await onSelected.call(this, ...args);
-					this_handler.call(this);
+				const getAndRender = async function () {
+					documentData = (await new Promise(resolve => {
+						socket.emit('c_get_documents', resolve)
+					})) || {}
+					this.widgets[0].options.values = Object.keys(documentData);
+					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
+					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];
+					resetWidget12.call(this);
 				}
-				nodeType.prototype.onMouseEnter = async function(...args) {
-					if(onMouseEnter) await onMouseEnter.call(this, ...args);
-					this_handler.call(this);
+				nodeType.prototype.onSelected = async function (...args) {
+					if (onSelected) await onSelected.call(this, ...args);
+					await getAndRender.call(this);
 				}
+				nodeType.prototype.onMouseEnter = async function (...args) {
+					if (onMouseEnter) await onMouseEnter.call(this, ...args);
+					await getAndRender.call(this);
+				}
+				nodeType.prototype.onAdded = async function () {
+					if (onAdded) await onAdded.call(this, ...args);
+					this.widgets[0].callback = () => {
+						resetWidget12.call(this);
+					}
+				}
+
 			} else if (nodeType.comfyClass === 'Send Images To Photoshop') {
 				const onSelected = nodeType.prototype.onSelected;
 				const onMouseEnter = nodeType.prototype.onMouseEnter;
-				let this_handler = function() {
-					this.widgets[0].options.values = setLayerStrs;
+				const onAdded = nodeType.prototype.onAdded;
+				const resetWidget1 = function () {
+					const documentName = this.widgets[0].value
+					this.widgets[1].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForSend().concat(documentData[documentName].layers.map(layer => layer.name));
+					if (!this.widgets[1].value || this.widgets[1].options.values.indexOf(this.widgets[1].value) == -1) this.widgets[1].value = this.widgets[1].options.values[0]
 				}
-				nodeType.prototype.onSelected = async function(...args) {
-					if(onSelected) await onSelected.call(this, ...args);
-					this_handler.call(this);
+				const getAndRender = async function () {
+					documentData = (await new Promise(resolve => {
+						socket.emit('c_get_documents', resolve)
+					})) || {}
+					this.widgets[0].options.values = Object.keys(documentData);
+					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
+					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];
+					resetWidget1.call(this);
 				}
-				nodeType.prototype.onMouseEnter = async function(...args) {
-					if(onMouseEnter) await onMouseEnter.call(this, ...args);
-					this_handler.call(this);
+				nodeType.prototype.onSelected = async function (...args) {
+					if (onSelected) await onSelected.call(this, ...args);
+					await getAndRender.call(this);
 				}
-				nodeType.prototype.onDrawBackground = async function(...args) {
-					console.log(args);
+				nodeType.prototype.onMouseEnter = async function (...args) {
+					if (onMouseEnter) await onMouseEnter.call(this, ...args);
+					await getAndRender.call(this);
 				}
-			
+				nodeType.prototype.onAdded = async function () {
+					if (onAdded) await onAdded.call(this, ...args);
+					this.widgets[0].callback = () => {
+						resetWidget1.call(this);
+					}
+				}
+
 			}
 		}
 	});
-	
+
 	const SDPPPNodes = [
 		'Get Image From Photoshop Layer',
 		'Send Images To Photoshop',
 	]
-	
+
 	async function checkHistoryChanges() {
 		try {
 			const currentState = app.graph.serialize();

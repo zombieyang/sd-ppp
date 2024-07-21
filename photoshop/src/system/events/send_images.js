@@ -1,5 +1,5 @@
 import { app, imaging } from "photoshop";
-import { executeAsModalUntilSuccess} from '../util.js';
+import { SpeicialIDManager, executeAsModalUntilSuccess} from '../util.js';
 import Jimp from "../library/jimp.min";
 import Model from "../model.js";
 
@@ -38,48 +38,60 @@ function autocrop(jimp) {
 
 export default async function sendImages(comfyURL, params) {
     const imageIds = params.image_ids
-    const layerId = params.layer_id
+    const documentIdentify = params.document_identify
+    const layerIdentify = params.layer_identify
+
+    let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? 
+        app.activeDocument : 
+        app.documents.find(document => document.id == SpeicialIDManager.getDocumentID(documentIdentify))
+    if (!document) throw new Error('document not found');
     await Promise.all(
         imageIds.map(async imageId => {
-            let layer;
+            let layerOrGroup;
             let existingLayerName;
             let newLayerName;
+            const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
             await executeAsModalUntilSuccess(async () => {
                 try {
-                    if (layerId && layerId != SPECIAL_LAYER_NAME_TO_ID[SPECIAL_LAYER_NEW_LAYER]) {
-                        layer = await app.activeDocument.layers.find(l => l.id == layerId)
-                        // deal with multiple images
-                        let imageIndexSuffix = ""
-                        if (imageIds.length > 1){
-                            index = imageIds.indexOf(imageId)
-                            if (index > 0)
-                                imageIndexSuffix = ` ${index}`
-                        }
-                        if (imageIndexSuffix != "" && layer != null){
-                            const layerName = layer?.name;
-                            existingLayerName = layerName + imageIndexSuffix
-                            layer = await app.activeDocument.layers.find(l => l.name == existingLayerName)
-                        }
+                    if (layerIdentify && layerIdentify != SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
+                        layerOrGroup = await document.layers.find(l => l.id == layerId)
+                        // // deal with multiple images
+                        // let imageIndexSuffix = ""
+                        // if (imageIds.length > 1){
+                        //     index = imageIds.indexOf(imageId)
+                        //     if (index > 0)
+                        //         imageIndexSuffix = ` ${index}`
+                        // }
+                        // if (imageIndexSuffix != "" && layerOrGroup != null){
+                        //     const layerName = layerOrGroup?.name;
+                        //     existingLayerName = layerName + imageIndexSuffix
+                        //     layerOrGroup = await app.activeDocument.layers.find(l => l.name == existingLayerName)
+                        // }
                     }
                     // deal with new layer or id/name not found layer
-                    if (!layer || (layer.kind == "group")) {
-                        newLayerName = existingLayerName ?? 'Comfy Images ' + imageId
-                        const activeLayers = app.activeDocument.activeLayers;
-                        const newLayer = await app.activeDocument.createLayer("pixel", {
+                    if (!layerOrGroup || (layerOrGroup.kind == "group")) {
+                        newLayerName = existingLayerName ?? 'Images ' + imageId
+                        const activeLayers = document.activeLayers;
+                        const newLayer = await document.createLayer("pixel", {
                             name: newLayerName,
                         })
-                        if (layer) newLayer.move(layer, "placeInside")
-                        else newLayer.move(app.activeDocument.layers[0], 'placeBefore')
-                        layer = newLayer
-                        activeLayers.forEach(layer => layer.selected = true);
-                        layer.selected = false;
+                        if (layerOrGroup) newLayer.move(layerOrGroup, "placeInside")
+                        else newLayer.move(document.layers[0], 'placeBefore')
+                        layerOrGroup = newLayer
+                        activeLayers.forEach(layerOrGroup => {
+                            const visible = layerOrGroup.visible;
+                            layerOrGroup.selected = true
+                            layerOrGroup.visible = visible;
+                        });
+                        layerOrGroup.selected = false;
                         Model.instance.ignoreNextHistoryChange()
                     }
                     const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
                     // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
                     autocrop(jimp)
                     let putPixelsOptions = {
-                        layerID: layer.id,
+                        documentID: document.id,
+                        layerID: layerOrGroup.id,
                         imageData: await imaging.createImageDataFromBuffer(
                             jimp.bitmap.data,
                             {

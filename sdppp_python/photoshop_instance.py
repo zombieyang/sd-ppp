@@ -1,74 +1,35 @@
 import time
 
 class PhotoshopInstance:
-    SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
-    SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
-    SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
-    SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###'
-    SPECIAL_LAYER_NAME_TO_ID = {
-        SPECIAL_LAYER_USE_CANVAS: 0,
-        SPECIAL_LAYER_USE_SELECTION: -1,
-        SPECIAL_LAYER_NEW_LAYER: -2,
-        SPECIAL_LAYER_SAME_AS_LAYER: -3
-    }
 
     def __init__(self, sdppp, sid):
         self.sdppp = sdppp
         self.sid = sid
         self.layers = []
         self.reset_change_tracker()
-
-    def get_layers(self):
-        return list(map(lambda layer: f"{layer['name']} (id:{layer['id']})", self.layers))
     
-    def get_base_layers(self):
-        raw_layer_strs = self.get_layers()
-        layer_strs = list(raw_layer_strs)
-        layer_strs.insert(0, self.SPECIAL_LAYER_USE_CANVAS)
-        return layer_strs
-    
-    def get_bounds_layers(self):
-        bounds_strs = list(self.get_layers())
-        bounds_strs.insert(0, self.SPECIAL_LAYER_USE_CANVAS)
-        bounds_strs.insert(1, self.SPECIAL_LAYER_USE_SELECTION)
-        bounds_strs.insert(1, self.SPECIAL_LAYER_SAME_AS_LAYER)
-        return bounds_strs
-
-    def get_set_layers(self):
-        raw_layer_strs = self.get_layers()
-        set_layer_strs = list(raw_layer_strs)
-        set_layer_strs.insert(0, self.SPECIAL_LAYER_NEW_LAYER)
-        return set_layer_strs
-    
-    def layer_name_to_id(self, layer_name, refrence_id=None):
-        id = 0
-        if layer_name == self.SPECIAL_LAYER_SAME_AS_LAYER:
-            id = refrence_id
-        elif self.SPECIAL_LAYER_NAME_TO_ID.get(layer_name, None) is not None:
-            id = self.SPECIAL_LAYER_NAME_TO_ID[layer_name]
-        else:
-            layer_name_and_id_split = layer_name.split('(id:')
-            id = int(layer_name_and_id_split.pop().strip()[:-1])
-        return id
-    
-    async def get_image(self, layer_id, bounds_id=False):
-        result = await self.sdppp.sio.call('get_image', data={'layer_id': layer_id, 'use_layer_bounds': bounds_id}, to=self.sid)
+    async def get_image(self, document_identify, layer_identify, bound_layer_identify):
+        result = await self.sdppp.sio.call('s_get_image', data={
+            'document_identify': document_identify, 'layer_identify': layer_identify, 'bound_layer_identify': bound_layer_identify
+        }, to=self.sid)
         if not result:
             return None, None
         if 'error' in result:
             raise Exception('sdppp PS side error:' + result['error'])
-        history_state_id = await self._update_layer_bounds_history_state_id(layer_id, bounds_id)
-        await self._update_history_state_id_after_internal_change(history_state_id)
+        # history_state_id = await self._update_layer_bounds_history_state_id(layer_id, bounds_id)
+        # await self._update_history_state_id_after_internal_change(history_state_id)
 
         return result['upload_name'], result['layer_opacity']
     
-    async def send_images(self, image_ids, layer_id=""):
-        result = await self.sdppp.sio.call('send_images', data={'image_ids': image_ids, 'layer_id': layer_id}, to=self.sid)
-        await self._update_history_state_id_after_internal_change()
+    async def send_images(self, image_ids, document_identify, layer_identify):
+        result = await self.sdppp.sio.call('s_send_images', data={
+            'image_ids': image_ids, 'document_identify': document_identify, 'layer_identify': layer_identify
+        }, to=self.sid)
+        # await self._update_history_state_id_after_internal_change()
         return result
     
     async def get_active_history_state_id(self):
-        result = await self.sdppp.sio.call('get_active_history_state_id', data={}, to=self.sid)
+        result = await self.sdppp.sio.call('s_get_active_history_state_id', data={}, to=self.sid)
         if result is None:
             return 0
         if 'error' in result:

@@ -1,9 +1,12 @@
 import { core } from "photoshop";
+import '../../../javascript/sdppp-util'
+const SpeicialIDManager = globalThis.SDPPPSpeicialIDManager
+export { SpeicialIDManager };
 
 export function unTrimImageData(
     intersectImageDataArray,
     toImageDataArray,
-    fromImageBounds,
+    fromImageBounds, 
     toImageBounds
 ) {
     const fromLeft = fromImageBounds.left;
@@ -60,7 +63,7 @@ export function getAllSubLayer(layer, level = 0) {
     if (!layer?.layers) return [];
     return layer.layers.reduce((ret, layer) => {
         ret.push({
-            name: '-'.repeat(level) + layer.name,
+            name: '-'.repeat(level) + layer.name + ` (id:${layer['id']})`,
             id: layer.id
         });
         return ret.concat(getAllSubLayer(layer, level + 1));

@@ -87,10 +87,6 @@ class ComfyConnection {
         });
         this.interval = setInterval(() => {
             if (!this.isConnected) return;
-            const allLayers = getAllSubLayer(app.activeDocument);
-            this.socket.emit('b_sync_layers',
-                { layers: allLayers }
-            )
         }, 3000)
 
         this.lastErrorMessage = '';
@@ -113,7 +109,7 @@ class ComfyConnection {
             ComfyConnection._callConnectStateChange();
         });
 
-        socket.on('get_image', async (data, callback) => {
+        socket.on('s_get_image', async (data, callback) => {
             try {
                 const startTime = Date.now();
                 const result = await getImage(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
@@ -121,13 +117,13 @@ class ComfyConnection {
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
-        socket.on('send_images', async (data, callback) => {
+        socket.on('s_send_images', async (data, callback) => {
             try {
                 const result = await sendImages(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 callback(result)
             } catch (e) { console.error(e); callback({ error: e.message }) }
         })
-        socket.on('get_active_history_state_id', async (data, callback) => {
+        socket.on('s_get_active_history_state_id', async (data, callback) => {
             try {
                 callback({
                     history_state_id: Model.instance.historyStateId
@@ -139,6 +135,21 @@ class ComfyConnection {
         })
         socket.on('c_progress', (data) => {
             ComfyConnection._callPageInstancesChange(data);
+        })
+        socket.on('c_get_documents', (d, callback) => {
+
+            callback(app.documents.reduce((ret, document) => {
+                ret[document.name + ` (id:${document.id})`] = {
+                    name: document.name + ` (id:${document.id})`,
+                    layers: getAllSubLayer(document) 
+                }
+                return ret;
+            }, { 
+                '### Active Document ###': {
+                    name: '### Active Document ###',
+                    layers: getAllSubLayer(app.activeDocument) 
+                } 
+            }))
         })
         setInterval(() => {
             socket.emit('b_get_pages', (data) => {
