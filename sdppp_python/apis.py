@@ -64,7 +64,15 @@ def registerSDHTTPEndpoints(sdppp, app):
         name = addImageCache(Image.open(BytesIO(image.file.read())))
         return {'name': name}
 
+from .sd_data import get_sd_document_data, set_sd_document_data, set_sd_special_get_bound_layer_options, set_sd_special_get_layer_options, set_sd_special_send_layer_options
 def registerSocketEvents(sdppp, sio):
+    @sio.event
+    async def c_set_sd_options(sid, data={}):
+        set_sd_document_data(data['document_data'])
+        set_sd_special_get_layer_options(data['special_get_layer_options'])
+        set_sd_special_get_bound_layer_options(data['special_get_bound_layer_options'])
+        set_sd_special_send_layer_options(data['special_send_layer_options'])
+
     # only emit by sd webui instance
     @sio.event
     async def c_get_image(sid, data={}):
@@ -75,9 +83,6 @@ def registerSocketEvents(sdppp, sio):
         layer = data['layer']
         use_layer_bounds = data['use_layer_bounds']
         sd_elem_id = data['sd']['elem_id']
-
-        # id = photoshopInstance.layer_name_to_id(layer)
-        # bounds_id = photoshopInstance.layer_name_to_id(use_layer_bounds, id)
 
         upload_name, opacity = await photoshopInstance.get_image(
             document_identify=document, layer_identify=layer, bound_layer_identify=use_layer_bounds

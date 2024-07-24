@@ -31,20 +31,30 @@
 
         initDOM() {
             this.insertedPop = true;
+            this.$inputGetDocument = document
+                .getElementById("sdppp_get_document")
+                .getElementsByTagName("input")[0];
             this.$inputLayer = document
                 .getElementById("sdppp_layers")
                 .getElementsByTagName("input")[0];
             this.$inputBound = document
                 .getElementById("sdppp_bounds")
                 .getElementsByTagName("input")[0];
+            this.$inputSendDocument = document
+                .getElementById("sdppp_send_document")
+                .getElementsByTagName("input")[0];
             this.$inputSendLayer = document
                 .getElementById("sdppp_send_layers")
                 .getElementsByTagName("input")[0];
 
+            this.$refreshGetDocument = document
+                .getElementById("refresh_sdppp_get_document");
             this.$refreshLayer = document
                 .getElementById("refresh_sdppp_layers");
             this.$refreshBound = document
                 .getElementById("refresh_sdppp_bounds");
+            this.$refreshSendDocument = document
+                .getElementById("refresh_sdppp_send_document");
             this.$refreshSendLayer = document
                 .getElementById("refresh_sdppp_send_layers");
 
@@ -54,6 +64,7 @@
                 .getElementById("sdppp_sender_dialog_close");
 
             this.$getterSaveAndClose.addEventListener("click", () => {
+                this.currentWidget.documentValue = this.$inputGetDocument.value;
                 this.currentWidget.layerValue = this.$inputLayer.value;
                 this.currentWidget.boundValue = this.$inputBound.value;
                 this.currentWidget.render();
@@ -61,40 +72,62 @@
                 closePopup();
             });
             this.$senderSaveAndClose.addEventListener("click", () => {
-                this.currentWidget.sendLayerValue = this.$inputSendLayer.value;
+                this.currentWidget.layerValue = this.$inputSendLayer.value;
+                this.currentWidget.documentValue = this.$inputSendDocument.value;
                 this.currentWidget.render();
                 this.currentWidget.action();
                 closePopup();
             });
         }
+
+        async fetchDocumentData() {
+            const data = await new Promise(resolve => {
+                this.socket.emit('c_get_documents', resolve)
+            });
+            await new Promise(resolve => {
+                this.socket.emit('c_set_sd_options', {
+                    document_data: data,
+                    special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
+                    special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
+                    special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+                }, resolve)
+            })
+        }
         
-        getterConfig(widget) {
+        async getterConfig(widget) {
             popupId("sdppp_getter_dialog")
             callGlobalGradioFunction("show_getter_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
             }
             this.currentWidget = widget;
+            if (widget.documentValue) {
+                this.$inputGetDocument.value = widget.documentValue;
+            }
             if (widget.layerValue) {
                 this.$inputLayer.value = widget.layerValue;
             }
             if (widget.boundValue) {
                 this.$inputBound.value = widget.boundValue;
             }
-            this.$refreshLayer.click();
-            this.$refreshBound.click();
+            await this.fetchDocumentData();
+            this.$refreshGetDocument.click();
         }
-        senderConfig(widget) {
+        async senderConfig(widget) {
             popupId("sdppp_sender_dialog")
             callGlobalGradioFunction("show_sender_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
             }
             this.currentWidget = widget;
-            if (widget.sendLayerValue) {
-                this.$inputSendLayer.value = widget.sendLayerValue;
+            if (widget.documentValue) {
+                this.$inputSendDocument.value = widget.documentValue;
             }
-            this.$refreshSendLayer.click();
+            if (widget.layerValue) {
+                this.$inputSendLayer.value = widget.layerValue;
+            }
+            await this.fetchDocumentData();
+            this.$refreshSendDocument.click();
         }
 
         async initSocket() {
@@ -121,7 +154,7 @@
                     const actions = []
                     for (let getWidgetRef of insertedGetWidgets) {
                         const widget = getWidgetRef.deref();
-                        if (widget && widget.layerValue && widget.boundValue) {
+                        if (widget && widget.isReady()) {
                             actions.push(widget.action());
                         }
                     }
@@ -153,7 +186,7 @@
 
                     for (let sendWidgetRef of insertedSendWidgets) {
                         const widget = sendWidgetRef.deref();
-                        if (widget && widget.sendLayerValue) {
+                        if (widget.isReady()) {
                             widget.action()
                         }
                     }
@@ -165,7 +198,7 @@
                     this.socket.emit('c_reset_instance_name', {
                         name: document.title
                     })
-                }, 3000)
+                }, 1000)
             });
         }
         
@@ -219,6 +252,10 @@
     }
 
     class GetterWidget extends SDPPPWidget {
+        isReady() {
+            return this.layerValue && this.boundValue && this.documentValue;
+        }
+
         openConfig() {
             SDPPP.instance.getterConfig(this);
         }
@@ -232,7 +269,7 @@
 
             $getButton
                 .addEventListener('click', async () => {
-                    if (!this.layerValue || !this.boundValue) 
+                    if (!this.isReady()) 
                         this.openConfig();
                     else {
                         this.action();
@@ -241,6 +278,7 @@
 
             this.layerValue = '';
             this.boundValue = '';
+            this.documentValue = '';
 
             this.render();
         }
@@ -249,7 +287,7 @@
             super.render();
             this.$el.className = "sdppp-get-widget";
             this.$getButton.className = "sdppp-get-button";
-            if (this.layerValue && this.boundValue) {
+            if (this.isReady()) {
                 this.$settingButton.style.display = 'flex';
                 this.$getButton.textContent = "SDPPP get";
 
@@ -262,7 +300,8 @@
 
         async action() {
             await SDPPP.instance.getImage({
-                'layer_id': this.layerValue, 
+                'document': this.documentValue,
+                'layer': this.layerValue, 
                 'use_layer_bounds': this.boundValue,
                 'sd': {
                     elem_id: this.$gradioImage.id
@@ -274,6 +313,10 @@
     }
 
     class SenderWidget extends SDPPPWidget{
+        isReady() {
+            return this.layerValue && this.documentValue
+        }
+
         openConfig() {
             SDPPP.instance.senderConfig(this);
         }
@@ -287,13 +330,14 @@
 
             $sendButton
                 .addEventListener('click', () => {
-                    if (!this.sendLayerValue) 
+                    if (!this.isReady()) 
                         this.openConfig();
                     else 
                         this.action();
                 });
 
-            this.sendLayerValue = '';
+            this.layerValue = '';
+            this.documentValue = '';
 
             this.render();
         }
@@ -303,7 +347,7 @@
             this.$el.className = "sdppp-send-widget";
             this.$sendButton.className = "sdppp-send-button";
 
-            if (this.sendLayerValue) {
+            if (this.isReady()) {
                 this.$settingButton.style.display = 'flex';
                 this.$sendButton.textContent = "SDPPP send";
 
@@ -324,7 +368,8 @@
                     return button.querySelector('img').src
                 });
             await SDPPP.instance.sendImage({
-                'layer': this.sendLayerValue, 
+                'document': this.documentValue,
+                'layer': this.layerValue, 
                 'sd': {
                     image_urls: selected_image
                 }

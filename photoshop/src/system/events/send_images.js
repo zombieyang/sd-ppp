@@ -39,7 +39,7 @@ function autocrop(jimp) {
 export default async function sendImages(comfyURL, params) {
     const imageIds = params.image_ids
     const documentIdentify = params.document_identify
-    const layerIdentify = params.layer_identify
+    const layerIdentify = params.layer_identify 
 
     let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? 
         app.activeDocument : 
@@ -104,7 +104,7 @@ export default async function sendImages(comfyURL, params) {
                         replace: true,
                     }
                     if (!newLayerName) {
-                        let bounds = layer.bounds
+                        let bounds = layerOrGroup.bounds
                         if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) {
                             if (bounds.width <= 1 && bounds.height <= 1) {
                                 bounds.left = jimp.bitmap.width / 2

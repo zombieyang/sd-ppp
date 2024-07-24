@@ -3,6 +3,7 @@ from modules import script_callbacks
 from modules.ui_components import ToolButton
 from sdppp_python.sdppp import SDPPP
 from sdppp_python.apis import consumeImageCache
+from sdppp_python.sd_data import get_sd_document_data, get_sd_special_get_bound_layer_options, get_sd_special_get_layer_options, get_sd_special_send_layer_options
 import gradio as gr
 
 refresh_symbol = '\U0001f504'  # 🔄
@@ -13,27 +14,31 @@ def on_app_started(blocks: gr.Blocks, app):
     sdppp = SDPPP()
     sdppp.attach_to_SD(app)
 
-    def update_layers_dropdown(origin):
+    def update_document_dropdown(origin):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        instance = sdppp.get_ps_instance()
-        choices = instance.get_base_layers()
+        choices = list(get_sd_document_data().keys())
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
-    def update_bounds_dropdown(origin):
+    def update_layers_dropdown(origin, document):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        instance = sdppp.get_ps_instance()
-        choices=instance.get_bounds_layers()
+        choices = [*get_sd_special_get_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
-    def update_send_layers_dropdown(origin):
+    def update_bounds_dropdown(origin, document):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        instance = sdppp.get_ps_instance()
-        choices = instance.get_set_layers()
+        choices = [*get_sd_special_get_bound_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
+        value = choices[0] if origin not in choices else origin
+        return gr.Dropdown.update(choices=choices, value=value, interactive=True)
+
+    def update_send_layers_dropdown(origin, document):
+        if not sdppp.has_ps_instance():
+            return ['==please connect SD in photoshop by sdppp first==']
+        choices = [*get_sd_special_send_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
@@ -54,21 +59,32 @@ def on_app_started(blocks: gr.Blocks, app):
     with blocks:
         with gr.Box(elem_id=f"sdppp_getter_dialog", elem_classes="popup-dialog") as sdppp_getter_dialog:
             with gr.Row():
+                get_document = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_get_document", elem_id=f'sdppp_get_document', interactive=True)
+                update_get_document = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_get_document", tooltip=f"refresh sdppp documents")
+                update_get_document.click(update_document_dropdown, inputs=[get_document], outputs=[get_document])
+            with gr.Row():
                 layers = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_layers", elem_id=f'sdppp_layers', interactive=True)
                 update_layers = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_layers", tooltip=f"refresh sdppp layers")
-                update_layers.click(update_layers_dropdown, inputs=[layers], outputs=[layers])
+                update_layers.click(update_layers_dropdown, inputs=[layers, get_document], outputs=[layers])
+                get_document.change(update_layers_dropdown, inputs=[layers, get_document], outputs=[layers])
             with gr.Row():
                 bounds = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_bounds", elem_id=f'sdppp_bounds', interactive=True)
                 update_bounds = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_bounds", tooltip=f"refresh sdppp bounds")
-                update_bounds.click(update_bounds_dropdown, inputs=[bounds], outputs=[bounds])
+                update_bounds.click(update_bounds_dropdown, inputs=[bounds, get_document], outputs=[bounds])
+                get_document.change(update_bounds_dropdown, inputs=[bounds, get_document], outputs=[bounds])
             with gr.Row():
                 close = gr.Button('Save And Run Get', variant='secondary', elem_id=f'sdppp_getter_dialog_close')
 
         with gr.Box(elem_id=f"sdppp_sender_dialog", elem_classes="popup-dialog") as sdppp_sender_dialog:
             with gr.Row():
+                send_document = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_send_document", elem_id=f'sdppp_send_document', interactive=True)
+                update_send_document = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_send_document", tooltip=f"refresh sdppp documents")
+                update_send_document.click(update_document_dropdown, inputs=[send_document], outputs=[send_document])
+            with gr.Row():
                 send_layers = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_send_layers", elem_id=f'sdppp_send_layers', interactive=True)
                 update_send_layers = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_send_layers", tooltip=f"refresh sdppp send layers")
-                update_send_layers.click(update_send_layers_dropdown, inputs=[send_layers], outputs=[send_layers])
+                update_send_layers.click(update_send_layers_dropdown, inputs=[send_layers, send_document], outputs=[send_layers])
+                send_document.change(update_send_layers_dropdown, inputs=[send_layers, send_document], outputs=[send_layers])
             with gr.Row():
                 close = gr.Button('Save And Run Send', variant='secondary', elem_id=f'sdppp_sender_dialog_close')
         sdppp_getter_dialog.visible = False
@@ -83,10 +99,6 @@ def on_app_started(blocks: gr.Blocks, app):
             
         registerGradioGlobalJSFunction(f'show_getter_dialog', lambda i: sdppp_getter_dialog.update(visible=True), [sdppp_getter_dialog])
         registerGradioGlobalJSFunction(f'show_sender_dialog', lambda i: sdppp_sender_dialog.update(visible=True), [sdppp_sender_dialog])
-
-        
-
-
 
 
 script_callbacks.on_app_started(on_app_started)

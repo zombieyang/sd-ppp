@@ -48,14 +48,11 @@ def define_comfyui_nodes(sdppp):
                 return np.random.rand()
             else:
                 photoshopInstance = sdppp.get_ps_instance()
-                print(1)
                 is_changed, history_state_id = call_async_func_in_server_thread(
                     photoshopInstance.check_layer_bounds_combo_changed(layer, use_layer_bounds)
                 )
-                print(2)
                 if is_changed and history_state_id is None:
                     return np.random.rand()
-                print(3)
                 photoshopInstance.update_comfyui_last_value(layer, use_layer_bounds, history_state_id)
                 return history_state_id
         
