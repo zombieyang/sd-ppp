@@ -37,7 +37,7 @@ class SDPPP:
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
-            if 'api_level' not in qsobj or qsobj['api_level'] != "2":
+            if 'api_level' not in qsobj or qsobj['api_level'] != "407":
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
             if 'type' not in qsobj:
                 raise socketio.exceptions.ConnectionRefusedError('instance type not recognized')
@@ -51,14 +51,16 @@ class SDPPP:
                 self.page_instances[sid] = {
                     "sid": sid,
                     "type": "comfy",
-                    "name": ""
+                    "name": "",
+                    "progress": 0
                 }
 
             elif qsobj['type'] == 'sd':
                 self.page_instances[sid] = {
                     "sid": sid,
                     "type": "sd",
-                    "name": ""
+                    "name": "",
+                    "progress": 0
                 }
 
             else:

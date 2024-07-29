@@ -24,7 +24,8 @@ export default class Model {
     constructor() {
         if (Model.instance) throw new Error('Model already inited')
         Model.instance = this;
-
+        
+        // historyState change listening
         setInterval(() => {
             const historyStates = app.activeDocument?.historyStates;
             if (historyStates && historyStates.length > 0) {

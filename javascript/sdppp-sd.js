@@ -136,7 +136,7 @@
                 transports: ["websocket"],
                 path: '/sd-ppp/',
                 query: {
-                    api_level: 2,
+                    api_level: 407,
                     type: 'sd'
                 }
             });
@@ -151,14 +151,12 @@
                     const tab = document.getElementById('tabs').querySelector('button.selected');
                     const activeTabIndex = Array.prototype.indexOf.call(tab.parentElement.children, tab)
                     
-                    const actions = []
                     for (let getWidgetRef of insertedGetWidgets) {
                         const widget = getWidgetRef.deref();
                         if (widget && widget.isReady()) {
-                            actions.push(widget.action());
+                            await widget.action()
                         }
                     }
-                    if (actions.length) await Promise.all(actions)
                         
                     let skipButton = null;
                     if (activeTabIndex == 0) {

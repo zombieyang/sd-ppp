@@ -12,7 +12,7 @@
 		transports: ["websocket"],
 		path: '/sd-ppp/',
 		query: {
-			api_level: 2,
+			api_level: 407,
 			type: 'comfyui'
 		}
 	});

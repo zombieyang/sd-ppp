@@ -81,7 +81,7 @@ class ComfyConnection {
             transports: ["websocket"],
             path: '/sd-ppp/',
             query: {
-                api_level: 2,
+                api_level: 407,
                 type: 'photoshop'
             }
         });
@@ -115,20 +115,20 @@ class ComfyConnection {
                 const result = await getImage(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 console.log('get_image cost', Date.now() - startTime, 'ms');
                 callback(result)
-            } catch (e) { console.error(e); callback({ error: e.message }) }
+            } catch (e) { console.error(e); callback({ error: e.message || e }) }
         })
         socket.on('s_send_images', async (data, callback) => {
             try {
                 const result = await sendImages(this.backendURL, Object.assign(data, { isComfy: this.serverType == "comfy" }))
                 callback(result)
-            } catch (e) { console.error(e); callback({ error: e.message }) }
+            } catch (e) { console.error(e); callback({ error: e.message || e }) }
         })
         socket.on('s_get_active_history_state_id', async (data, callback) => {
             try {
                 callback({
                     history_state_id: Model.instance.historyStateId
                 })
-            } catch (e) { console.error(e); callback({ error: e.message }) }
+            } catch (e) { console.error(e); callback({ error: e.message || e }) }
         })
         socket.on('s_confirm', (data) => {
             this.serverType = data.server_type

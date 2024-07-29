@@ -158,6 +158,11 @@ def registerSocketEvents(sdppp, sio):
 
     @sio.event
     async def c_progress(sid, data):
+        instance = sdppp.page_instances[sid]
+        instance["progress"] = data["progress"]
+        if instance["progress"] == 100:
+            instance["progress"] = 0
+
         instance = sdppp.get_ps_instance()
         if instance is None:
             return

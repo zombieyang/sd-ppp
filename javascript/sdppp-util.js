@@ -11,8 +11,7 @@
                 return -1;
             }
             const split = name.split('(id:')
-            id = parseInt(split.pop().trim().slice(0, -1))
-            return id;
+            return parseInt(split.pop().trim().slice(0, -1));
         }
         static getLayerID(name) {
             if (name == this.SPECIAL_LAYER_USE_CANVAS) 
@@ -24,8 +23,7 @@
             if (name == this.SPECIAL_LAYER_SAME_AS_LAYER) 
                 return -3;
             const split = name.split('(id:')
-            id = parseInt(split.pop().trim().slice(0, -1))
-            return id;
+            return parseInt(split.pop().trim().slice(0, -1));
         }
     
     

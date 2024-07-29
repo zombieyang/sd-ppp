@@ -1,4 +1,4 @@
-import { app, imaging } from "photoshop";
+import { app, imaging, core } from "photoshop";
 import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
 import Jimp from "../library/jimp.min";
 
@@ -20,7 +20,7 @@ async function findLayer(document, layerID) {
         layer.visible = true;
         visibleOriginal = false;
     }
-    const dupLayer = await layer.duplicate();
+    const dupLayer = await layer.duplicate(document);
     const mergedLayer = await dupLayer.merge()
     layerIsFolder = true;
     if (!visibleOriginal) layer.visible = false
@@ -29,7 +29,10 @@ async function findLayer(document, layerID) {
 
 // ps returns trimmed data so need padding
 function padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds) {
-    if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
+    if (
+        pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4 || 
+        pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 3 // for layer that does not has alpha.
+    ) {
         return pixelDataFromAPI;
     }
     let pixelDataForReturn = new Uint8Array(desireBounds.width * desireBounds.height * 4);
@@ -37,7 +40,7 @@ function padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, de
         left: 0,
         top: 0,
         right: document.width,
-        bottom: document.height,
+        bottom: document.height, 
     }
     if (layer) bounds = layer.bounds;
     unTrimImageData(
@@ -145,28 +148,13 @@ export default async function getImage(serverURL, params) {
     const layerID = SpeicialIDManager.getLayerID(layerIdentify); 
 
     const startTime = Date.now();
-    await executeAsModalUntilSuccess(async (executionContext) => {
+    await core.executeAsModal(async (executionContext) => {
         let hostControl;
         let suspensionID;
         let layer;
         let isFolder = false;
         const activeLayers = document.activeLayers;
-        try {
-            hostControl = executionContext.hostControl;
-            suspensionID = await hostControl.suspendHistory({
-                "documentID": document.id,
-                "name": "Image To ComfyUI"
-            });
-            [layer, isFolder] = await findLayer(document, layerID);
-            layerOpacity = layer?.opacity ?? 100;
-            const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds)
-            pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds)
-            console.log('getPixels', Date.now() - startTime, 'ms');
-        } catch (e) {
-            console.error(e);
-            throw e
-
-        } finally {
+        function finalize() { 
             if (layer && isFolder) {
                 layer.selected = false;
                 layer.delete();
@@ -179,6 +167,27 @@ export default async function getImage(serverURL, params) {
                 })
             }
             if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
+        }
+        try {
+            hostControl = executionContext.hostControl;
+            suspensionID = await hostControl.suspendHistory({
+                "documentID": document.id,
+                "name": "Image To ComfyUI"
+            });
+            [layer, isFolder] = await findLayer(document, layerID);
+            layerOpacity = layer?.opacity ?? 100;
+            const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds)
+            pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds)
+            console.log('getPixels', Date.now() - startTime, 'ms');
+            
+            finalize();
+
+        } catch (e) {
+            finalize();
+            
+            console.error(e);
+            throw e
+
         }
 
     }, { commandName: "get content of layer " + layerIdentify })

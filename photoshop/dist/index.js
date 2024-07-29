@@ -374,7 +374,7 @@ class ComfyConnection {
       transports: ["websocket"],
       path: '/sd-ppp/',
       query: {
-        api_level: 2,
+        api_level: 407,
         type: 'photoshop'
       }
     });
@@ -411,7 +411,7 @@ class ComfyConnection {
       } catch (e) {
         console.error(e);
         callback({
-          error: e.message
+          error: e.message || e
         });
       }
     });
@@ -424,7 +424,7 @@ class ComfyConnection {
       } catch (e) {
         console.error(e);
         callback({
-          error: e.message
+          error: e.message || e
         });
       }
     });
@@ -436,7 +436,7 @@ class ComfyConnection {
       } catch (e) {
         console.error(e);
         callback({
-          error: e.message
+          error: e.message || e
         });
       }
     });
@@ -543,7 +543,7 @@ async function findLayer(document, layerID) {
     layer.visible = true;
     visibleOriginal = false;
   }
-  const dupLayer = await layer.duplicate();
+  const dupLayer = await layer.duplicate(document);
   const mergedLayer = await dupLayer.merge();
   layerIsFolder = true;
   if (!visibleOriginal) layer.visible = false;
@@ -552,7 +552,8 @@ async function findLayer(document, layerID) {
 
 // ps returns trimmed data so need padding
 function padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds) {
-  if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4) {
+  if (pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 4 || pixelDataFromAPI.length == desireBounds.width * desireBounds.height * 3 // for layer that does not has alpha.
+  ) {
     return pixelDataFromAPI;
   }
   let pixelDataForReturn = new Uint8Array(desireBounds.width * desireBounds.height * 4);
@@ -652,27 +653,13 @@ async function getImage(serverURL, params) {
   let layerOpacity = 100;
   const layerID = _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getLayerID(layerIdentify);
   const startTime = Date.now();
-  await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async executionContext => {
+  await photoshop__WEBPACK_IMPORTED_MODULE_0__.core.executeAsModal(async executionContext => {
     let hostControl;
     let suspensionID;
     let layer;
     let isFolder = false;
     const activeLayers = document.activeLayers;
-    try {
-      hostControl = executionContext.hostControl;
-      suspensionID = await hostControl.suspendHistory({
-        "documentID": document.id,
-        "name": "Image To ComfyUI"
-      });
-      [layer, isFolder] = await findLayer(document, layerID);
-      layerOpacity = layer?.opacity ?? 100;
-      const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds);
-      pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds);
-      console.log('getPixels', Date.now() - startTime, 'ms');
-    } catch (e) {
-      console.error(e);
-      throw e;
-    } finally {
+    function finalize() {
       if (layer && isFolder) {
         layer.selected = false;
         layer.delete();
@@ -685,6 +672,23 @@ async function getImage(serverURL, params) {
         });
       }
       if (hostControl && suspensionID) hostControl.resumeHistory(suspensionID);
+    }
+    try {
+      hostControl = executionContext.hostControl;
+      suspensionID = await hostControl.suspendHistory({
+        "documentID": document.id,
+        "name": "Image To ComfyUI"
+      });
+      [layer, isFolder] = await findLayer(document, layerID);
+      layerOpacity = layer?.opacity ?? 100;
+      const pixelDataFromAPI = await getPixelsData(document, layer, desireBounds);
+      pixelDataForReturn = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds);
+      console.log('getPixels', Date.now() - startTime, 'ms');
+      finalize();
+    } catch (e) {
+      finalize();
+      console.error(e);
+      throw e;
     }
   }, {
     commandName: "get content of layer " + layerIdentify
@@ -5293,6 +5297,8 @@ class Model {
   constructor() {
     if (Model.instance) throw new Error('Model already inited');
     Model.instance = this;
+
+    // historyState change listening
     setInterval(() => {
       const historyStates = photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument?.historyStates;
       if (historyStates && historyStates.length > 0) {
