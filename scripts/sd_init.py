@@ -1,5 +1,5 @@
 # sd script init
-from modules import script_callbacks
+from modules import script_callbacks, shared
 from modules.ui_components import ToolButton
 from sdppp_python.sdppp import SDPPP
 from sdppp_python.apis import consumeImageCache
@@ -102,3 +102,10 @@ def on_app_started(blocks: gr.Blocks, app):
 
 
 script_callbacks.on_app_started(on_app_started)
+
+
+shared.options_templates.update(
+    shared.options_section(('sd-ppp', "SD-PPP", "ui"), {
+        "sd-ppp_download": shared.OptionInfo([], "Download PS plugin", gr.Button)
+    })
+)

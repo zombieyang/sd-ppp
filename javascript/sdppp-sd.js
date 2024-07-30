@@ -380,6 +380,7 @@
     const insertedSendWidgetsByElem = new WeakMap();
     const insertedGetWidgets = new Set();
     const insertedSendWidgets = new Set();
+    let downloadButtonProcessed = false;
 
     onUiUpdate(() => {
         gradioApp().querySelectorAll(".gradio-image").forEach((el) => {
@@ -396,5 +397,12 @@
             insertedSendWidgetsByElem.set(el, widget);
             insertedSendWidgets.add(new WeakRef(widget))
         })
+        const downloadButton = gradioApp().querySelector('#setting_sd-ppp_download')
+        if (!downloadButton || downloadButtonProcessed) return;
+        downloadButton.innerHTML = "Download SD-PPP PS .ccx plugin"
+        downloadButton.addEventListener('click', () => {
+            location.href = "/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx"
+        })
+        downloadButtonProcessed = true
     })
 })();

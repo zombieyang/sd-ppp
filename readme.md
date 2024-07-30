@@ -53,8 +53,9 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 2. install Photoshop plugin
     1. by CCX:
-        1. download `http://<your-sd-url>/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`.
-           > for example: `http://127.0.0.1:7860/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx`
+        1. download .ccx in SDWebUI's setting tab.
+
+            <img width=600 src="https://github.com/user-attachments/assets/82edecba-23fd-4dab-9027-214fbbdeed1e" />
         3. double click the `.ccx` file. OR rename it to `.zip` and extract it into photoshop's plugin directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
 
     2. by UXP develop Tool (you can debug the code this way):
@@ -78,15 +79,39 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 </details>
 
+## Other showcase
+0. live-painting
+    
+    <img width=400 src="https://github.com/user-attachments/assets/9e4fbb6e-67ff-45bf-8df0-47f7b692e522" />
+1. inpaint
+    
+    <img width=400 src="https://github.com/user-attachments/assets/3a3da67e-003f-4838-b326-daa291353d31" />
+2. controlnet
+    
+    <img width=400 src="https://github.com/user-attachments/assets/647757cc-4bdd-40f4-8956-6a399d9c0e2d" />
+3. IC-light
+    
+    <img width=400 src="https://github.com/user-attachments/assets/24abf5de-dab1-4d84-bf9f-696cd09d8c5e" />
 -----------------------------
+### Tutorial
+1. Official
+
+    |BiliBili|Youtube|
+    | -- | -- |
+    |coming soon|coming soon|
+
+2. Community
+
+    | Author | Link |
+    | -- | -- |
+    | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 
 ### Ask for help
 [Discord](https://discord.gg/5wmUQ3aZ)
 
-### Concept
-In contrast to the plugin that I contributed before [AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin](https://github.com/AbdullahAlfaraj/Auto-Photoshop-StableDiffusion-Plugin), which "runs" the SD/Comfy in Photoshop. This tool provides another option that makes Photoshop a helper of SD/ComfyUI. Because I think SD/Comfy will keep growing fast in the future, it is hard to inject the entire SD/Comfy Ecology into Photoshop with a single plugin.
-
-Still, shout out to AbdullahAlfaraj's plugin and I inherited some of the code using Photoshop's API in it.
+### Thanks
+@AbdullahAlfaraj
+@tianlang0704
 
 -----------------------------
 
