@@ -95,12 +95,10 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 -----------------------------
 ### Tutorial
 1. Official
-
-    |BiliBili|Youtube|
-    | -- | -- |
-    |coming soon|coming soon|
-
-2. Community
+   
+    * [=>BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN)
+    * =>Youtube(CommingSoon)
+3. Community
 
     | Author | Link |
     | -- | -- |
