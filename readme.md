@@ -1,7 +1,7 @@
 # SD-PPP: Use Photoshop as your SD/ComfyUI's workspace
 > ppp for Professional Photoshop Portal
 
-this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD. You can manage your AI art by Photoshop and make Photoshop become the workspace of your SD/ComfyUI
+this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD. You can manage your AI art by Photoshop and I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 #### SD/SDForge Showcase
     
