@@ -1,7 +1,7 @@
 # SD-PPP: Easily use photoshop in your StableDiffusion/ComfyUI
-> ppp for Professional Photoshop transPorter
+> ppp for Professional Photoshop Portal
 
-this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD
+this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD. You can manage your AI art by Photoshop and make Photoshop become the workspace of your SD/ComfyUI
 
 #### ComfyUI Showcase
     
