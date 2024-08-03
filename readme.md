@@ -96,11 +96,11 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 -----------------------------
 ### Tutorial
 
-    | Author | Link |
-    | -- | -- |
-    | zombieyang | [=>BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
-    | zombieyang | =>Youtube(CommingSoon) |
-    | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
+| Author | Link |
+| -- | -- |
+| zombieyang | [=>BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
+| zombieyang | =>Youtube(CommingSoon) |
+| [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 
 ### Ask for help
 [Discord](https://discord.gg/5wmUQ3aZ)
