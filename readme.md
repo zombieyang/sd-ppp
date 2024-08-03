@@ -98,7 +98,7 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 | Author | Link |
 | -- | -- |
-| zombieyang | [=>BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
+| zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
 | zombieyang | =>Youtube(CommingSoon) |
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 
