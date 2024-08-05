@@ -249,6 +249,43 @@
         }
     }
 
+    class WidgetDragger {
+        static dragging
+        static dragMoved = false;
+        static startElemRight
+        static startElemTop
+        static startX
+        static startY
+        static inited = false;
+        static init() {
+            function dragMove(e) {
+                if (!WidgetDragger.dragging) return;
+                WidgetDragger.dragging.style.right = WidgetDragger.startElemRight - (e.clientX - WidgetDragger.startX) + 'px';
+                WidgetDragger.dragging.style.top = WidgetDragger.startElemTop + (e.clientY - WidgetDragger.startY) + 'px';
+                if (e.clientX - WidgetDragger.startX > 3 || e.clientY - WidgetDragger.startY > 3) WidgetDragger.dragMoved = true;
+            }
+            function endDrag() {
+                WidgetDragger.dragging = null;
+                requestAnimationFrame(()=> {
+                    WidgetDragger.dragMoved = false;
+                })
+            }
+            document.body.addEventListener('mousemove', dragMove)
+            document.body.addEventListener('touchmove', dragMove)
+            document.body.addEventListener('mouseup', endDrag)
+            document.body.addEventListener('touchend', endDrag)
+        }
+        static startDrag(elem, e) {
+            if (!WidgetDragger.inited) WidgetDragger.init();
+            WidgetDragger.dragging = elem
+            
+            WidgetDragger.startElemRight = elem.parentElement.clientWidth - elem.offsetLeft - elem.clientWidth;
+            WidgetDragger.startElemTop = elem.offsetTop;
+            WidgetDragger.startX = e.clientX; 
+            WidgetDragger.startY = e.clientY;
+        }
+    }
+
     class GetterWidget extends SDPPPWidget {
         isReady() {
             return this.layerValue && this.boundValue && this.documentValue;
@@ -267,12 +304,19 @@
 
             $getButton
                 .addEventListener('click', async () => {
+                    if (WidgetDragger.dragMoved) return;
                     if (!this.isReady()) 
                         this.openConfig();
                     else {
                         this.action();
                     }
                 });
+            const $el = this.$el
+            $el.addEventListener('mousedown', dragdown)
+            $el.addEventListener('touchstart', dragdown)
+            function dragdown(e) {
+                WidgetDragger.startDrag(e.currentTarget, e);
+            }
 
             this.layerValue = '';
             this.boundValue = '';
@@ -328,11 +372,18 @@
 
             $sendButton
                 .addEventListener('click', () => {
+                    if (WidgetDragger.dragMoved) return;
                     if (!this.isReady()) 
                         this.openConfig();
                     else 
                         this.action();
                 });
+            const $el = this.$el
+            $el.addEventListener('mousedown', dragdown)
+            $el.addEventListener('touchstart', dragdown)
+            function dragdown(e) {
+                WidgetDragger.startDrag(e.currentTarget, e);
+            }
 
             this.layerValue = '';
             this.documentValue = '';
