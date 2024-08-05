@@ -711,7 +711,7 @@ async function getImage(serverURL, params) {
     const PhotoshopBlob = new Blob([file], {
       type: "image/png"
     });
-    fd.append('image', PhotoshopBlob, "PhotoshopBlob.png");
+    fd.append('image', await PhotoshopBlob.arrayBuffer(), "PhotoshopBlob.png");
     fd.append('overwrite', "true");
     console.log('start upload', Date.now() - startTime, 'ms');
     let endpoint = params.isComfy ? '/upload/image' : '/sdppp_upload';
