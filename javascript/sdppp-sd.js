@@ -112,6 +112,8 @@
             }
             await this.fetchDocumentData();
             this.$refreshGetDocument.click();
+            this.$refreshLayer.click();
+            this.$refreshBound.click();
         }
         async senderConfig(widget) {
             popupId("sdppp_sender_dialog")
@@ -128,6 +130,7 @@
             }
             await this.fetchDocumentData();
             this.$refreshSendDocument.click();
+            this.$refreshSendLayer.click();
         }
 
         async initSocket() {
