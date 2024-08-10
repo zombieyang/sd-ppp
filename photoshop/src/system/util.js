@@ -70,12 +70,12 @@ export function getAllSubLayer(layer, level = 0) {
     }, []);
 }
 
-export function findInAllSubLayer(layer, layerid) {
-    if (!layer.layers) return null;
-    for (let i = 0; i < layer.layers.length; i++) {
-        if (layer.layers[i].id === layerid) return layer.layers[i];
+export function findInAllSubLayer(rootLayer, layerid) {
+    if (!rootLayer.layers) return null;
+    for (let i = 0; i < rootLayer.layers.length; i++) {
+        if (rootLayer.layers[i].id === layerid) return rootLayer.layers[i];
 
-        const result = findInAllSubLayer(layer.layers[i], layerid)
+        const result = findInAllSubLayer(rootLayer.layers[i], layerid)
         if (result) return result;
     }
     return null;

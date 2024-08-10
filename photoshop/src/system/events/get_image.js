@@ -1,5 +1,5 @@
 import { app, imaging, core } from "photoshop";
-import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer, unTrimImageData } from '../util.js';
+import { SpeicialIDManager, findInAllSubLayer, unTrimImageData } from '../util.js';
 import Jimp from "../library/jimp.min";
 
 function isFolder(layer) {

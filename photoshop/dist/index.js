@@ -760,16 +760,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###';
-const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###';
-const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###';
-const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###';
-const SPECIAL_LAYER_NAME_TO_ID = {
-  SPECIAL_LAYER_USE_CANVAS: 0,
-  SPECIAL_LAYER_USE_SELECTION: -1,
-  SPECIAL_LAYER_NEW_LAYER: -2,
-  SPECIAL_LAYER_SAME_AS_LAYER: -3
-};
 function autocrop(jimp) {
   let minX = jimp.bitmap.width - 1;
   let minY = jimp.bitmap.height - 1;
@@ -803,19 +793,8 @@ async function sendImages(comfyURL, params) {
     await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async () => {
       try {
         if (layerIdentify && layerIdentify != _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
-          layerOrGroup = await document.layers.find(l => l.id == layerId);
+          layerOrGroup = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(document, layerId);
           // // deal with multiple images
-          // let imageIndexSuffix = ""
-          // if (imageIds.length > 1){
-          //     index = imageIds.indexOf(imageId)
-          //     if (index > 0)
-          //         imageIndexSuffix = ` ${index}`
-          // }
-          // if (imageIndexSuffix != "" && layerOrGroup != null){
-          //     const layerName = layerOrGroup?.name;
-          //     existingLayerName = layerName + imageIndexSuffix
-          //     layerOrGroup = await app.activeDocument.layers.find(l => l.name == existingLayerName)
-          // }
         }
         // deal with new layer or id/name not found layer
         if (!layerOrGroup || layerOrGroup.kind == "group") {
@@ -850,7 +829,7 @@ async function sendImages(comfyURL, params) {
         };
         if (!newLayerName) {
           let bounds = layerOrGroup.bounds;
-          if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) {
+          if (bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0) {} else if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) {
             if (bounds.width <= 1 && bounds.height <= 1) {
               bounds.left = jimp.bitmap.width / 2;
               bounds.top = jimp.bitmap.height / 2;
@@ -863,8 +842,8 @@ async function sendImages(comfyURL, params) {
             centerBounds.width = jimp.bitmap.width;
             centerBounds.height = jimp.bitmap.height;
             bounds = centerBounds;
+            putPixelsOptions.targetBounds = bounds;
           }
-          putPixelsOptions.targetBounds = bounds;
         }
         await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels(putPixelsOptions);
         _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
@@ -5392,11 +5371,11 @@ function getAllSubLayer(layer, level = 0) {
     return ret.concat(getAllSubLayer(layer, level + 1));
   }, []);
 }
-function findInAllSubLayer(layer, layerid) {
-  if (!layer.layers) return null;
-  for (let i = 0; i < layer.layers.length; i++) {
-    if (layer.layers[i].id === layerid) return layer.layers[i];
-    const result = findInAllSubLayer(layer.layers[i], layerid);
+function findInAllSubLayer(rootLayer, layerid) {
+  if (!rootLayer.layers) return null;
+  for (let i = 0; i < rootLayer.layers.length; i++) {
+    if (rootLayer.layers[i].id === layerid) return rootLayer.layers[i];
+    const result = findInAllSubLayer(rootLayer.layers[i], layerid);
     if (result) return result;
   }
   return null;

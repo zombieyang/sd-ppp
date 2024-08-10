@@ -1,18 +1,7 @@
 import { app, imaging } from "photoshop";
-import { SpeicialIDManager, executeAsModalUntilSuccess} from '../util.js';
+import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer} from '../util.js';
 import Jimp from "../library/jimp.min";
 import Model from "../model.js";
-
-const SPECIAL_LAYER_USE_CANVAS = '### Use Canvas ###'
-const SPECIAL_LAYER_USE_SELECTION = '### Use Selection ###'
-const SPECIAL_LAYER_NEW_LAYER = '### New Layer ###'
-const SPECIAL_LAYER_SAME_AS_LAYER = '### Same as Layer ###'
-const SPECIAL_LAYER_NAME_TO_ID = {
-    SPECIAL_LAYER_USE_CANVAS: 0,
-    SPECIAL_LAYER_USE_SELECTION: -1,
-    SPECIAL_LAYER_NEW_LAYER: -2,
-    SPECIAL_LAYER_SAME_AS_LAYER: -3
-}
 
 function autocrop(jimp) {
     let minX = jimp.bitmap.width - 1;
@@ -54,19 +43,8 @@ export default async function sendImages(comfyURL, params) {
             await executeAsModalUntilSuccess(async () => {
                 try {
                     if (layerIdentify && layerIdentify != SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
-                        layerOrGroup = await document.layers.find(l => l.id == layerId)
+                        layerOrGroup = findInAllSubLayer(document, layerId)
                         // // deal with multiple images
-                        // let imageIndexSuffix = ""
-                        // if (imageIds.length > 1){
-                        //     index = imageIds.indexOf(imageId)
-                        //     if (index > 0)
-                        //         imageIndexSuffix = ` ${index}`
-                        // }
-                        // if (imageIndexSuffix != "" && layerOrGroup != null){
-                        //     const layerName = layerOrGroup?.name;
-                        //     existingLayerName = layerName + imageIndexSuffix
-                        //     layerOrGroup = await app.activeDocument.layers.find(l => l.name == existingLayerName)
-                        // }
                     }
                     // deal with new layer or id/name not found layer
                     if (!layerOrGroup || (layerOrGroup.kind == "group")) {
@@ -105,7 +83,12 @@ export default async function sendImages(comfyURL, params) {
                     }
                     if (!newLayerName) {
                         let bounds = layerOrGroup.bounds
-                        if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) {
+                        if (bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0) 
+                        {
+
+                        }
+                        else if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) 
+                        {
                             if (bounds.width <= 1 && bounds.height <= 1) {
                                 bounds.left = jimp.bitmap.width / 2
                                 bounds.top = jimp.bitmap.height / 2
@@ -118,8 +101,8 @@ export default async function sendImages(comfyURL, params) {
                             centerBounds.width = jimp.bitmap.width
                             centerBounds.height = jimp.bitmap.height
                             bounds = centerBounds
+                            putPixelsOptions.targetBounds = bounds
                         }
-                        putPixelsOptions.targetBounds = bounds
                     }
                     await imaging.putPixels(putPixelsOptions)
                     Model.instance.ignoreNextHistoryChange()
