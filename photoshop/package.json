@@ -27,6 +27,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@types/jimp": "^0.2.28",
     "jimp": "^0.22.12",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

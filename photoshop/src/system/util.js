@@ -81,6 +81,24 @@ export function findInAllSubLayer(rootLayer, layerid) {
     return null;
 }
 
+export async function getLayerOrGroupAfterMerged(document, layerID) {
+    let layer;
+    if (layerID <= 0) return [layer, false];
+    layer = findInAllSubLayer(document, layerID)
+    if (!layer) throw new Error(`Layer(id: ${layerID}) not found`);
+    if (layer.kind != 'group') return [layer, false];
+
+    // layer is folder
+    let visibleOriginal = true;
+    if (!layer.visible) {
+        layer.visible = true;
+        visibleOriginal = false;
+    }
+    const dupLayer = await layer.duplicate(document);
+    const mergedLayer = await dupLayer.merge()
+    if (!visibleOriginal) layer.visible = false
+    return [mergedLayer, true];
+}
 const executeAsModal = core.executeAsModal;
 
 export async function executeAsModalUntilSuccess(...args) {
@@ -98,4 +116,54 @@ export async function executeAsModalUntilSuccess(...args) {
         await new Promise(r => setTimeout(r, 200));
     }
     return result;
+}
+
+export function getDesiredBounds(document, boundLayerIdentify, layerIdentify) {
+    const boundsLayerID = boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_SAME_AS_LAYER ?
+        SpeicialIDManager.getLayerID(layerIdentify) :
+        SpeicialIDManager.getLayerID(boundLayerIdentify)
+
+    const docBounds = {
+        left: 0,
+        top: 0,
+        right: document.width,
+        bottom: document.height,
+        width: document.width,
+        height: document.height
+    };
+    if (boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS) {
+        return docBounds;
+    }
+    // use selection bounds
+    if (boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION) {
+        // if no selection use document bounds
+        const selectionBounds = document.selection?.bounds;
+        if (!selectionBounds) return docBounds;
+        return {
+            left: selectionBounds.left,
+            top: selectionBounds.top,
+            right: selectionBounds.right,
+            bottom: selectionBounds.bottom,
+            width: selectionBounds.width,
+            height: selectionBounds.height
+        }
+    }
+    let boundsLayer;
+    if (boundsLayerID > 0) {
+        boundsLayer = findInAllSubLayer(document, boundsLayerID)
+    }
+    if (!boundsLayer) throw new Error(`Bounds layer(id: ${boundsLayerID}) not found`);
+    const boundsLayerBounds = boundsLayer.bounds
+    const isEmptyBoundsLayer = boundsLayerBounds.left == 0 && boundsLayerBounds.top == 0 && boundsLayerBounds.right == 0 && boundsLayerBounds.bottom == 0;
+    if (isEmptyBoundsLayer) return docBounds;
+    // normal layer
+    let desireBounds = {
+        left: boundsLayerBounds.left,
+        top: boundsLayerBounds.top,
+        right: boundsLayerBounds.right,
+        bottom: boundsLayerBounds.bottom,
+        width: boundsLayerBounds.width,
+        height: boundsLayerBounds.height
+    };
+    return desireBounds
 }
