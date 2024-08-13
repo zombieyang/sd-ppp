@@ -53,8 +53,6 @@
 		init() {
 		},
 		async setup() {
-
-
 			socket.on('connect', () => {
 				socket.emit('c_reset_changes');
 				socket.emit('c_reset_instance_name', {
@@ -118,6 +116,16 @@
 					this.widgets[0].callback = () => {
 						resetWidget12.call(this);
 					}
+					this.widgets[1].callback = () => {
+						if (this.widgets[0].value == SDPPPSpeicialIDManager.SPECIAL_DOCUMENT_CURRENT) {
+							Object.keys(documentData).forEach(documentKey => {
+								if (documentKey == SDPPPSpeicialIDManager.SPECIAL_DOCUMENT_CURRENT) return;
+								if (documentData[documentKey].layers.find(layer => layer.name == this.widgets[1].value)) {
+									this.widgets[0].value = documentKey;
+								}
+							})
+						}		
+					}
 				}
 
 			} else if (nodeType.comfyClass === 'Send Images To Photoshop') {
@@ -150,6 +158,16 @@
 					if (onAdded) await onAdded.call(this, ...args);
 					this.widgets[0].callback = () => {
 						resetWidget1.call(this);
+					}
+					this.widgets[1].callback = () => {
+						if (this.widgets[0].value == SDPPPSpeicialIDManager.SPECIAL_DOCUMENT_CURRENT) {
+							Object.keys(documentData).forEach(documentKey => {
+								if (documentKey == SDPPPSpeicialIDManager.SPECIAL_DOCUMENT_CURRENT) return;
+								if (documentData[documentKey].layers.find(layer => layer.name == this.widgets[1].value)) {
+									this.widgets[0].value = documentKey;
+								}
+							})
+						}						
 					}
 				}
 
