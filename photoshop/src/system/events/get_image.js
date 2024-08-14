@@ -9,7 +9,6 @@ function padAndTrimLayerDataToDesireBounds(document, layer, dataFromImagingAPI, 
         // sometimes the layer is single colored (grayscale)
         dataFromImagingAPI.length % (desireBounds.width * desireBounds.height) == 0
     ) {
-        console.log('direct return');
         return dataFromImagingAPI;
     }
     let pixelData = new Uint8Array(desireBounds.width * desireBounds.height * 4);
@@ -29,6 +28,17 @@ function padAndTrimLayerDataToDesireBounds(document, layer, dataFromImagingAPI, 
     return pixelData;
 }
 
+async function getSelectionData(document, bounds) {
+    let options = {
+        documentID: document.id,
+        sourceBounds: bounds,
+    }
+    let selection = await imaging.getSelection(options)
+    let psImageData = selection.imageData
+    const selectionDataFromAPI = await psImageData.getData()
+    Promise.resolve().then(() => { psImageData.dispose() })
+    return selectionDataFromAPI
+}
 async function getPixelsData(document, layer, bounds) {
     let options = {
         documentID: document.id,
@@ -108,14 +118,20 @@ export default async function getImage(serverURL, params) {
 
             returnData.layerOpacity = layer?.opacity ?? 100;
 
-            const [pixelDataFromAPI, maskDataFromAPI] = await Promise.all(
-                [getPixelsData(document, layer, desireBounds), getMaskData(document, layer, desireBounds)]
-            )
+            const [pixelDataFromAPI, maskDataFromAPI, selectionDataFromAPI] = await Promise.all([
+                getPixelsData(document, layer, desireBounds, boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION),
+                getMaskData(document, layer, desireBounds),
+                boundLayerIdentify == SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION && document.selection.bounds ? getSelectionData(document, desireBounds) : null,
+            ])
             returnData.pixelData = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds)
-            if (maskDataFromAPI) {
-                const maskData = padAndTrimLayerDataToDesireBounds(document, layer, maskDataFromAPI, desireBounds)
-                for (let i = 0; i < maskData.length; i++) {
-                    returnData.pixelData[4 * i + 3] = maskData[i] && returnData.pixelData[4 * i + 3];
+            if (maskDataFromAPI || selectionDataFromAPI) {
+                const maskData = maskDataFromAPI && padAndTrimLayerDataToDesireBounds(document, layer, maskDataFromAPI, desireBounds)
+                const selectionData = selectionDataFromAPI && padAndTrimLayerDataToDesireBounds(document, layer, selectionDataFromAPI, desireBounds)
+                for (let i = 0, length = returnData.pixelData.length / 4; i < length; i++) {
+                    const maskPixel = maskData ? maskData[i] / 255 : 1;
+                    const selectionPixel = selectionData ? selectionData[i] / 255 : 1;
+                    returnData.pixelData[4 * i + 3] = maskPixel * selectionPixel * returnData.pixelData[4 * i + 3];
+
                     if (!returnData.pixelData[4 * i + 3]) {
                         returnData.pixelData[4 * i] = returnData.pixelData[4 * i + 1] = returnData.pixelData[4 * i + 2] = 0;
                     }
@@ -126,7 +142,6 @@ export default async function getImage(serverURL, params) {
 
         } catch (e) {
             finalize();
-
             console.error(e);
             throw e
 
@@ -157,13 +172,13 @@ async function uploadImage(imageData, bounds, serverURL, isComfy) {
         //     })
 
         // } else {
-            new Jimp({
-                data: imageData,
-                width: bounds.width,
-                height: bounds.height
-            }, (err, image) => {
-                err ? reject(err) : resolve(image);
-            })
+        new Jimp({
+            data: imageData,
+            width: bounds.width,
+            height: bounds.height
+        }, (err, image) => {
+            err ? reject(err) : resolve(image);
+        })
         // }
     })
     jimpImage.quality(100);
