@@ -33,7 +33,7 @@ export default async function sendImages(comfyURL, params) {
     let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? 
         app.activeDocument : 
         app.documents.find(document => document.id == SpeicialIDManager.getDocumentID(documentIdentify))
-    if (!document) throw new Error('document not found');
+        
     await Promise.all(
         imageIds.map(async imageId => {
             let layerOrGroup;
@@ -42,6 +42,15 @@ export default async function sendImages(comfyURL, params) {
             const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
             await executeAsModalUntilSuccess(async () => {
                 try {
+                    const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
+                    if (!document) document = await app.createDocument({
+                        width: jimp.bitmap.width,
+                        height: jimp.bitmap.width,
+                        resolution: 72, 
+                        mode: "RGBColorMode", 
+                        fill: "transparent"
+                    })
+
                     if (layerIdentify && layerIdentify != SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
                         layerOrGroup = findInAllSubLayer(document, layerId)
                         // // deal with multiple images
@@ -64,8 +73,7 @@ export default async function sendImages(comfyURL, params) {
                         layerOrGroup.selected = false;
                         Model.instance.ignoreNextHistoryChange()
                     }
-                    const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
-                    // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
+
                     autocrop(jimp)
                     let putPixelsOptions = {
                         documentID: document.id,
@@ -104,12 +112,12 @@ export default async function sendImages(comfyURL, params) {
                             putPixelsOptions.targetBounds = bounds
                         }
                     }
-                    await imaging.putPixels(putPixelsOptions)
-                    Model.instance.ignoreNextHistoryChange()
                 } catch(e) {
-                    console.error(e)
-                    throw e
+                    console.error(e);
+                    throw e;
                 }
+                await imaging.putPixels(putPixelsOptions)
+                Model.instance.ignoreNextHistoryChange()
             })
         })
     )
