@@ -254,11 +254,9 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
         }
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
         class: "client-name"
-      }, item.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      }, item.progress ? `${item.progress}% - ` : "", item.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "client-list-item-right"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-label", {
-        class: "client-progress"
-      }, item.progress ? `${item.progress}%` : ""), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("sp-link", {
         onClick: () => {
           _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance?.pageInstanceRun(item.sid);
         }
@@ -533,7 +531,6 @@ function padAndTrimLayerDataToDesireBounds(document, layer, dataFromImagingAPI, 
   // sometimes the layer does not has alpha
   // sometimes the layer is single colored (grayscale)
   dataFromImagingAPI.length % (desireBounds.width * desireBounds.height) == 0) {
-    console.log('direct return');
     return dataFromImagingAPI;
   }
   let pixelData = new Uint8Array(desireBounds.width * desireBounds.height * 4);
@@ -546,6 +543,19 @@ function padAndTrimLayerDataToDesireBounds(document, layer, dataFromImagingAPI, 
   if (layer) bounds = layer.bounds;
   (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.unTrimImageData)(dataFromImagingAPI, pixelData, bounds, desireBounds);
   return pixelData;
+}
+async function getSelectionData(document, bounds) {
+  let options = {
+    documentID: document.id,
+    sourceBounds: bounds
+  };
+  let selection = await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.getSelection(options);
+  let psImageData = selection.imageData;
+  const selectionDataFromAPI = await psImageData.getData();
+  Promise.resolve().then(() => {
+    psImageData.dispose();
+  });
+  return selectionDataFromAPI;
 }
 async function getPixelsData(document, layer, bounds) {
   let options = {
@@ -620,12 +630,15 @@ async function getImage(serverURL, params) {
       });
       [layer, isGroup] = await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.getLayerOrGroupAfterMerged)(document, layerID);
       returnData.layerOpacity = layer?.opacity ?? 100;
-      const [pixelDataFromAPI, maskDataFromAPI] = await Promise.all([getPixelsData(document, layer, desireBounds), getMaskData(document, layer, desireBounds)]);
+      const [pixelDataFromAPI, maskDataFromAPI, selectionDataFromAPI] = await Promise.all([getPixelsData(document, layer, desireBounds, boundLayerIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION), getMaskData(document, layer, desireBounds), boundLayerIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION && document.selection.bounds ? getSelectionData(document, desireBounds) : null]);
       returnData.pixelData = padAndTrimLayerDataToDesireBounds(document, layer, pixelDataFromAPI, desireBounds);
-      if (maskDataFromAPI) {
-        const maskData = padAndTrimLayerDataToDesireBounds(document, layer, maskDataFromAPI, desireBounds);
-        for (let i = 0; i < maskData.length; i++) {
-          returnData.pixelData[4 * i + 3] = maskData[i] && returnData.pixelData[4 * i + 3];
+      if (maskDataFromAPI || selectionDataFromAPI) {
+        const maskData = maskDataFromAPI && padAndTrimLayerDataToDesireBounds(document, layer, maskDataFromAPI, desireBounds);
+        const selectionData = selectionDataFromAPI && padAndTrimLayerDataToDesireBounds(document, layer, selectionDataFromAPI, desireBounds);
+        for (let i = 0, length = returnData.pixelData.length / 4; i < length; i++) {
+          const maskPixel = maskData ? maskData[i] / 255 : 1;
+          const selectionPixel = selectionData ? selectionData[i] / 255 : 1;
+          returnData.pixelData[4 * i + 3] = maskPixel * selectionPixel * returnData.pixelData[4 * i + 3];
           if (!returnData.pixelData[4 * i + 3]) {
             returnData.pixelData[4 * i] = returnData.pixelData[4 * i + 1] = returnData.pixelData[4 * i + 2] = 0;
           }
@@ -734,14 +747,24 @@ async function sendImages(comfyURL, params) {
   const documentIdentify = params.document_identify;
   const layerIdentify = params.layer_identify;
   let document = documentIdentify == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? photoshop__WEBPACK_IMPORTED_MODULE_0__.app.activeDocument : photoshop__WEBPACK_IMPORTED_MODULE_0__.app.documents.find(document => document.id == _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(documentIdentify));
-  if (!document) throw new Error('document not found');
-  await Promise.all(imageIds.map(async imageId => {
-    let layerOrGroup;
-    let existingLayerName;
-    let newLayerName;
-    const layerId = _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(layerIdentify);
-    await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async () => {
-      try {
+  await (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.executeAsModalUntilSuccess)(async () => {
+    try {
+      const jimps = await Promise.all(imageIds.map(async imageId => await _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().read(comfyURL + '/sdppp_download?name=' + imageId)));
+      if (!document) document = await photoshop__WEBPACK_IMPORTED_MODULE_0__.app.createDocument({
+        width: jimps[0].bitmap.width,
+        height: jimps[0].bitmap.width,
+        resolution: 72,
+        mode: "RGBColorMode",
+        fill: "transparent"
+      });
+      const activeLayers = document.activeLayers;
+      const formerVisibles = activeLayers.map(layer => layer.visible);
+      await Promise.all(imageIds.map(async (imageId, index) => {
+        const jimp = jimps[index];
+        let layerOrGroup;
+        let existingLayerName;
+        let newLayerName;
+        const layerId = _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.getDocumentID(layerIdentify);
         if (layerIdentify && layerIdentify != _util_js__WEBPACK_IMPORTED_MODULE_1__.SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
           layerOrGroup = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.findInAllSubLayer)(document, layerId);
           // // deal with multiple images
@@ -749,22 +772,14 @@ async function sendImages(comfyURL, params) {
         // deal with new layer or id/name not found layer
         if (!layerOrGroup || layerOrGroup.kind == "group") {
           newLayerName = existingLayerName ?? 'Images ' + imageId;
-          const activeLayers = document.activeLayers;
           const newLayer = await document.createLayer("pixel", {
             name: newLayerName
           });
           if (layerOrGroup) newLayer.move(layerOrGroup, "placeInside");else newLayer.move(document.layers[0], 'placeBefore');
           layerOrGroup = newLayer;
-          activeLayers.forEach(layerOrGroup => {
-            const visible = layerOrGroup.visible;
-            layerOrGroup.selected = true;
-            layerOrGroup.visible = visible;
-          });
           layerOrGroup.selected = false;
           _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
         }
-        const jimp = await _library_jimp_min__WEBPACK_IMPORTED_MODULE_2___default().read(comfyURL + '/sdppp_download?name=' + imageId);
-        // const jimp = (await Jimp.read(comfyURL + '/finished_images?id=' + imageId))
         autocrop(jimp);
         let putPixelsOptions = {
           documentID: document.id,
@@ -797,12 +812,16 @@ async function sendImages(comfyURL, params) {
         }
         await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.putPixels(putPixelsOptions);
         _model_js__WEBPACK_IMPORTED_MODULE_3__["default"].instance.ignoreNextHistoryChange();
-      } catch (e) {
-        console.error(e);
-        throw e;
-      }
-    });
-  }));
+      }));
+      activeLayers.forEach((formerActiveLayer, index) => {
+        formerActiveLayer.selected = true;
+        formerActiveLayer.visible = formerVisibles[index];
+      });
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  });
   return {};
 }
 
@@ -5494,6 +5513,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
     margin-left: 5px;
     display: flex;
     align-items: center;
+    flex: 2;
 }
 .client-list-item sp-checkbox {
     margin-right: 2px;
@@ -5507,7 +5527,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.tabbar {
 .client-list-item .client-list-item-right {
     margin-right: 10px;
     display: flex;
-    align-items: center;
+    align-items: end;
+    flex: 1;
+    text-align: right;
+    white-space: nowrap;
+    justify-content: end;
 }
 .client-list-item .client-list-item-right sp-link:active {
     color: white;
