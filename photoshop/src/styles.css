@@ -70,10 +70,11 @@
 .client-list-item .client-list-item-right {
     margin-right: 10px;
     display: flex;
-    align-items: center;
+    align-items: end;
     flex: 1;
     text-align: right;
     white-space: nowrap;
+    justify-content: end;
 }
 .client-list-item .client-list-item-right sp-link:active {
     color: white;
