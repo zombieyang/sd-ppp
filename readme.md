@@ -47,9 +47,9 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 
 </details>
 <details>
-<summary><b>StableDiffusion or SD-Forge</b></summary>
+<summary><b>SD-WebUI or SD-Forge</b></summary>
 
-1. install in SD's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
+1. install in A1111's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
     <img width=800 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb" />
 
 2. install Photoshop plugin

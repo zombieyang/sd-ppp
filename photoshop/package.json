@@ -9,8 +9,6 @@
     "uxp:watch": "cd dist && nodemon --exec \"uxp plugin reload\" -e js,css,html",
     "uxp:debug": "cd dist && uxp plugin debug"
   },
-  "author": "Adobe Inc",
-  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
