@@ -24,7 +24,7 @@
             this.$getterSaveAndClose = null;
             this.$senderSaveAndClose = null;
 
-            setTimeout(()=> {
+            requestAnimationFrame(()=> {
                 this.initSocket();
             })
         }
@@ -78,6 +78,30 @@
                 this.currentWidget.action();
                 closePopup();
             });
+            const extraGetUI = createExtraUI.call(this);
+            this.$getterSaveAndClose.parentElement.parentElement.appendChild(extraGetUI)
+
+            const extraSendUI = createExtraUI.call(this);
+            this.$senderSaveAndClose.parentElement.parentElement.appendChild(extraSendUI)
+
+            function createExtraUI() {
+                const extraUI = document.createElement('p')
+
+                const ccxDownloadElement = document.createElement('a')
+                ccxDownloadElement.innerHTML = "> Download SD-PPP PS .ccx plugin"
+                ccxDownloadElement.href = "/file=extensions/sd-ppp/javascript/plugins/sd-ppp_PS.ccx"
+                ccxDownloadElement.target = "_blank"
+                ccxDownloadElement.style.textAlign = 'center'
+                ccxDownloadElement.style.textDecoration = 'underline'
+
+                const pageIDElement = document.createElement('span')
+                pageIDElement.innerHTML = `Current WebUI pageid: (${this.socket.id.slice(0,4)})`
+                extraUI.appendChild(pageIDElement)
+                extraUI.appendChild(ccxDownloadElement)
+                extraUI.style.display = 'flex'
+                extraUI.style.justifyContent = 'space-between'
+                return extraUI
+            }
         }
 
         async fetchDocumentData() {
@@ -146,7 +170,17 @@
             this.socketInited = true;
 
             return new Promise((resolve, reject) => {
-                this.socket.on('connect', resolve);
+                this.socket.on('connect', () => {
+                    this.socket.emit('c_reset_instance_name', {
+                        name: `(${this.socket.id.slice(0, 4)}) ${document.title}`
+                    })
+                    setInterval(() => {
+                        this.socket.emit('c_reset_instance_name', {
+                            name: `(${this.socket.id.slice(0, 4)}) ${document.title}`
+                        })
+                    }, 1000)
+                    resolve();
+                });
                 this.socket.on('disconnect', () => {
                     this.socketInited = false;
                 });
@@ -192,14 +226,6 @@
                         }
                     }
                 });
-				this.socket.emit('c_reset_instance_name', {
-					name: document.title
-				})
-                setInterval(() => {
-                    this.socket.emit('c_reset_instance_name', {
-                        name: document.title
-                    })
-                }, 1000)
             });
         }
         
