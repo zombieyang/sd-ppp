@@ -35,23 +35,26 @@ export default async function sendImages(comfyURL, params) {
         app.documents.find(document => document.id == SpeicialIDManager.getDocumentID(documentIdentify))
 
     await executeAsModalUntilSuccess(async () => {
-        const activeLayers = document.activeLayers;
-        const formerVisibles = activeLayers.map(layer => layer.visible);
-        await Promise.all(
-            imageIds.map(async imageId => {
-                let layerOrGroup;
-                let existingLayerName;
-                let newLayerName;
-                const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
-                try {
-                    const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
-                    if (!document) document = await app.createDocument({
-                        width: jimp.bitmap.width,
-                        height: jimp.bitmap.width,
-                        resolution: 72,
-                        mode: "RGBColorMode",
-                        fill: "transparent"
-                    })
+        try {
+            const jimps = await Promise.all(imageIds.map(async imageId => 
+                await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId)
+            ))
+            if (!document) document = await app.createDocument({
+                width: jimps[0].bitmap.width,
+                height: jimps[0].bitmap.width,
+                resolution: 72,
+                mode: "RGBColorMode",
+                fill: "transparent"
+            })
+            const activeLayers = document.activeLayers;
+            const formerVisibles = activeLayers.map(layer => layer.visible);
+            await Promise.all(
+                imageIds.map(async (imageId, index) => {
+                    const jimp = jimps[index]
+                    let layerOrGroup;
+                    let existingLayerName;
+                    let newLayerName;
+                    const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
 
                     if (layerIdentify && layerIdentify != SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER) {
                         layerOrGroup = findInAllSubLayer(document, layerId)
@@ -108,16 +111,16 @@ export default async function sendImages(comfyURL, params) {
                     }
                     await imaging.putPixels(putPixelsOptions)
                     Model.instance.ignoreNextHistoryChange()
-                } catch (e) {
-                    console.error(e);
-                    throw e;
-                }
-            })
-        )
-        activeLayers.forEach((formerActiveLayer, index) => {
-            formerActiveLayer.selected = true
-            formerActiveLayer.visible = formerVisibles[index];
-        });
+                })
+            )
+            activeLayers.forEach((formerActiveLayer, index) => {
+                formerActiveLayer.selected = true
+                formerActiveLayer.visible = formerVisibles[index];
+            });
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
     })
     return {}
 }
