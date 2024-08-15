@@ -1,5 +1,5 @@
 import { app, imaging } from "photoshop";
-import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer} from '../util.js';
+import { SpeicialIDManager, executeAsModalUntilSuccess, findInAllSubLayer } from '../util.js';
 import Jimp from "../library/jimp.min";
 import Model from "../model.js";
 
@@ -9,7 +9,7 @@ function autocrop(jimp) {
     let maxX = 0;
     let maxY = 0;
 
-    jimp.scan(0, 0, jimp.bitmap.width, jimp.bitmap.height, function(x, y, idx) {
+    jimp.scan(0, 0, jimp.bitmap.width, jimp.bitmap.height, function (x, y, idx) {
         const alpha = this.bitmap.data[idx + 3];
         if (alpha !== 0) {
             minX = Math.min(minX, x);
@@ -28,26 +28,28 @@ function autocrop(jimp) {
 export default async function sendImages(comfyURL, params) {
     const imageIds = params.image_ids
     const documentIdentify = params.document_identify
-    const layerIdentify = params.layer_identify 
+    const layerIdentify = params.layer_identify
 
-    let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ? 
-        app.activeDocument : 
+    let document = documentIdentify == SpeicialIDManager.SPECIAL_DOCUMENT_CURRENT ?
+        app.activeDocument :
         app.documents.find(document => document.id == SpeicialIDManager.getDocumentID(documentIdentify))
-        
-    await Promise.all(
-        imageIds.map(async imageId => {
-            let layerOrGroup;
-            let existingLayerName;
-            let newLayerName;
-            const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
-            await executeAsModalUntilSuccess(async () => {
+
+    await executeAsModalUntilSuccess(async () => {
+        const activeLayers = document.activeLayers;
+        const formerVisibles = activeLayers.map(layer => layer.visible);
+        await Promise.all(
+            imageIds.map(async imageId => {
+                let layerOrGroup;
+                let existingLayerName;
+                let newLayerName;
+                const layerId = SpeicialIDManager.getDocumentID(layerIdentify)
                 try {
                     const jimp = (await Jimp.read(comfyURL + '/sdppp_download?name=' + imageId))
                     if (!document) document = await app.createDocument({
                         width: jimp.bitmap.width,
                         height: jimp.bitmap.width,
-                        resolution: 72, 
-                        mode: "RGBColorMode", 
+                        resolution: 72,
+                        mode: "RGBColorMode",
                         fill: "transparent"
                     })
 
@@ -58,18 +60,12 @@ export default async function sendImages(comfyURL, params) {
                     // deal with new layer or id/name not found layer
                     if (!layerOrGroup || (layerOrGroup.kind == "group")) {
                         newLayerName = existingLayerName ?? 'Images ' + imageId
-                        const activeLayers = document.activeLayers;
                         const newLayer = await document.createLayer("pixel", {
                             name: newLayerName,
                         })
                         if (layerOrGroup) newLayer.move(layerOrGroup, "placeInside")
                         else newLayer.move(document.layers[0], 'placeBefore')
                         layerOrGroup = newLayer
-                        activeLayers.forEach(layerOrGroup => {
-                            const visible = layerOrGroup.visible;
-                            layerOrGroup.selected = true
-                            layerOrGroup.visible = visible;
-                        });
                         layerOrGroup.selected = false;
                         Model.instance.ignoreNextHistoryChange()
                     }
@@ -91,12 +87,10 @@ export default async function sendImages(comfyURL, params) {
                     }
                     if (!newLayerName) {
                         let bounds = layerOrGroup.bounds
-                        if (bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0) 
-                        {
+                        if (bounds.left == 0 && bounds.top == 0 && bounds.right == 0 && bounds.bottom == 0) {
 
                         }
-                        else if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) 
-                        {
+                        else if (bounds.width != jimp.bitmap.width || bounds.height != jimp.bitmap.height) {
                             if (bounds.width <= 1 && bounds.height <= 1) {
                                 bounds.left = jimp.bitmap.width / 2
                                 bounds.top = jimp.bitmap.height / 2
@@ -112,14 +106,18 @@ export default async function sendImages(comfyURL, params) {
                             putPixelsOptions.targetBounds = bounds
                         }
                     }
-                } catch(e) {
+                    await imaging.putPixels(putPixelsOptions)
+                    Model.instance.ignoreNextHistoryChange()
+                } catch (e) {
                     console.error(e);
                     throw e;
                 }
-                await imaging.putPixels(putPixelsOptions)
-                Model.instance.ignoreNextHistoryChange()
             })
-        })
-    )
+        )
+        activeLayers.forEach((formerActiveLayer, index) => {
+            formerActiveLayer.selected = true
+            formerActiveLayer.visible = formerVisibles[index];
+        });
+    })
     return {}
 }
