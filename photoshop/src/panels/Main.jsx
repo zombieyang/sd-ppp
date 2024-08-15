@@ -120,10 +120,9 @@ export default class Main extends React.Component {
                                                 autoRunning: e.target.checked ? '' : item.sid
                                             })
                                         }}></sp-checkbox>
-                                        <sp-label class="client-name">{item.name}</sp-label>
+                                        <sp-label class="client-name">{item.progress ? `${item.progress}% - ` : ""}{item.name}</sp-label>
                                     </div>
                                     <div className="client-list-item-right">
-                                        <sp-label class="client-progress">{item.progress ? `${item.progress}%` : ""}</sp-label>
                                         <sp-link onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>{item.type == "comfy" ? "Queue Prompt" : "Generate"}</sp-link>
                                     </div>
                                 </li>
