@@ -1,6 +1,7 @@
 try:
     from fastapi.responses import FileResponse, StreamingResponse
     from fastapi import UploadFile, File
+    import urllib
 except ImportError:
     print("SD-PPP: fastapi not found")
 try:
@@ -55,7 +56,7 @@ def registerSDHTTPEndpoints(sdppp, app):
     def sdppp_download(name: str):
         res = consumeImageCache(name)
         if isinstance(res, str):
-            return FileResponse(res, media_type='image/png')
+            return FileResponse(urllib.parse.unquote(res), media_type='image/png')
         else:
             return StreamingResponse(BytesIO(res.tobytes()), media_type='image/png')
         
