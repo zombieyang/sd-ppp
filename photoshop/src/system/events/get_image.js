@@ -59,7 +59,10 @@ async function getMaskData(document, layer, bounds) {
         sourceBounds: bounds,
         layerID: layer.id
     }
-    let mask = await imaging.getLayerMask(options)
+    let mask = null;
+    try {
+        mask = await imaging.getLayerMask(options)
+    } catch (e) { console.warn(e); return null; }
     let psMaskData = mask.imageData
     if (!psMaskData) return null;
     const maskDataFromAPI = await psMaskData.getData()
