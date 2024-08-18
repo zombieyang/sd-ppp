@@ -28,20 +28,3 @@ jobs:
           release_name: v${{ github.event.inputs.tag_name }}
           draft: false
           prerelease: false
-      - name: Upload CCX
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/javascript/plugins/sd-ppp_PS.ccx
-          asset_name: sd-ppp_PS.ccx
-      - name: Upload ZIP
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/javascript/plugins/sd-ppp_PS.ccx
-          asset_name: sd-ppp_PS.zip
-          
