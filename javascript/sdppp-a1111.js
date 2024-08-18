@@ -120,6 +120,7 @@
         
         async getterConfig(widget) {
             popupId("sdppp_getter_dialog")
+            document.getElementById("sdppp_getter_dialog").style.display = "flex";
             callGlobalGradioFunction("show_getter_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
@@ -141,6 +142,7 @@
         }
         async senderConfig(widget) {
             popupId("sdppp_sender_dialog")
+            document.getElementById("sdppp_sender_dialog").style.display = "flex";
             callGlobalGradioFunction("show_sender_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
@@ -286,23 +288,23 @@
         static startX
         static startY
         static inited = false;
+        static dragMove(e) {
+            if (!WidgetDragger.dragging) return;
+            WidgetDragger.dragging.style.right = WidgetDragger.startElemRight - (e.clientX - WidgetDragger.startX) + 'px';
+            WidgetDragger.dragging.style.top = WidgetDragger.startElemTop + (e.clientY - WidgetDragger.startY) + 'px';
+            if (e.clientX - WidgetDragger.startX > 3 || e.clientY - WidgetDragger.startY > 3) WidgetDragger.dragMoved = true;
+        }
+        static endDrag() {
+            WidgetDragger.dragging = null;
+            requestAnimationFrame(()=> {
+                WidgetDragger.dragMoved = false;
+            })
+        }
         static init() {
-            function dragMove(e) {
-                if (!WidgetDragger.dragging) return;
-                WidgetDragger.dragging.style.right = WidgetDragger.startElemRight - (e.clientX - WidgetDragger.startX) + 'px';
-                WidgetDragger.dragging.style.top = WidgetDragger.startElemTop + (e.clientY - WidgetDragger.startY) + 'px';
-                if (e.clientX - WidgetDragger.startX > 3 || e.clientY - WidgetDragger.startY > 3) WidgetDragger.dragMoved = true;
-            }
-            function endDrag() {
-                WidgetDragger.dragging = null;
-                requestAnimationFrame(()=> {
-                    WidgetDragger.dragMoved = false;
-                })
-            }
-            document.body.addEventListener('mousemove', dragMove)
-            document.body.addEventListener('touchmove', dragMove)
-            document.body.addEventListener('mouseup', endDrag)
-            document.body.addEventListener('touchend', endDrag)
+            document.body.addEventListener('mousemove', WidgetDragger.dragMove)
+            document.body.addEventListener('touchmove', WidgetDragger.dragMove)
+            document.body.addEventListener('mouseup', WidgetDragger.endDrag)
+            document.body.addEventListener('touchend', WidgetDragger.endDrag)
         }
         static startDrag(elem, e) {
             if (!WidgetDragger.inited) WidgetDragger.init();
@@ -324,16 +326,22 @@
             SDPPP.instance.getterConfig(this);
         }
 
-        constructor($gradioImage) {
+        constructor($gradioImage, isForge) {
             super();
             const $getButton = document.createElement("button");
             this.$getButton = $getButton;
             this.$gradioImage = $gradioImage;
+            this.id = $gradioImage.id;
+            if (isForge) {
+                this.isForge = true;
+                this.id = $gradioImage.id.replace('imageContainer_', '').replace('container_', '')
+            }
             this.$el.appendChild($getButton);
 
             $getButton
                 .addEventListener('click', async () => {
                     if (WidgetDragger.dragMoved) return;
+                    WidgetDragger.endDrag();
                     if (!this.isReady()) 
                         this.openConfig();
                     else {
@@ -375,11 +383,16 @@
                 'layer': this.layerValue, 
                 'use_layer_bounds': this.boundValue,
                 'sd': {
-                    elem_id: this.$gradioImage.id
+                    elem_id: this.id
                 }
             })
+            
+            if (this.isForge) {
+                callGlobalGradioFunction('get_image_forge_' + this.id)
 
-            callGlobalGradioFunction('get_image_' + this.$gradioImage.id)
+            } else {
+                callGlobalGradioFunction('get_image_' + this.id)
+            }
         }
     }
 
@@ -402,6 +415,7 @@
             $sendButton
                 .addEventListener('click', () => {
                     if (WidgetDragger.dragMoved) return;
+                    WidgetDragger.endDrag();
                     if (!this.isReady()) 
                         this.openConfig();
                     else 
@@ -466,6 +480,14 @@
         gradioApp().querySelectorAll(".gradio-image").forEach((el) => {
             if (insertedGetWidgetsByElem.has(el)) return;
             const widget = new GetterWidget(el);
+            el.appendChild(widget.$el);
+            insertedGetWidgetsByElem.set(el, widget);
+            insertedGetWidgets.add(new WeakRef(widget))
+        })
+        gradioApp().querySelectorAll(".forge-image-container").forEach((el) => {
+            el = el.parentElement
+            if (insertedGetWidgetsByElem.has(el)) return;
+            const widget = new GetterWidget(el, true);
             el.appendChild(widget.$el);
             insertedGetWidgetsByElem.set(el, widget);
             insertedGetWidgets.add(new WeakRef(widget))

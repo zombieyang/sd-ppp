@@ -1,5 +1,6 @@
 # sd script init
 from modules import script_callbacks, shared
+from modules_forge.forge_canvas.canvas import LogicalImage
 from modules.ui_components import ToolButton
 from sdppp_python.sdppp import SDPPP
 from sdppp_python.apis import consumeImageCache
@@ -45,9 +46,16 @@ def on_app_started(blocks: gr.Blocks, app):
     def sdppp_get(elem):
         res = consumeImageCache(elem.elem_id)
         return gr.Image.update(value=res)
+    
+    def sdppp_get_forge(elem):
+        res = consumeImageCache(elem.elem_id)
+        # maybe a convert to base64 is needed
+        print(res)
+        return gr.Textbox.update(value=res)
 
     sdppp.all_images = all_images = dict()
     sdppp.all_galleries = all_galleries = dict()
+    sdppp.all_forge_input = all_forge_input = dict()
     for k in blocks.blocks:
         elem = blocks.blocks[k]
         if elem.elem_id == '' or elem.elem_id == None: continue
@@ -55,6 +63,8 @@ def on_app_started(blocks: gr.Blocks, app):
             all_images[elem.elem_id] = elem
         if isinstance(elem, gr.Gallery):
             all_galleries[elem.elem_id] = elem
+        if isinstance(elem, LogicalImage) and elem.label == 'background':
+            all_forge_input[elem.elem_id] = elem
 
     with blocks:
         with gr.Box(elem_id=f"sdppp_getter_dialog", elem_classes="popup-dialog") as sdppp_getter_dialog:
@@ -96,6 +106,9 @@ def on_app_started(blocks: gr.Blocks, app):
         for i in all_images:
             elem = all_images[i]
             registerGradioGlobalJSFunction(f'get_image_{elem.elem_id}', sdppp_get, [elem])
+        for i in all_forge_input:
+            elem = all_forge_input[i]
+            registerGradioGlobalJSFunction(f'get_image_forge_{elem.elem_id}', sdppp_get_forge, [elem])
             
         registerGradioGlobalJSFunction(f'show_getter_dialog', lambda i: sdppp_getter_dialog.update(visible=True), [sdppp_getter_dialog])
         registerGradioGlobalJSFunction(f'show_sender_dialog', lambda i: sdppp_sender_dialog.update(visible=True), [sdppp_sender_dialog])
