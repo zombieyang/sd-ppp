@@ -167,7 +167,6 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       this.setState({
         isConnected: instance?.isConnected,
         isReconnecting: instance?.isReconnecting,
-        backendURL: instance ? instance.backendURL : '',
         lastConnectErrorMessage: instance?.lastErrorMessage,
         autoRunning: '',
         pageInstances: []

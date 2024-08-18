@@ -29,7 +29,6 @@ export default class Main extends React.Component {
             this.setState({
                 isConnected: instance?.isConnected,
                 isReconnecting: instance?.isReconnecting,
-                backendURL: instance ? instance.backendURL : '',
                 lastConnectErrorMessage: instance?.lastErrorMessage,
                 autoRunning: '',
                 pageInstances: []
