@@ -25,14 +25,17 @@ export default class Main extends React.Component {
         })
         ComfyConnection.onConnectStateChange(() => {
             const instance = ComfyConnection.instance
-            console.log('isConnected：', instance?.isConnected)
-            this.setState({
+            const setter = {
                 isConnected: instance?.isConnected,
                 isReconnecting: instance?.isReconnecting,
                 lastConnectErrorMessage: instance?.lastErrorMessage,
                 autoRunning: '',
                 pageInstances: []
-            })
+            };
+            if (instance && instance.isConnected) {
+                setter.backendURL = instance.backendURL;
+            }
+            this.setState(setter)
         });
         ComfyConnection.onPageInstancesChange((data) => {
             if (data.pages) {
@@ -74,7 +77,7 @@ export default class Main extends React.Component {
                 <sp-textfield
                     id="url-bar"
                     label="backendURL"
-                    onInput={(ev) => { console.log('onInput', ev.currentTarget.value); this.state.backendURL = ev.currentTarget.value }}
+                    onInput={(ev) => { this.state.backendURL = ev.currentTarget.value }}
                     {...inputDisable}
                     value={this.state.backendURL}
                     placeholder="http://127.0.0.1:8188"

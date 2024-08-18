@@ -55,7 +55,7 @@ class ComfyConnection {
     lastErrorMessage = '';
     constructor(backendURL) {
         ComfyConnection.instance = this;
-        this.backendURL = backendURL.replace(/\/*$/, '');
+        this.backendURL = backendURL.split('?')[0].split('#')[0].replace(/\/*$/, '');
         this.connect();
     }
     connect() {
