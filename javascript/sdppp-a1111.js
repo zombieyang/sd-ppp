@@ -120,7 +120,7 @@
         
         async getterConfig(widget) {
             popupId("sdppp_getter_dialog")
-            document.getElementById("sdppp_getter_dialog").style.display = "flex";
+            document.getElementById("sdppp_getter_dialog").style.display = "block";
             callGlobalGradioFunction("show_getter_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
@@ -142,7 +142,7 @@
         }
         async senderConfig(widget) {
             popupId("sdppp_sender_dialog")
-            document.getElementById("sdppp_sender_dialog").style.display = "flex";
+            document.getElementById("sdppp_sender_dialog").style.display = "block";
             callGlobalGradioFunction("show_sender_dialog")
             if (!this.insertedPop) {
                 this.initDOM();
