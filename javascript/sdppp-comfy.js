@@ -70,7 +70,7 @@
 		let widget;
 		if (!downloadWidgets.has(node)) {
 			const size = node.size;
-			widget = node.addWidget('button', '', 0, ()=> {
+			widget = node.addWidget('button', '', 0, () => {
 				if (!Object.keys(documentData || {}).length)
 					location.href = "/extensions/sd-ppp/plugins/sd-ppp_PS.ccx"
 			})
@@ -84,7 +84,7 @@
 	function renderNotConnectedBG(node, ctx) {
 		if (node.flags.collapsed) return;
 		const connected = Object.keys(documentData || {}).length;
-		if (!connected)	{
+		if (!connected) {
 			ctx.save();
 			ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
 			ctx.fillRect(0, 0, node.size[0], node.size[1]);
@@ -128,6 +128,13 @@
 					documentData = (await new Promise(resolve => {
 						socket.emit('c_get_documents', resolve)
 					})) || {}
+					socket.emit('c_update_options', {
+						document_data: documentData,
+						special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
+						special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
+						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+					})
+					// TODO current document is added on PS side, that's strange
 					this.widgets[0].options.values = Object.keys(documentData);
 					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
 					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];
@@ -176,6 +183,13 @@
 					documentData = (await new Promise(resolve => {
 						socket.emit('c_get_documents', resolve)
 					})) || {}
+					socket.emit('c_update_options', {
+						document_data: documentData,
+						special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
+						special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
+						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+					})
+					// TODO current document is added on PS side, that's strange
 					this.widgets[0].options.values = Object.keys(documentData);
 					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
 					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];

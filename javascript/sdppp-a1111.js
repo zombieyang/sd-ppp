@@ -109,7 +109,7 @@
                 this.socket.emit('c_get_documents', resolve)
             });
             await new Promise(resolve => {
-                this.socket.emit('c_set_sd_options', {
+                this.socket.emit('c_update_options', {
                     document_data: data,
                     special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
                     special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),

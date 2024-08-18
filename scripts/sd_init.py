@@ -3,7 +3,7 @@ from modules import script_callbacks, shared
 from modules.ui_components import ToolButton
 from sdppp_python.sdppp import SDPPP
 from sdppp_python.apis import consumeImageCache
-from sdppp_python.sd_data import get_sd_document_data, get_sd_special_get_bound_layer_options, get_sd_special_get_layer_options, get_sd_special_send_layer_options
+from sdppp_python.data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options
 import gradio as gr
 
 refresh_symbol = '\U0001f504'  # 🔄
@@ -24,21 +24,21 @@ def on_app_started(blocks: gr.Blocks, app):
     def update_layers_dropdown(origin, document):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        choices = [*get_sd_special_get_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
+        choices = [*get_special_get_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
     def update_bounds_dropdown(origin, document):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        choices = [*get_sd_special_get_bound_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
+        choices = [*get_special_get_bound_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
     def update_send_layers_dropdown(origin, document):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
-        choices = [*get_sd_special_send_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
+        choices = [*get_special_send_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 

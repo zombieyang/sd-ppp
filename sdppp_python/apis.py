@@ -6,6 +6,7 @@ except ImportError:
     print("SD-PPP: fastapi not found")
 try:
     from aiohttp import web
+    from .data import set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options
 except ImportError:
     print("SD-PPP: aiohttp not found")
 
@@ -65,14 +66,8 @@ def registerSDHTTPEndpoints(sdppp, app):
         name = addImageCache(Image.open(BytesIO(image.file.read())))
         return {'name': name}
 
-from .sd_data import get_sd_document_data, set_sd_document_data, set_sd_special_get_bound_layer_options, set_sd_special_get_layer_options, set_sd_special_send_layer_options
+from .data import get_sd_document_data, set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options
 def registerSocketEvents(sdppp, sio):
-    @sio.event
-    async def c_set_sd_options(sid, data={}):
-        set_sd_document_data(data['document_data'])
-        set_sd_special_get_layer_options(data['special_get_layer_options'])
-        set_sd_special_get_bound_layer_options(data['special_get_bound_layer_options'])
-        set_sd_special_send_layer_options(data['special_send_layer_options'])
 
     # only emit by sd webui instance
     @sio.event
@@ -180,4 +175,10 @@ def registerSocketEvents(sdppp, sio):
             return {}
         photoshop_sid = instance.sid
         return await sio.call('c_get_documents', data, to=photoshop_sid)
-        
+    
+    @sio.event
+    async def c_update_options(sid, data={}):
+        set_sd_document_data(data['document_data'])
+        set_special_get_layer_options(data['special_get_layer_options'])
+        set_special_get_bound_layer_options(data['special_get_bound_layer_options'])
+        set_special_send_layer_options(data['special_send_layer_options'])

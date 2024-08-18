@@ -3,6 +3,7 @@ import time
 from nodes import LoadImage
 from PIL import Image
 from .apis import addImageCache
+from .data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options
 
 def define_comfyui_nodes(sdppp):
     def validate_sdppp():
@@ -38,6 +39,7 @@ def define_comfyui_nodes(sdppp):
 
 
     class GetImageFromPhotoshopLayerNode:
+
         @classmethod
         def VALIDATE_INPUTS(s):
             return validate_sdppp()
@@ -58,12 +60,21 @@ def define_comfyui_nodes(sdppp):
         
         @classmethod
         def INPUT_TYPES(cls):
+            document_data = get_sd_document_data()
+            document_data_keys = document_data.keys()
+            list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
                 "required": {},
                 "optional": {
-                    "document": ([], {"default": None}),
-                    "layer_or_group": ([], {"default": None}),
-                    "use_layer_bounds": ([], {"default": None}),
+                    "document": (list(document_data_keys), {"default": None}),
+                    "layer_or_group": ([
+                        *get_special_get_layer_options(),
+                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
+                    ], {"default": None}),
+                    "use_layer_bounds": ([
+                        *get_special_get_bound_layer_options(),
+                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
+                    ], {"default": None}),
                 }
             }
 
@@ -87,18 +98,26 @@ def define_comfyui_nodes(sdppp):
 
 
     class SendImageToPhotoshopLayerNode:
+
         @classmethod
         def VALIDATE_INPUTS(s):
             return validate_sdppp()
         
         @classmethod
         def INPUT_TYPES(cls):
+            document_data = get_sd_document_data()
+            document_data_keys = document_data.keys()
+            list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
                 "required": {},
                 "optional": {
                     "images": ("IMAGE", ),
-                    "document": ([], {"default": None}),
-                    "layer_or_group": ([], {"default": None}),
+                    # documents_options
+                    "document": (list(document_data), {"default": None}),
+                    "layer_or_group": ([
+                        *get_special_send_layer_options(), 
+                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
+                    ], {"default": None}),
                 }
             }
 
