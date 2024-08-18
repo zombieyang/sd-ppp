@@ -1,6 +1,6 @@
 {
   "name": "sdppp",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "scripts": {
     "watch": "nodemon -w src -e js,jsx,json,css,html -w webpack.config.js -x npm run build",
     "build": "webpack --mode development",

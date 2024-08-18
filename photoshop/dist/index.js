@@ -163,14 +163,17 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onConnectStateChange(() => {
       const instance = _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].instance;
-      console.log('isConnected：', instance?.isConnected);
-      this.setState({
+      const setter = {
         isConnected: instance?.isConnected,
         isReconnecting: instance?.isReconnecting,
         lastConnectErrorMessage: instance?.lastErrorMessage,
         autoRunning: '',
         pageInstances: []
-      });
+      };
+      if (instance && instance.isConnected) {
+        setter.backendURL = instance.backendURL;
+      }
+      this.setState(setter);
     });
     _system_ComfyConnection__WEBPACK_IMPORTED_MODULE_1__["default"].onPageInstancesChange(data => {
       if (data.pages) {
@@ -211,7 +214,6 @@ class Main extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
       id: "url-bar",
       label: "backendURL",
       onInput: ev => {
-        console.log('onInput', ev.currentTarget.value);
         this.state.backendURL = ev.currentTarget.value;
       }
     }, inputDisable, {
@@ -347,7 +349,7 @@ class ComfyConnection {
   lastErrorMessage = '';
   constructor(backendURL) {
     ComfyConnection.instance = this;
-    this.backendURL = backendURL.replace(/\/*$/, '');
+    this.backendURL = backendURL.split('?')[0].split('#')[0].replace(/\/*$/, '');
     this.connect();
   }
   connect() {
@@ -578,7 +580,13 @@ async function getMaskData(document, layer, bounds) {
     sourceBounds: bounds,
     layerID: layer.id
   };
-  let mask = await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.getLayerMask(options);
+  let mask = null;
+  try {
+    mask = await photoshop__WEBPACK_IMPORTED_MODULE_0__.imaging.getLayerMask(options);
+  } catch (e) {
+    console.warn(e);
+    return null;
+  }
   let psMaskData = mask.imageData;
   if (!psMaskData) return null;
   const maskDataFromAPI = await psMaskData.getData();

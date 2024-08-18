@@ -1,3 +1,10 @@
+## [1.2.2] - 2024-08-18
+1. fix: compatible latest SD-Forge with ForgeCanvas and Gradio4
+2. fix: compatible with latest ComfyUI (August ver.).
+3. fix: cannot get background layer without alpha
+4. fix: remove the `?` and `#` in connect url to prevent HTTP 405 error
+5. fix: some UI bug in initial connect
+
 ## [1.2.1] - 2024-08-15
 1. feature: add .ccx download button in comfy node and webui's setting popup.
 2. feature: show the page name in PS plugin's panel and in comfy node and webui's setting popup.
