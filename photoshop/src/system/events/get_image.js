@@ -80,8 +80,8 @@ export default async function getImage(serverURL, params) {
     if (!document) throw new Error('document not found');
 
     const layerIdentify = params.layer_identify
-    const boundLayerIdentify = params.bound_layer_identify
-    const desireBounds = getDesiredBounds(document, boundLayerIdentify, layerIdentify);
+    const boundsIdentify = params.bounds_identify
+    const desireBounds = getDesiredBounds(document, boundsIdentify, layerIdentify);
     const layerID = SpeicialIDManager.getLayerID(layerIdentify);
 
     const returnData = {

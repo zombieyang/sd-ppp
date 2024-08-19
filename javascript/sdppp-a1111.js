@@ -113,7 +113,8 @@
                     document_data: data,
                     special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
                     special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
-                    special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+                    special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend(),
+                    special_send_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSendBounds()
                 }, resolve)
             })
         }

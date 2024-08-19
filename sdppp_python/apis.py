@@ -6,7 +6,7 @@ except ImportError:
     print("SD-PPP: fastapi not found")
 try:
     from aiohttp import web
-    from .data import set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options
+    from .data import set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options, set_special_send_bound_layer_options
 except ImportError:
     print("SD-PPP: aiohttp not found")
 
@@ -182,3 +182,4 @@ def registerSocketEvents(sdppp, sio):
         set_special_get_layer_options(data['special_get_layer_options'])
         set_special_get_bound_layer_options(data['special_get_bound_layer_options'])
         set_special_send_layer_options(data['special_send_layer_options'])
+        set_special_send_bound_layer_options(data['special_send_bound_layer_options'])

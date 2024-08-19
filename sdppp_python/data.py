@@ -27,3 +27,10 @@ def set_special_send_layer_options(data):
     special_send_layer_options = data
 def get_special_send_layer_options():
     return special_send_layer_options
+
+special_send_bound_layer_options = []
+def set_special_send_bound_layer_options(data):
+    global special_send_bound_layer_options
+    special_send_bound_layer_options = data
+def get_special_send_bound_layer_options():
+    return special_send_bound_layer_options

@@ -3,7 +3,7 @@ import time
 from nodes import LoadImage
 from PIL import Image
 from .apis import addImageCache
-from .data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options
+from .data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options, get_special_send_bound_layer_options
 
 def define_comfyui_nodes(sdppp):
     def validate_sdppp():
@@ -45,17 +45,17 @@ def define_comfyui_nodes(sdppp):
             return validate_sdppp()
         
         @classmethod
-        def IS_CHANGED(self, layer_or_group, use_layer_bounds):
+        def IS_CHANGED(self, layer_or_group, bounds):
             if not sdppp.has_ps_instance():
                 return np.random.rand()
             else:
                 photoshopInstance = sdppp.get_ps_instance()
                 is_changed, history_state_id = call_async_func_in_server_thread(
-                    photoshopInstance.check_layer_bounds_combo_changed(layer, use_layer_bounds)
+                    photoshopInstance.check_layer_bounds_combo_changed(layer, bounds)
                 )
                 if is_changed and history_state_id is None:
                     return np.random.rand()
-                photoshopInstance.update_comfyui_last_value(layer, use_layer_bounds, history_state_id)
+                photoshopInstance.update_comfyui_last_value(layer, bounds, history_state_id)
                 return history_state_id
         
         @classmethod
@@ -64,14 +64,13 @@ def define_comfyui_nodes(sdppp):
             document_data_keys = document_data.keys()
             list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
-                "required": {},
-                "optional": {
+                "required": {
                     "document": (list(document_data_keys), {"default": None}),
                     "layer_or_group": ([
                         *get_special_get_layer_options(),
                         *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
                     ], {"default": None}),
-                    "use_layer_bounds": ([
+                    "bounds": ([
                         *get_special_get_bound_layer_options(),
                         *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
                     ], {"default": None}),
@@ -79,17 +78,17 @@ def define_comfyui_nodes(sdppp):
             }
 
         RETURN_TYPES = ("IMAGE", "MASK", "FLOAT")
-        RETURN_NAMES = ("image_out", "mask_out", "layer_opacity")
+        RETURN_NAMES = ("rgb_out", "alpha_out", "layer_opacity")
         FUNCTION = "get_image"
         CATEGORY = "Photoshop"
 
-        def get_image(self, document, layer_or_group, use_layer_bounds):
+        def get_image(self, document, layer_or_group, bounds):
             if validate_sdppp() is not True:
                 raise ValueError('Photoshop is not connected')
             photoshopInstance = sdppp.get_ps_instance()
 
             image_id, layer_opacity = call_async_func_in_server_thread(
-                photoshopInstance.get_image(document_identify=document, layer_identify=layer_or_group, bound_layer_identify=use_layer_bounds)
+                photoshopInstance.get_image(document_identify=document, layer_identify=layer_or_group, bounds_identify=bounds)
             )
 
             loadImage = LoadImage()
@@ -109,13 +108,16 @@ def define_comfyui_nodes(sdppp):
             document_data_keys = document_data.keys()
             list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
-                "required": {},
-                "optional": {
+                "required": {
                     "images": ("IMAGE", ),
                     # documents_options
                     "document": (list(document_data), {"default": None}),
                     "layer_or_group": ([
                         *get_special_send_layer_options(), 
+                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
+                    ], {"default": None}),
+                    "bounds": ([
+                        *get_special_send_bound_layer_options(), 
                         *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
                     ], {"default": None}),
                 }
@@ -126,19 +128,22 @@ def define_comfyui_nodes(sdppp):
         CATEGORY = "Photoshop"
         OUTPUT_NODE = True
 
-        def send_image(self, images, document, layer_or_group):
+        def send_image(self, images, document, layer_or_group, bounds):
             if validate_sdppp() is not True:
                 raise ValueError('Photoshop is not connected')
             photoshopInstance = sdppp.get_ps_instance()
             
             image_ids = []
-            for (batch_number, image) in enumerate(images):
+            for (batch_index, image) in enumerate(images):
                 i = 255. * image.cpu().numpy()
                 img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
                 image_ids.append(addImageCache(img))
                 
             call_async_func_in_server_thread(photoshopInstance.send_images(
-                image_ids=image_ids, document_identify=document, layer_identify=layer_or_group
+                image_ids=image_ids,  
+                document_identify=document, 
+                layer_identify=layer_or_group, 
+                bounds_identify=bounds
             ), True)
 
             return (None,)

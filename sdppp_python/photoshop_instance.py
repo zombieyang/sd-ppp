@@ -8,9 +8,11 @@ class PhotoshopInstance:
         self.layers = []
         self.reset_change_tracker()
     
-    async def get_image(self, document_identify, layer_identify, bound_layer_identify):
+    async def get_image(self, document_identify, layer_identify, bounds_identify):
         result = await self.sdppp.sio.call('s_get_image', data={
-            'document_identify': document_identify, 'layer_identify': layer_identify, 'bound_layer_identify': bound_layer_identify
+            'document_identify': document_identify, 
+            'layer_identify': layer_identify, 
+            'bounds_identify': bounds_identify
         }, to=self.sid)
         if not result:
             return None, None
@@ -21,9 +23,12 @@ class PhotoshopInstance:
 
         return result['upload_name'], result['layer_opacity']
     
-    async def send_images(self, image_ids, document_identify, layer_identify):
+    async def send_images(self, image_ids, document_identify, layer_identify, bounds_identify):
         result = await self.sdppp.sio.call('s_send_images', data={
-            'image_ids': image_ids, 'document_identify': document_identify, 'layer_identify': layer_identify
+            'image_ids': image_ids, 
+            'document_identify': document_identify, 
+            'layer_identify': layer_identify,
+            'bounds_identify': bounds_identify
         }, to=self.sid)
         # await self._update_history_state_id_after_internal_change()
         return result
@@ -49,8 +54,8 @@ class PhotoshopInstance:
         current_id = await self.get_active_history_state_id()
         return self.get_img_state_id != current_id and self.get_img_state_id < current_id
 
-    async def check_layer_bounds_combo_changed(self, layer, use_layer_bounds):
-        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+    async def check_layer_bounds_combo_changed(self, layer, bounds):
+        layer_bounds_combo = f"{layer}{bounds}"
         layer_bounds_history_state_id = self.change_tracker.get(layer_bounds_combo, None)
         if layer_bounds_history_state_id is None:
             return True
@@ -63,8 +68,8 @@ class PhotoshopInstance:
     
     # have to track this value because comfyui determines if the value is changed by comparing it with the last value.
     # can't use the real history id because sending images changes the history id, and comfyui will think the value is changed when it's not
-    def update_comfyui_last_value(self, layer, use_layer_bounds, value):
-        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+    def update_comfyui_last_value(self, layer, bounds, value):
+        layer_bounds_combo = f"{layer}{bounds}"
         self.comfyui_last_value_tracker[layer_bounds_combo] = value
     
     # need to update history id after internal operation otherwise it might cause infinite change loop
@@ -75,8 +80,8 @@ class PhotoshopInstance:
             self.change_tracker = {k: history_state_id for k, v in self.change_tracker.items() if v == self.get_img_state_id}
         self.get_img_state_id = history_state_id # it gets into a loop if get img state is not updated
         
-    async def _update_layer_bounds_history_state_id(self, layer, use_layer_bounds):
-        layer_bounds_combo = f"{layer}{use_layer_bounds}"
+    async def _update_layer_bounds_history_state_id(self, layer, bounds):
+        layer_bounds_combo = f"{layer}{bounds}"
         latest_state_id = await self.get_active_history_state_id()
         self.change_tracker[layer_bounds_combo] = latest_state_id
         return latest_state_id

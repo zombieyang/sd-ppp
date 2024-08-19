@@ -1,4 +1,3 @@
-import { core } from "photoshop";
 import '../../../javascript/sdppp-util'
 const SpeicialIDManager = globalThis.SDPPPSpeicialIDManager
 export { SpeicialIDManager };
@@ -98,24 +97,6 @@ export async function getLayerOrGroupAfterMerged(document, layerID) {
     const mergedLayer = await dupLayer.merge()
     if (!visibleOriginal) layer.visible = false
     return [mergedLayer, true];
-}
-const executeAsModal = core.executeAsModal;
-
-export async function executeAsModalUntilSuccess(...args) {
-    let result;
-    let failed = true;
-    while(failed) {
-        try {
-            result = await executeAsModal(...args);
-            failed = false;
-        } catch (e) {
-            if (e.number != 9) {
-                failed = false; // This case is hit if the targetFunction throws an exception
-            }
-        }
-        await new Promise(r => setTimeout(r, 200));
-    }
-    return result;
 }
 
 export function getDesiredBounds(document, boundLayerIdentify, layerIdentify) {

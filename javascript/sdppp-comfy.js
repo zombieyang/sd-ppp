@@ -121,8 +121,8 @@
 					const documentName = this.widgets[0].value
 					this.widgets[1].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForGet().concat(documentData[documentName].layers.map(layer => layer.name));
 					this.widgets[2].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForGetBounds().concat(documentData[documentName].layers.map(layer => layer.name));
-					if (!this.widgets[1].value || this.widgets[1].options.values.indexOf(this.widgets[1].value) == -1) this.widgets[1].value = this.widgets[1].options.values[0]
-					if (!this.widgets[2].value || this.widgets[2].options.values.indexOf(this.widgets[2].value) == -1) this.widgets[2].value = this.widgets[2].options.values[0]
+					widgetCheckContainOrReset(this.widgets[1])
+					widgetCheckContainOrReset(this.widgets[2])
 				}
 				const getAndRender = async function () {
 					documentData = (await new Promise(resolve => {
@@ -132,12 +132,12 @@
 						document_data: documentData,
 						special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
 						special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
-						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend(),
+						special_send_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSendBounds()
 					})
 					// TODO current document is added on PS side, that's strange
 					this.widgets[0].options.values = Object.keys(documentData);
-					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
-					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];
+					widgetCheckContainOrReset(this.widgets[0])
 					resetWidget12.call(this);
 					handleDownloadWidgets(this);
 				}
@@ -174,10 +174,12 @@
 				const onSelected = nodeType.prototype.onSelected;
 				const onMouseEnter = nodeType.prototype.onMouseEnter;
 				const onAdded = nodeType.prototype.onAdded;
-				const resetWidget1 = function () {
+				const resetWidget12 = function () {
 					const documentName = this.widgets[0].value
 					this.widgets[1].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForSend().concat(documentData[documentName].layers.map(layer => layer.name));
-					if (!this.widgets[1].value || this.widgets[1].options.values.indexOf(this.widgets[1].value) == -1) this.widgets[1].value = this.widgets[1].options.values[0]
+					this.widgets[2].options.values = !documentData[documentName] ? [] : SDPPPSpeicialIDManager.getSpecialLayerForSendBounds().concat(documentData[documentName].layers.map(layer => layer.name));
+					widgetCheckContainOrReset(this.widgets[1])
+					widgetCheckContainOrReset(this.widgets[2])
 				}
 				const getAndRender = async function () {
 					documentData = (await new Promise(resolve => {
@@ -187,13 +189,13 @@
 						document_data: documentData,
 						special_get_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGet(),
 						special_get_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForGetBounds(),
-						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend()
+						special_send_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSend(),
+						special_send_bound_layer_options: SDPPPSpeicialIDManager.getSpecialLayerForSendBounds()
 					})
 					// TODO current document is added on PS side, that's strange
 					this.widgets[0].options.values = Object.keys(documentData);
-					if (!this.widgets[0].options.values.length) this.widgets[0].value = ''
-					if (!this.widgets[0].value || this.widgets[0].options.values.indexOf(this.widgets[0].value) == -1) this.widgets[0].value = this.widgets[0].options.values[0];
-					resetWidget1.call(this);
+					widgetCheckContainOrReset(this.widgets[0])
+					resetWidget12.call(this);
 					handleDownloadWidgets(this);
 				}
 				nodeType.prototype.onSelected = async function (...args) {
@@ -207,7 +209,7 @@
 				nodeType.prototype.onAdded = async function () {
 					if (onAdded) await onAdded.call(this, ...args);
 					this.widgets[0].callback = () => {
-						resetWidget1.call(this);
+						resetWidget12.call(this);
 					}
 					this.widgets[1].callback = () => {
 						if (this.widgets[0].value == SDPPPSpeicialIDManager.SPECIAL_DOCUMENT_CURRENT) {
@@ -232,6 +234,11 @@
 		'Get Image From Photoshop Layer',
 		'Send Images To Photoshop',
 	]
+
+	function widgetCheckContainOrReset(widget) {
+		if (!widget.options.values.length) widget.value = ''
+		if (!widget.value || widget.options.values.indexOf(widget.value) == -1) widget.value = widget.options.values[0];
+	}
 
 	async function checkHistoryChanges() {
 		try {

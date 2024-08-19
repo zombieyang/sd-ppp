@@ -40,6 +40,12 @@
                 SpeicialIDManager.SPECIAL_LAYER_SAME_AS_LAYER
             ]
         }
+        static getSpecialLayerForSendBounds() {
+            return [
+                SpeicialIDManager.SPECIAL_LAYER_USE_CANVAS,
+                SpeicialIDManager.SPECIAL_LAYER_USE_SELECTION
+            ]
+        }
         static getSpecialLayerForSend() {
             return [
                 SpeicialIDManager.SPECIAL_LAYER_NEW_LAYER
