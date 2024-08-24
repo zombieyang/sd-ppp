@@ -5,20 +5,24 @@
 ------ 
 > ppp for Professional Photoshop Portal
 
-this extension/custom_node is mainly focus on getting/sending elements from/to Photoshop in ComfyUI or SD. Let's manage your AI art by Photoshop.
+this extension/custom_node is mainly focus on getting/sending elements from/to Photoshop in ComfyUI or SD. You can do
+1. get any layer's content and mask from Photoshop. Even many layers in the same time.
+2. send images to Photoshop to any layer/area.
+3. get text layer's content as prompt.
+4. set a specific boundary of Photoshop document to work.
 
 I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 
 #### SD/SDForge Showcase
     
-<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63" />
-<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a" />
+<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63" />
+<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a" />
 
 #### ComfyUI Showcase
     
-<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
-<img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a" />
+<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
+<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a" />
 
     
 ## How to install
@@ -88,12 +92,12 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 </details>
 
 ## Other showcase
-0. live-painting
+0. regional prompting
+    <img width=600 src="https://github.com/user-attachments/assets/e7dac3ed-f292-4d4a-9a72-8774d5928607" />
+
+1. live-painting
     
     <img width=400 src="https://github.com/user-attachments/assets/9e4fbb6e-67ff-45bf-8df0-47f7b692e522" />
-1. inpaint
-    
-    <img width=400 src="https://github.com/user-attachments/assets/3a3da67e-003f-4838-b326-daa291353d31" />
 2. controlnet
     
     <img width=400 src="https://github.com/user-attachments/assets/647757cc-4bdd-40f4-8956-6a399d9c0e2d" />
