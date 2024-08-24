@@ -37,27 +37,50 @@ def define_comfyui_nodes(sdppp):
         else:
             return None
 
-
-    class GetImageFromPhotoshopLayerNode:
+    class ParseLayerInfoNode:
+        RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT")
+        RETURN_NAMES = ("opacity", "center_x", "center_y", "bound_width", "bound_height")
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
 
         @classmethod
-        def VALIDATE_INPUTS(s):
-            return validate_sdppp()
-        
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "layer_info": ("LAYER_INFO", {"default": None}),
+                }
+            }
+        def action(self, layer_info):
+            return (layer_info['opacity'], layer_info['center_x'], layer_info['center_y'], layer_info['bound_width'], layer_info['bound_height'])
+
+    class GetDocumentNode:
+        RETURN_TYPES = ("DOCUMENT", "BOUND")
+        RETURN_NAMES = ("document", "canvas_bound")
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
         @classmethod
-        def IS_CHANGED(self, layer_or_group, bounds):
-            if not sdppp.has_ps_instance():
-                return np.random.rand()
-            else:
-                photoshopInstance = sdppp.get_ps_instance()
-                is_changed, history_state_id = call_async_func_in_server_thread(
-                    photoshopInstance.check_layer_bounds_combo_changed(layer, bounds)
-                )
-                if is_changed and history_state_id is None:
-                    return np.random.rand()
-                photoshopInstance.update_comfyui_last_value(layer, bounds, history_state_id)
-                return history_state_id
-        
+        def INPUT_TYPES(cls):
+            document_data = get_sd_document_data()
+            document_data_keys = document_data.keys()
+            return {
+                "required": {
+                    "document_name": (list(document_data_keys), {"default": None, "tooltip": "select sd-ppp document"}),
+                }
+            }
+
+        def action(self, document_name):
+            return (document_name, {
+                "document": document_name,
+                "bound_name": '### The Canvas ###'
+            })
+
+    class GetLayerByIDNode:
+        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
+        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
         @classmethod
         def INPUT_TYPES(cls):
             document_data = get_sd_document_data()
@@ -65,128 +88,140 @@ def define_comfyui_nodes(sdppp):
             list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
                 "required": {
-                    "document": (list(document_data_keys), {"default": None}),
-                    "layer_or_group": ([
+                    "document": ("DOCUMENT", {"default": None}),
+                    "layer_nameid": ([
                         *get_special_get_layer_options(),
                         *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
-                    ], {"default": None}),
-                    "bounds": ([
-                        *get_special_get_bound_layer_options(),
-                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
-                    ], {"default": None}),
+                    ], {"default": None, "tooltip": "select sd-ppp layer"}),
                 }
             }
-
-        RETURN_TYPES = ("IMAGE", "MASK", "FLOAT")
-        RETURN_NAMES = ("rgb_out", "alpha_out", "layer_opacity")
-        FUNCTION = "get_image"
-        CATEGORY = "Photoshop"
-
-        def get_image(self, document, layer_or_group, bounds):
+        
+        def action(self, document, layer_nameid):
             if validate_sdppp() is not True:
                 raise ValueError('Photoshop is not connected')
             photoshopInstance = sdppp.get_ps_instance()
 
-            image_id, layer_opacity = call_async_func_in_server_thread(
-                photoshopInstance.get_image(document_identify=document, layer_identify=layer_or_group, bounds_identify=bounds)
+            result = call_async_func_in_server_thread(
+                photoshopInstance.get_layer_info(document_identify=document, layer_identify=layer_nameid)
             )
-
-            loadImage = LoadImage()
-            (output_image, output_mask) = loadImage.load_image(image_id)
-            return (output_image, output_mask, layer_opacity / 100)
-
-
-    class SendImageToPhotoshopLayerNode:
+            return ({
+                "document": document,
+                "layer_name": layer_nameid
+            }, {
+                "document": document,
+                "bound_name": layer_nameid
+            }, result)
+        
+    class GetLayersInGroupNode:
+        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
+        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
 
         @classmethod
-        def VALIDATE_INPUTS(s):
-            return validate_sdppp()
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "layer_or_group": ('LAYER', {"default": None}),
+                }
+            }
         
+        def action(self, layer_or_group):
+            if validate_sdppp() is not True:
+                raise ValueError('Photoshop is not connected')
+            photoshopInstance = sdppp.get_ps_instance()
+
+            document = layer_or_group['document']
+            layer_or_group = layer_or_group['layer_name']
+
+            result = call_async_func_in_server_thread(
+                photoshopInstance.get_layers_in_group(document_identify=document, layer_identify=layer_nameid)
+            )
+            # return ([{ "document": document, "layer_name": item } for item in result['layer_identifies']], result['layer_identifies'], result['layer_infos'])
+            if len(result['layer_identifies']) == 0:
+                return (None, None, None)
+            return (
+                { "document": document, "layer_name": result['layer_identifies'][0] }, 
+                { "document": document, "bound_name": result['layer_identifies'][0] }, 
+                result['layer_infos'][0]
+            )
+        
+    class GetLinkedLayersNode:
+        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
+        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "layer_or_group": ('LAYER', {"default": None}),
+                }
+            }
+        
+        def action(self, layer_or_group):
+            if validate_sdppp() is not True:
+                raise ValueError('Photoshop is not connected')
+            photoshopInstance = sdppp.get_ps_instance()
+
+            document = layer_or_group['document']
+            layer_or_group = layer_or_group['layer_name']
+
+            result = call_async_func_in_server_thread(
+                photoshopInstance.get_linked_layers(document_identify=document, layer_identify=layer_or_group)
+            )
+            # return ([{ "document": document, "layer_name": item } for item in result['layer_identifies']], result['layer_identifies'], result['layer_infos'])
+            if len(result['layer_identifies']) == 0:
+                return (None, None, None)
+            return (
+                { "document": document, "layer_name": result['layer_identifies'][0] }, 
+                { "document": document, "bound_name": result['layer_identifies'][0] }, 
+                result['layer_infos'][0]
+            )
+        
+    class GetTextFromLayerNode:
+        RETURN_TYPES = ("STRING",)
+        RETURN_NAMES = ("text",)
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
+        @classmethod
+        def IS_CHANGED(self):
+            return np.random.rand()
+
         @classmethod
         def INPUT_TYPES(cls):
             document_data = get_sd_document_data()
-            document_data_keys = document_data.keys()
-            list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
                 "required": {
-                    "images": ("IMAGE", ),
-                    # documents_options
-                    "document": (list(document_data), {"default": None}),
-                    "layer_or_group": ([
-                        *get_special_send_layer_options(), 
-                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
-                    ], {"default": None}),
-                    "bounds": ([
-                        *get_special_send_bound_layer_options(), 
-                        *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
-                    ], {"default": None}),
+                    "layer_or_group": ('LAYER', {"default": None}),
+                },
+                "optional": {
+                    # compat combo selection type
+                    "document": (list(document_data), {"default": False}),
                 }
             }
-
-        RETURN_TYPES = ()
-        FUNCTION = "send_image"
-        CATEGORY = "Photoshop"
-        OUTPUT_NODE = True
-
-        def send_image(self, images, document, layer_or_group, bounds):
+        
+        def action(self, layer_or_group, document = ""):
             if validate_sdppp() is not True:
                 raise ValueError('Photoshop is not connected')
             photoshopInstance = sdppp.get_ps_instance()
-            
-            image_ids = []
-            for (batch_index, image) in enumerate(images):
-                i = 255. * image.cpu().numpy()
-                img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-                image_ids.append(addImageCache(img))
-                
-            call_async_func_in_server_thread(photoshopInstance.send_images(
-                image_ids=image_ids,  
-                document_identify=document, 
-                layer_identify=layer_or_group, 
-                bounds_identify=bounds
-            ), True)
+            if not isinstance(layer_or_group, str):
+                document = layer_or_group['document']
+                layer_or_group = layer_or_group['layer_name']
 
-            return (None,)
-        
-    class ImageTimesOpacity:
-        @classmethod
-        def INPUT_TYPES(cls):
-            return {
-                "required": {
-                    "images": ("IMAGE", ),
-                    "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
-                }
-            }
+            text = call_async_func_in_server_thread(
+                photoshopInstance.get_text(document_identify=document, layer_identify=layer_or_group)
+            )
+            return (text,)
 
-        RETURN_TYPES = ("IMAGE",)
-        FUNCTION = "image_times_opacity"
-        CATEGORY = "Photoshop"
-
-        def image_times_opacity(self, images, opacity):
-            image_out = images * opacity
-            return (image_out,)
-        
-    class MaskTimesOpacity:
-        @classmethod
-        def INPUT_TYPES(cls):
-            return {
-                "required": {
-                    "masks": ("MASK", ),
-                    "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
-                }
-            }
-
-        RETURN_TYPES = ("MASK",)
-        FUNCTION = "mask_times_opacity"
-        CATEGORY = "Photoshop"
-
-        def mask_times_opacity(self, masks, opacity):
-            mask_out = masks * opacity
-            return (mask_out,)
-        
     return {
-        'GetImageFromPhotoshopLayerNode': GetImageFromPhotoshopLayerNode,
-        'SendImageToPhotoshopLayerNode': SendImageToPhotoshopLayerNode,
-        'ImageTimesOpacity': ImageTimesOpacity,
-        'MaskTimesOpacity': MaskTimesOpacity,
+        'SDPPP Get Document': GetDocumentNode,
+        'SDPPP Get Layer By ID': GetLayerByIDNode,
+        'SDPPP Get Linked Layers': GetLinkedLayersNode,
+        'SDPPP Get Layers In Group': GetLayersInGroupNode,
+        'SDPPP Get Text From Layer': GetTextFromLayerNode,
+
+        'SDPPP Parse Layer Info': ParseLayerInfoNode,
     }

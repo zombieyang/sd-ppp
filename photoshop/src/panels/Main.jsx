@@ -1,17 +1,16 @@
 import React from "react";
-import ComfyConnection from "../system/ComfyConnection";
 import { storage } from "uxp";
-import Model from "../system/model";
+import { Model, ComfyConnection } from "../system/system.mjs";
 export default class Main extends React.Component {
     state = {
         backendURL: '',
         isConnected: false,
         isReconnecting: false,
-        lastConnectErrorMessage: '',
+        lastConnectErrorMessage: '', 
         pageInstances: [],
         autoRunning: ''
     }
-
+ 
     componentDidMount() {
         const model = new Model();
         let cooldown = false;

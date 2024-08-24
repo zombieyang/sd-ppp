@@ -81,7 +81,7 @@ def registerSocketEvents(sdppp, sio):
         sd_elem_id = data['sd']['elem_id']
 
         upload_name, opacity = await photoshopInstance.get_image(
-            document_identify=document, layer_identify=layer, bound_layer_identify=use_layer_bounds
+            document_identify=document, layer_identify=layer, bound_identify=use_layer_bounds
         )
         res = consumeImageCache(upload_name)
         addImageCache(res, sd_elem_id)
@@ -96,6 +96,7 @@ def registerSocketEvents(sdppp, sio):
 
         document = data['document']
         layer = data['layer']
+        bound = data['bound']
         image_urls = data['sd']['image_urls']
 
         def load_image(image_url):
@@ -105,7 +106,7 @@ def registerSocketEvents(sdppp, sio):
                 raise Exception('Invalid image url')
             return addImageCache(image_url)
         image_ids = [load_image(image_url) for image_url in image_urls]
-        await photoshopInstance.send_images(document_identify=document, layer_identify=layer, image_ids=image_ids)
+        await photoshopInstance.send_images(document_identify=document, layer_identify=layer, bounds_identify=bound, image_ids=image_ids)
 
     # only emit by photoshop instance
     @sio.event

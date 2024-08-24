@@ -3,7 +3,7 @@ from modules import script_callbacks, shared
 from modules.ui_components import ToolButton
 from sdppp_python.sdppp import SDPPP
 from sdppp_python.apis import consumeImageCache
-from sdppp_python.data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options
+from sdppp_python.data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options, get_special_send_bound_layer_options
 import gradio as gr
 try:
     from modules_forge.forge_canvas.canvas import LogicalImage
@@ -45,6 +45,13 @@ def on_app_started(blocks: gr.Blocks, app):
         if not sdppp.has_ps_instance():
             return ['==please connect SD in photoshop by sdppp first==']
         choices = [*get_special_send_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
+        value = choices[0] if origin not in choices else origin
+        return gr.Dropdown.update(choices=choices, value=value, interactive=True)
+
+    def update_send_bounds_dropdown(origin, document):
+        if not sdppp.has_ps_instance():
+            return ['==please connect SD in photoshop by sdppp first==']
+        choices = [*get_special_send_bound_layer_options(), *(x['name'] for x in get_sd_document_data()[document]['layers'])]
         value = choices[0] if origin not in choices else origin
         return gr.Dropdown.update(choices=choices, value=value, interactive=True)
 
@@ -99,6 +106,11 @@ def on_app_started(blocks: gr.Blocks, app):
                 update_send_layers = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_send_layers", tooltip=f"refresh sdppp send layers")
                 update_send_layers.click(update_send_layers_dropdown, inputs=[send_layers, send_document], outputs=[send_layers])
                 send_document.change(update_send_layers_dropdown, inputs=[send_layers, send_document], outputs=[send_layers])
+            with gr.Row():
+                send_bounds = gr.Dropdown(choices=['==please connect SD in photoshop by sdppp first=='], label="sdppp_send_bounds", elem_id=f'sdppp_send_bounds', interactive=True)
+                update_send_bounds = ToolButton(value=refresh_symbol, elem_id="refresh_sdppp_send_bounds", tooltip=f"refresh sdppp send bounds")
+                update_send_bounds.click(update_send_bounds_dropdown, inputs=[send_bounds, send_document], outputs=[send_bounds])
+                send_document.change(update_send_bounds_dropdown, inputs=[send_bounds, send_document], outputs=[send_bounds])
             with gr.Row():
                 close = gr.Button('Save And Run Send', variant='secondary', elem_id=f'sdppp_sender_dialog_close')
         sdppp_getter_dialog.visible = False

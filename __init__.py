@@ -54,20 +54,26 @@ else:
     sdppp.attach_to_comfyui(PromptServer)
 
     from .sdppp_python.comfy_nodes import define_comfyui_nodes
+    from .sdppp_python.comfy_nodes_legacy import define_comfyui_nodes_legacy
+    export_nodes_legacy = define_comfyui_nodes_legacy(sdppp)
     export_nodes = define_comfyui_nodes(sdppp)
 
     NODE_CLASS_MAPPINGS = { 
-        'Get Image From Photoshop Layer': export_nodes['GetImageFromPhotoshopLayerNode'],
-        'Send Images To Photoshop': export_nodes['SendImageToPhotoshopLayerNode'],
-        'Image Times Opacity': export_nodes['ImageTimesOpacity'],
-        'Mask Times Opacity': export_nodes['MaskTimesOpacity'],
+        'Get Image From Photoshop Layer': export_nodes_legacy['GetImageFromPhotoshopLayerNode'],
+        'Send Images To Photoshop': export_nodes_legacy['SendImageToPhotoshopLayerNode'],
+        'Image Times Opacity': export_nodes_legacy['ImageTimesOpacity'],
+        'Mask Times Opacity': export_nodes_legacy['MaskTimesOpacity'],
     }
     NODE_DISPLAY_NAME_MAPPINGS = { 
-        'Get Image From Photoshop Layer': 'Get image from Photoshop layer',
-        'Send Images To Photoshop': 'Send images to Photoshop',
+        'Get Image From Photoshop Layer': 'SDPPP Get Image From Layer',
+        'Send Images To Photoshop': 'SDPPP Send Images To Layer',
         'Image Times Opacity': 'Image times opacity',
-        'Mask Times Opacity': 'Mask times opacity',
+        'Mask Times Opacity': 'Mask times opacity'
     }
+    for (k, v) in export_nodes.items():
+        NODE_CLASS_MAPPINGS[k] = v
+        NODE_DISPLAY_NAME_MAPPINGS[k] = k
+        
     WEB_DIRECTORY = 'javascript'
     __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
     
