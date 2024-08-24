@@ -93,15 +93,15 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 ## Other showcase
 0. regional prompting
+   
     <img width=600 src="https://github.com/user-attachments/assets/e7dac3ed-f292-4d4a-9a72-8774d5928607" />
-
-1. live-painting
+2. live-painting
     
     <img width=400 src="https://github.com/user-attachments/assets/9e4fbb6e-67ff-45bf-8df0-47f7b692e522" />
-2. controlnet
+3. controlnet
     
     <img width=400 src="https://github.com/user-attachments/assets/647757cc-4bdd-40f4-8956-6a399d9c0e2d" />
-3. IC-light
+4. IC-light
     
     <img width=400 src="https://github.com/user-attachments/assets/24abf5de-dab1-4d84-bf9f-696cd09d8c5e" />
 -----------------------------
