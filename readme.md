@@ -3,6 +3,8 @@
 
 this extension/custom_node is mainly focus on getting/sending picture from/to Photoshop in ComfyUI or SD. You can manage your AI art by Photoshop and I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn)](https://discord.gg/9HeGjDvEmn) [![QQ group](https://img.shields.io/badge/QQ群-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
+
 #### SD/SDForge Showcase
     
 <img width=600 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63" />
@@ -101,9 +103,6 @@ this extension/custom_node is mainly focus on getting/sending picture from/to Ph
 | zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
 | zombieyang | =>[Youtube](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
-
-### Ask for help
-[Discord](https://discord.gg/5wmUQ3aZ)
 
 ### Thanks
 @AbdullahAlfaraj
