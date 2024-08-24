@@ -1,3 +1,8 @@
+## [1.3.0] - 2024-08-24
+1. feature: support send image to boundary
+2. feature: new ComfyUI nodes: GetTextFromLayer,GetDocument,GetLayerByID,GetLinkedLayer,GetLayersInGroup,ParseLayerInfo
+2. fix: SDWebUI icon placed over the inpaint icon.
+
 ## [1.2.2] - 2024-08-18
 1. fix: compatible latest SD-Forge with ForgeCanvas and Gradio4
 2. fix: compatible with latest ComfyUI (August ver.).
