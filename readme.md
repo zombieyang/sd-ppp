@@ -93,9 +93,10 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 ## Other showcase
 0. regional prompting
+    
+    [>> tutorial](https://github.com/zombieyang/sd-ppp/wiki/Tutorial:-regional-prompting-in-Photoshop-by-SD%E2%80%90PPP)
    
     <img width=600 src="https://github.com/user-attachments/assets/e7dac3ed-f292-4d4a-9a72-8774d5928607" />
-    [tutorial](https://github.com/zombieyang/sd-ppp/wiki/Tutorial:-regional-prompting-in-Photoshop-by-SD%E2%80%90PPP)
 2. live-painting
     
     <img width=400 src="https://github.com/user-attachments/assets/9e4fbb6e-67ff-45bf-8df0-47f7b692e522" />
