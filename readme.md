@@ -115,6 +115,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 | zombieyang | =>[Youtube](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 
+* [ComfyUI Nodes Manual](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
 ### Thanks
 @AbdullahAlfaraj
 @tianlang0704
