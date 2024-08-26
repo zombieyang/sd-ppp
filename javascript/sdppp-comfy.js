@@ -7,6 +7,6 @@
     // @ts-ignore
     const { $el } = await import('../../../scripts/ui.js');
 
-    const { init } = await import('./entries/comfy-entry.mjs')
+    const { init } = await import('./entries/comfy-entry.js')
     await init(app, api, $el);
 })();

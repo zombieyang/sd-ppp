@@ -65,8 +65,8 @@ else:
         'Mask Times Opacity': export_nodes_legacy['MaskTimesOpacity'],
     }
     NODE_DISPLAY_NAME_MAPPINGS = { 
-        'Get Image From Photoshop Layer': 'SDPPP Get Image From Layer',
-        'Send Images To Photoshop': 'SDPPP Send Images To Layer',
+        'Get Image From Photoshop Layer': 'SDPPP Get Image From Photoshop',
+        'Send Images To Photoshop': 'SDPPP Send Images To Photoshop',
         'Image Times Opacity': 'Image times opacity',
         'Mask Times Opacity': 'Mask times opacity'
     }
