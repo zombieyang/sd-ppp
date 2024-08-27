@@ -6,10 +6,9 @@
 > ppp for Professional Photoshop Portal
 
 this extension/custom_node is mainly focus on getting/sending elements from/to Photoshop in ComfyUI or SD. You can do
-1. get any layer's content and mask from Photoshop. Even many layers in the same time.
-2. send images to Photoshop to any layer/area.
+1. get any layer of any document in any area and amount from Photoshop.
+2. send images to Photoshop to any document/layer/area.
 3. get text layer's content as prompt.
-4. set a specific boundary of Photoshop document to work.
 
 I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
@@ -116,6 +115,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 
 * [ComfyUI Nodes Manual](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
+* Sample work flows on my [Discord](https://discord.com/channels/983223079226470410/1277931809740689443)
 ### Thanks
 @AbdullahAlfaraj
 @tianlang0704
