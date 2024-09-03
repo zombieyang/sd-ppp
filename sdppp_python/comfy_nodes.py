@@ -1,9 +1,6 @@
 import numpy as np
 import time
-from nodes import LoadImage
-from PIL import Image
-from .apis import addImageCache
-from .data import get_sd_document_data, get_special_get_bound_layer_options, get_special_get_layer_options, get_special_send_layer_options, get_special_send_bound_layer_options
+from .data import get_sd_document_data, get_special_get_layer_options
 
 def define_comfyui_nodes(sdppp):
     def validate_sdppp():
@@ -39,7 +36,7 @@ def define_comfyui_nodes(sdppp):
 
     class ParseLayerInfoNode:
         RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT")
-        RETURN_NAMES = ("opacity", "center_x", "center_y", "bound_width", "bound_height")
+        RETURN_NAMES = ("opacity", "bound_left", "bound_top", "bound_width", "bound_height")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
 
@@ -47,11 +44,11 @@ def define_comfyui_nodes(sdppp):
         def INPUT_TYPES(cls):
             return {
                 "required": {
-                    "layer_info": ("LAYER_INFO", {"default": None}),
+                    "layer_info": ("LAYER_INFO", {"default": None, "sdppp_type": "LAYER_INFO"}),
                 }
             }
         def action(self, layer_info):
-            return (layer_info['opacity'], layer_info['center_x'], layer_info['center_y'], layer_info['bound_width'], layer_info['bound_height'])
+            return (layer_info['opacity'], layer_info['bound_left'], layer_info['bound_top'], layer_info['bound_width'], layer_info['bound_height'])
 
     class GetDocumentNode:
         RETURN_TYPES = ("DOCUMENT", "BOUND")
@@ -65,7 +62,7 @@ def define_comfyui_nodes(sdppp):
             document_data_keys = document_data.keys()
             return {
                 "required": {
-                    "document_name": (list(document_data_keys), {"default": None, "tooltip": "select sd-ppp document"}),
+                    "document_name": (list(document_data_keys), {"default": None, "sdppp_type": "DOCUMENT_nameid"}),
                 }
             }
 
@@ -88,11 +85,11 @@ def define_comfyui_nodes(sdppp):
             list_of_list_of_layers = [document_data[key]['layers'] for key in document_data_keys]
             return {
                 "required": {
-                    "document": ("DOCUMENT", {"default": None}),
+                    "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                     "layer_nameid": ([
                         *get_special_get_layer_options(),
                         *(item['name'] for sublist in list_of_list_of_layers for item in sublist)
-                    ], {"default": None, "tooltip": "select sd-ppp layer"}),
+                    ], {"default": None, "sdppp": True, "sdppp_type": "LAYER_nameid"}),
                 }
             }
         
@@ -122,7 +119,7 @@ def define_comfyui_nodes(sdppp):
         def INPUT_TYPES(cls):
             return {
                 "required": {
-                    "layer_or_group": ('LAYER', {"default": None}),
+                    "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                 }
             }
         
@@ -156,7 +153,7 @@ def define_comfyui_nodes(sdppp):
         def INPUT_TYPES(cls):
             return {
                 "required": {
-                    "layer_or_group": ('LAYER', {"default": None}),
+                    "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                 }
             }
         
@@ -195,11 +192,11 @@ def define_comfyui_nodes(sdppp):
             document_data = get_sd_document_data()
             return {
                 "required": {
-                    "layer_or_group": ('LAYER', {"default": None}),
+                    "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                 },
                 "optional": {
                     # compat combo selection type
-                    "document": (list(document_data), {"default": False}),
+                    "document": (list(document_data), {"default": False, "sdppp_type": "DOCUMENT_nameid"}),
                 }
             }
         
