@@ -1,6 +1,6 @@
 import React from "react";
 import { storage } from "uxp";
-import { Model, ComfyConnection } from "../system/system.mjs";
+import { Model, ComfyConnection, TEXTS } from "../system/system.mjs";
 export default class Main extends React.Component {
     state = {
         backendURL: '',
@@ -83,16 +83,16 @@ export default class Main extends React.Component {
                 ></sp-textfield>
                 <div className="connect-box">
                     <div className={"status-bar " + (
-                        this.state.isConnected ? 'connected' : (
-                            this.state.isReconnecting ? 'reconnecting' :
-                                'disconnected'
+                        this.state.isConnected ? ('connected') : (
+                            this.state.isReconnecting ? ('reconnecting') :
+                                ('disconnected')
                         )
                     )}>
                         <div className="status-icon">⬤</div>
                         <div className="status-text">{(
-                            this.state.isConnected ? 'connected' : (
-                                this.state.isReconnecting ? 'reconnecting...' :
-                                    (this.state.lastConnectErrorMessage?.toString() || 'disconnected')
+                            this.state.isConnected ? TEXTS('connected') : (
+                                this.state.isReconnecting ? TEXTS('reconnecting...') :
+                                    (this.state.lastConnectErrorMessage?.toString() || TEXTS('disconnected'))
                             )
                         )}</div>
                     </div>
@@ -100,12 +100,12 @@ export default class Main extends React.Component {
                         id="connect-btn"
                         variant="primary"
                         onClick={this.doConnectOrDisconnect.bind(this)}
-                    >{this.state.isConnected || this.state.isReconnecting ? 'disconnect' : 'connect'}</sp-button>
+                    >{this.state.isConnected || this.state.isReconnecting ? TEXTS('disconnect') : TEXTS('connect')}</sp-button>
                 </div>
 
                 <sp-divider size="small"></sp-divider>
 
-                <sp-label>webpage-list</sp-label>
+                <sp-label>{TEXTS('webpage-list')}</sp-label>
                 <ul className="client-list">
                     {
                         this.state.pageInstances.map((item) => {
@@ -131,9 +131,9 @@ export default class Main extends React.Component {
                         })
                     }
                 </ul>
-                <sp-label class="autorun-desc">{this.state.autoRunning ? `auto run page [${this.state.pageInstances.find(item =>
+                <sp-label class="autorun-desc">{this.state.autoRunning ? TEXTS(`auto run page [{0}] after change..`, this.state.pageInstances.find(item =>
                     item.sid == this.state.autoRunning
-                )?.name || ''}] after change..` : ''}</sp-label>
+                )?.name || ''): ''}</sp-label>
             </>
         )
     }
