@@ -1,3 +1,12 @@
+## [1.3.1] - 2024-09-04
+1. feature: zh-cn support
+2. fix: support for 16bit colored layer.
+2. fix: support for cmyk/grayscale layer.
+2. fix: getting error when canvas bound is N times of layer bound.
+3. fix: parse layer info failed.
+4. optimize: disable convert widget to input in get/send layer nodes.
+5. optimize: shorten modal state in get/send layer.
+
 ## [1.3.0] - 2024-08-24
 1. feature: support send image to boundary
 2. feature: new ComfyUI nodes: GetTextFromLayer,GetDocument,GetLayerByID,GetLinkedLayer,GetLayersInGroup,ParseLayerInfo
