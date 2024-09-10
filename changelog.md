@@ -1,4 +1,4 @@
-## [1.3.1] - 2024-09-04
+## [1.3.1] - 2024-09-10
 1. feature: zh-cn support
 2. fix: support for 16bit colored layer.
 2. fix: support for cmyk/grayscale layer.
