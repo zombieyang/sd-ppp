@@ -44,7 +44,7 @@ def define_comfyui_nodes_legacy(sdppp):
             return validate_sdppp()
         
         @classmethod
-        def IS_CHANGED(self, layer_or_group, bound):
+        def IS_CHANGED(self, layer_or_group, bound, document=""):
             if not sdppp.has_ps_instance():
                 return np.random.rand()
             else:
