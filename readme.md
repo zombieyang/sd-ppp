@@ -17,13 +17,11 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 #### SDWebUI/Forge Showcase
     
-<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e43a5b7d-a601-4733-9527-1005ec0fee63" />
-<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/fe64dd52-aa32-4cd9-b7b7-e39a7553899a" />
+<img width=600 src="https://github.com/user-attachments/assets/b788c3f5-4ddc-460e-90de-93ff70c99307" />
 
 #### ComfyUI Showcase
     
-<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/69bb64a8-5865-44be-ac10-faf3d82ab97c" />
-<img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/ae573b36-6f3e-43f2-9866-89216182665a" />
+<img width=600 src="https://github.com/user-attachments/assets/d5d8f673-78d8-4d3f-9a7a-0a385b862951" />
 
     
 ## How to install
