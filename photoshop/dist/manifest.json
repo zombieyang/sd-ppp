@@ -1,17 +1,20 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
     "app": "PS",
     "minVersion": "24.4.0"
   },
+  "featureFlags": {
+    "enableAlerts": true
+  },
   "requiredPermissions": {
-    "enableUserInfo": true,  
+    "enableUserInfo": true,
     "network": {
-        "domains": "all"
+      "domains": "all"
     },
     "allowCodeGenerationFromStrings": true,
     "launchProcess": {
@@ -26,9 +29,8 @@
     },
     "webview": {
       "allow": "yes",
-      "domains": [
-        "https://*.adobe.com"
-      ]
+      "domains": "all",
+      "enableMessageBridge": "localAndRemote"
     }
   },
   "entrypoints": [
@@ -40,28 +42,19 @@
       },
       "minimumSize": {
         "width": 300,
-        "height": 160
+        "height": 100
       },
       "maximumSize": {
-<<<<<<< HEAD
-        "width": 300,
-        "height": 500
-=======
-        "width": 400,
-        "height": 160
->>>>>>> tl/develop_sio_multi_user
+        "width": 1280,
+        "height": 960
       },
       "preferredDockedSize": {
         "width": 300,
-        "height": 160
+        "height": 100
       },
       "preferredFloatingSize": {
         "width": 300,
-<<<<<<< HEAD
-        "height": 500
-=======
-        "height": 160
->>>>>>> tl/develop_sio_multi_user
+        "height": 200
       },
       "icons": [
         {

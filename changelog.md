@@ -1,3 +1,12 @@
+## [1.4.0] - 2024-10-03
+1. optimize: getImage node add only selection option, with lasso can only get the lasso area content. The original bounds parameter is now changed to only be able to connect lines, only used to control the square area, in general, need to limit the square work area, will need to connect the area to several nodes
+2. optimize: getLayerByID node now automatically searches for new layers with the same name along the original path if the layer is deleted
+3. optimize: getLinkedLayer and getLayersInGroup now support filtering (text, image, first)
+4. optimize: optimize the speed of image transmission
+5. new feature: support multiple photoshop connections at the same time, now you can share a comfyUI with multiple people and multiple photoshop
+6. new feature: getDocument node adds a save `.psd` function. You can save the current selected psd into the workflow for sharing. Others can open the workflow and directly select the imported psd in the getDocument node (if you need to clear the saved psd in the workflow, right-click the node->properties panel->delete the content in the psd box)
+7. new feature: wide screen mode, click the menu icon in the upper right corner of the panel to enter WideMode, you can directly edit the workflow in Photoshop. (May not work in some MacOS)
+
 ## [1.3.1] - 2024-09-10
 1. feature: zh-cn support
 2. fix: support for 16bit colored layer.
