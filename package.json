@@ -25,7 +25,8 @@
   "dependencies": {
     "@types/jimp": "^0.2.28",
     "@types/photoshop": "^25.0.4",
-    "jimp": "^0.22.12",
+    "fast-json-patch": "^3.1.1",
+    "jimp": "^1.6.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "webpack-obfuscator": "^3.5.1"

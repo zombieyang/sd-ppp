@@ -45,7 +45,10 @@ else:
         import socketio
     except:
         run_script([sys.executable, "-m", "pip", "install", 'python-socketio'])
-
+    try:
+        import jsonpatch
+    except:
+        run_script([sys.executable, "-m", "pip", "install", 'python-json-patch'])
 
     from server import PromptServer
 
@@ -53,8 +56,8 @@ else:
     sdppp = SDPPP()
     sdppp.attach_to_comfyui(PromptServer)
 
-    from .sdppp_python.comfy_nodes import define_comfyui_nodes
-    from .sdppp_python.comfy_nodes_legacy import define_comfyui_nodes_legacy
+    from .sdppp_python.comfy.nodes import define_comfyui_nodes
+    from .sdppp_python.comfy.nodes_legacy import define_comfyui_nodes_legacy
     export_nodes_legacy = define_comfyui_nodes_legacy(sdppp)
     export_nodes = define_comfyui_nodes(sdppp)
 
@@ -63,12 +66,14 @@ else:
         'Send Images To Photoshop': export_nodes_legacy['SendImageToPhotoshopLayerNode'],
         'Image Times Opacity': export_nodes_legacy['ImageTimesOpacity'],
         'Mask Times Opacity': export_nodes_legacy['MaskTimesOpacity'],
+        'CLIP Text Encode PS Regional': export_nodes_legacy['CLIPTextEncodePSRegional'],
     }
     NODE_DISPLAY_NAME_MAPPINGS = { 
         'Get Image From Photoshop Layer': 'SDPPP Get Image From Photoshop',
         'Send Images To Photoshop': 'SDPPP Send Images To Photoshop',
         'Image Times Opacity': 'Image times opacity',
-        'Mask Times Opacity': 'Mask times opacity'
+        'Mask Times Opacity': 'Mask times opacity',
+        'CLIP Text Encode PS Regional': 'CLIP Text Encode PS Regional',
     }
     for (k, v) in export_nodes.items():
         NODE_CLASS_MAPPINGS[k] = v

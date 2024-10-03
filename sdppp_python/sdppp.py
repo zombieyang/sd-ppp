@@ -1,15 +1,22 @@
 import socketio
-from .photoshop_instance import PhotoshopInstance
+from .instances import BackendInstance, PageInstance
 from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
 
 class SDPPP:
     def __init__(self):
-        self.photoshop_instances = dict()
         self.page_instances = dict()
+        self.backend_instances = dict()
 
     def attach_to_comfyui(self, PromptServer):
-        self.sio = socketio.AsyncServer(async_mode='aiohttp', cors_allowed_origins="*")
-        self.sio.attach(PromptServer.instance.app, socketio_path='/sd-ppp/')
+        self.sio = socketio.AsyncServer(
+            async_mode='aiohttp', 
+            cors_allowed_origins="*",
+            max_http_buffer_size=524288000
+        )
+        self.sio.attach(
+            PromptServer.instance.app, 
+            socketio_path='/sd-ppp/'
+        )
 
         self.loop = PromptServer.instance.loop
 
@@ -18,9 +25,14 @@ class SDPPP:
         self.server_type = "comfy"
 
     def attach_to_SD(self, app):
-        self.sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins="*")
+        self.sio = socketio.AsyncServer(
+            async_mode='asgi', 
+            cors_allowed_origins="*",
+            max_http_buffer_size=524288000
+        )
         app_sdppp = socketio.ASGIApp(
-            socketio_server=self.sio, socketio_path=''
+            socketio_server=self.sio, 
+            socketio_path=''
         )
         app.mount('/sd-ppp', app_sdppp)
         self.app = app
@@ -37,54 +49,45 @@ class SDPPP:
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
-            if 'api_level' not in qsobj or qsobj['api_level'] != "408":
+            if 'api_level' not in qsobj or qsobj['api_level'] != "409":
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
-            if 'type' not in qsobj:
+
+        @sio.event
+        async def init(sid, payload):
+            if 'type' not in payload:
                 raise socketio.exceptions.ConnectionRefusedError('instance type not recognized')
 
-            elif qsobj['type'] == 'photoshop':
-                if len(self.photoshop_instances) > 0:
-                    raise socketio.exceptions.ConnectionRefusedError('only 1 instance is allowed now, or try to restart comfyUI')
-                self.photoshop_instances[sid] = PhotoshopInstance(self, sid)
+            elif payload['type'] == 'photoshop':
+                instance = self.backend_instances[sid] = BackendInstance(self, sid, "photoshop", payload['data'], payload['version'])
 
-            elif qsobj['type'] == 'comfyui':
-                self.page_instances[sid] = {
-                    "sid": sid,
-                    "type": "comfy",
-                    "name": "",
-                    "progress": 0
-                }
+            elif payload['type'] == 'comfyui':
+                instance = self.page_instances[sid] = PageInstance(self, sid, "comfy", payload['data'], payload['version'])
 
-            elif qsobj['type'] == 'sd':
-                self.page_instances[sid] = {
-                    "sid": sid,
-                    "type": "sd",
-                    "name": "",
-                    "progress": 0
-                }
+            elif payload['type'] == 'a1111':
+                instance = self.page_instances[sid] = PageInstance(self, sid, "a1111", payload['data'], payload['version'])
 
             else:
-                raise socketio.exceptions.ConnectionRefusedError('unknown instance type ' + qsobj['type'])
-
-            await sio.emit('s_confirm', {
+                raise socketio.exceptions.ConnectionRefusedError('unknown instance type ' + payload['type'])
+                
+            return {
                 "server_type": self.server_type
-            })
+            }
+
 
         @sio.event
         async def disconnect(sid):
-            if sid in self.photoshop_instances:
-                self.photoshop_instances.pop(sid, None)
-            elif sid in self.page_instances:
+            if sid in self.backend_instances:
+                self.backend_instances.pop(sid, None)
+            if sid in self.page_instances:
                 self.page_instances.pop(sid, None)
+            await sio.emit('s_remove_data', {'sid': sid})
 
         registerSocketEvents(self, self.sio)
                 
     def has_ps_instance(self):
-        return len(self.photoshop_instances) > 0
+        for instance in self.backend_instances.values():
+            if instance.type == 'photoshop':
+                return True
+        return False
 
-    def get_ps_instance(self, sid = None):
-        if len(self.photoshop_instances) == 0:
-            return None
-        if sid is None:
-            sid = list(self.photoshop_instances.keys())[0]
-        return self.photoshop_instances[sid]
+    

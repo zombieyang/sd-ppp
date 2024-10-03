@@ -22,9 +22,8 @@
 }
 
 #url-bar {
-    width: 100%;
+    flex: 2;
 }
-<<<<<<< HEAD
 .status-bar {
     display: flex;
     justify-content: left;
@@ -34,25 +33,34 @@
 .status-bar.reconnecting { color: lightyellow; }
 .status-bar.disconnected { color: lightcoral; }
 .status-icon {
-    margin: 0 5px;
+    margin-right: 5px;
 }
 .connect-box {
-=======
-#user-id-bar {
-    width: 100%;
-}
-.button-box {
->>>>>>> tl/develop_sio_multi_user
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    overflow: hidden;
+    margin: 5px 0;
 }
 #connect-btn {
-    text-align: center;
-<<<<<<< HEAD
-    margin-right: 10px;
+    margin-left: 8px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    line-height: 30px;
+    margin-left: 5px;
+}
+.container {
+    flex-direction: column;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.panel-body {
+    flex: 1;
+    margin-top: 8px;
 }
 .client-list-item {
     display: flex;
@@ -76,75 +84,21 @@
     justify-content: end;
 }
 .client-list-item .client-list-item-right {
-    margin-right: 10px;
     display: flex;
-    align-items: end;
+    align-items: middle;
     flex: 1;
     text-align: right;
     white-space: nowrap;
     justify-content: end;
+}
+.client-list-item .client-list-item-right sp-action-button {
+    height: 20px;
+    width: 16px;
+    margin-left: 5px;
 }
 .client-list-item .client-list-item-right sp-link:active {
     color: white;
 }
 .autorun-desc {
     font-size: 10px;
-=======
-}
-.input-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 30px;
-    width: 100%;
-}
-
-.input-label {
-    position: relative;
-    flex: 1;
-}
-.input-label sp-label {
-    width: calc(100% - 15px);
-    height: 100%;
-    margin-left: 15px;
-}
-.input-label sp-textfield {
-    position: absolute;
-    width: 100%;
-    top: -5px;
-    left: 0;
-    visibility: hidden;
-    z-index: 5;
-}
-.input-label sp-textfield:focus {
-    visibility: visible;
-} 
-.input-label:hover sp-textfield{
-    visibility: visible;
-}
-.expand-menu .expand-menu-title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 15px;
-    padding: 5px;
-}
-.expand-menu .expand-menu-arrow {
-    font-weight: bold;
-    text-align: center;
-}
-.expand-menu .expand-menu-title sp-icon {
-    height: 15px;
-    width: 20px;
-    color: #ccc;
-}
-.expand-menu .content {
-    margin-left: 15px
-}
-.expand-menu.collapse .content {
-    display: none;
-}
-.expand-menu.expand .content {
-    display: flex;
->>>>>>> tl/develop_sio_multi_user
 }

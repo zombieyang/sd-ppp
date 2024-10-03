@@ -6,13 +6,13 @@ except ImportError:
     print("SD-PPP: fastapi not found")
 try:
     from aiohttp import web
-    from .data import set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options, set_special_send_bound_layer_options
 except ImportError:
     print("SD-PPP: aiohttp not found")
 
 import numpy as np
 from io import BytesIO
 from PIL import Image
+from .protocols.photoshop import ProtocolPhotoshop
 
 # str => PIL.Image
 image_cache = dict()
@@ -66,121 +66,107 @@ def registerSDHTTPEndpoints(sdppp, app):
         name = addImageCache(Image.open(BytesIO(image.file.read())))
         return {'name': name}
 
-from .data import get_sd_document_data, set_sd_document_data, set_special_get_bound_layer_options, set_special_get_layer_options, set_special_send_layer_options
 def registerSocketEvents(sdppp, sio):
 
     # only emit by sd webui instance
     @sio.event
-    async def c_get_image(sid, data={}):
+    async def c_get_image(sid, payload={}):
         if not sdppp.has_ps_instance():
             return
-        photoshopInstance = sdppp.get_ps_instance()
-        document = data['document']
-        layer = data['layer']
-        use_layer_bounds = data['use_layer_bounds']
-        sd_elem_id = data['sd']['elem_id']
+        document = payload['document']
 
-        upload_name, opacity = await photoshopInstance.get_image(
-            document_identify=document, layer_identify=layer, bound_identify=use_layer_bounds
+        backendInstance = sdppp.backend_instances[document['instance_id']]
+        
+        return await ProtocolPhotoshop.get_image(backendInstance, 
+            document_identify=document['identify'], 
+            layer_identify=payload['layer_identify'], 
+            bound_identify=payload['bound_identify'],
         )
-        res = consumeImageCache(upload_name)
-        addImageCache(res, sd_elem_id)
-        return {}
 
     # only emit by sd webui instance
     @sio.event
-    async def c_send_image(sid, data={}):
+    async def c_send_image(sid, payload={}):
         if not sdppp.has_ps_instance():
             return
-        photoshopInstance = sdppp.get_ps_instance()
+        document = payload['document']
 
-        document = data['document']
-        layer = data['layer']
-        bound = data['bound']
-        image_urls = data['sd']['image_urls']
+        backendInstance = sdppp.backend_instances[document['instance_id']]
 
-        def load_image(image_url):
-            if 'file=' in image_url:
-                image_url = image_url.split('file=')[1].split('?')[0]
-            else:
-                raise Exception('Invalid image url')
-            return addImageCache(image_url)
-        image_ids = [load_image(image_url) for image_url in image_urls]
-        await photoshopInstance.send_images(document_identify=document, layer_identify=layer, bounds_identify=bound, image_ids=image_ids)
+        await ProtocolPhotoshop.send_images(backendInstance, 
+            document_identify=document['identify'], 
+            layer_identifies=payload['layer_identifies'], 
+            bounds_identify=payload['bounds_identify'],
+            image_urls=payload['image_urls']
+        )
+
+    @sio.event
+    async def c_psd(sid, payload = {}):
+        if 'sid' not in payload:
+            return {"error": "sid is not defined"}
+        result = await sdppp.sio.call('c_psd', payload, to=payload['sid'])
+        return result
 
     # only emit by photoshop instance
     @sio.event
-    async def b_sync_layers(sid, data = {}):
-        instance = sdppp.get_ps_instance(sid)
-        if instance is None:
-            return
-        instance.layers = data['layers']
-
-    # only emit by photoshop instance
-    @sio.event
-    async def b_get_pages(sid, data = {}):
-        pages = []
-        pages = list(sdppp.page_instances.values())
-        pages.reverse()
-
-        return {
-            'pages': pages
-        }
-
-    # only emit by photoshop instance
-    @sio.event
-    async def b_page_run(sid, data = {}):
-        await sdppp.sio.emit('s_run', to=data['sid'])
+    async def b_page_run(sid, payload = {}):
+        await sdppp.sio.emit('b_page_run', to=payload['sid'])
 
     @sio.event
-    async def c_check_changes(sid):
-        instance = sdppp.get_ps_instance()
-        if instance is None:
-            return
-        if not await instance.is_ps_history_changed():
-            return
-        await sio.emit('s_trigger_graph_change', to=sid)
-    
-    @sio.event
-    async def c_reset_changes(sid):
-        instance = sdppp.get_ps_instance()
-        if instance is None:
-            return
-        instance.reset_change_tracker()
+    async def b_flush_data(sid, payload = {}):
+        store = sdppp.backend_instances[sid].store
+        if store.patch_version_acceptable(payload['fromVersion']):
+            store.patch_data(payload['operations'], payload['fromVersion'])
+        else:
+            result = await sio.call('s_request_data', {}, to=sid)
+            sdppp.backend_instances[sid].store.sync_data(result['data'], result['version'])
+
+        payload['sid'] = sid
+        if len(sdppp.page_instances):
+            await sio.emit('s_flush_data', payload, to=[page.sid for page in sdppp.page_instances.values()])
 
     @sio.event
-    async def c_reset_instance_name(sid, data):
-        instance = sdppp.page_instances[sid]
-        instance["name"] = data["name"]
+    async def c_flush_data(sid, payload = {}):
+        store = sdppp.page_instances[sid].store
+        if store.patch_version_acceptable(payload['fromVersion']):
+            store.patch_data(payload['operations'], payload['fromVersion'])
+        else:
+            result = await sio.call('s_request_data', {}, to=sid)
+            sdppp.page_instances[sid].store.sync_data(result['data'], result['version'])
+
+        payload['sid'] = sid
+        if len(sdppp.backend_instances):
+            await sio.emit('s_flush_data', payload, to=[backend.sid for backend in sdppp.backend_instances.values()])
 
     @sio.event
-    async def c_progress(sid, data):
-        instance = sdppp.page_instances[sid]
-        instance["progress"] = data["progress"]
-        if instance["progress"] == 100:
-            instance["progress"] = 0
-
-        instance = sdppp.get_ps_instance()
-        if instance is None:
-            return
-        photoshop_sid = instance.sid
-        await sio.emit('c_progress', {
-            'progress': data['progress'],
-            'sid': sid
-        }, to=photoshop_sid)
+    async def c_request_data(sid, payload = {}):
+        if 'sid' in payload:
+            return {
+                'sid': payload['sid'],
+                'data': sdppp.backend_instances[payload['sid']].store.data,
+                'version': sdppp.backend_instances[payload['sid']].store.version
+            }
+        else:
+            ret = {}
+            for backend in sdppp.backend_instances.values():
+                ret[backend.sid] = {
+                    'data': backend.store.data,
+                    'version': backend.store.version
+                }
+            return ret
 
     @sio.event
-    async def c_get_documents(sid, data = {}):
-        instance = sdppp.get_ps_instance()
-        if instance is None:
-            return {}
-        photoshop_sid = instance.sid
-        return await sio.call('c_get_documents', data, to=photoshop_sid)
-    
-    @sio.event
-    async def c_update_options(sid, data={}):
-        set_sd_document_data(data['document_data'])
-        set_special_get_layer_options(data['special_get_layer_options'])
-        set_special_get_bound_layer_options(data['special_get_bound_layer_options'])
-        set_special_send_layer_options(data['special_send_layer_options'])
-        set_special_send_bound_layer_options(data['special_send_bound_layer_options'])
+    async def b_request_data(sid, payload = {}):
+        if 'sid' in payload:
+            return {
+                'sid': payload['sid'],
+                'data': sdppp.page_instances[payload['sid']].store.data,
+                'version': sdppp.page_instances[payload['sid']].store.version
+            }
+        else:
+            ret = {}
+            for page in sdppp.page_instances.values():
+                ret[page.sid] = {
+                    'data': page.store.data,
+                    'version': page.store.version
+                }
+            return ret
