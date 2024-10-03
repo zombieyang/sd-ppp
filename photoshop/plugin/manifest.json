@@ -9,6 +9,7 @@
     "minVersion": "24.4.0"
   },
   "requiredPermissions": {
+    "enableUserInfo": true,  
     "network": {
         "domains": "all"
     },
@@ -39,19 +40,28 @@
       },
       "minimumSize": {
         "width": 300,
-        "height": 100
+        "height": 160
       },
       "maximumSize": {
+<<<<<<< HEAD
         "width": 300,
         "height": 500
+=======
+        "width": 400,
+        "height": 160
+>>>>>>> tl/develop_sio_multi_user
       },
       "preferredDockedSize": {
         "width": 300,
-        "height": 100
+        "height": 160
       },
       "preferredFloatingSize": {
         "width": 300,
+<<<<<<< HEAD
         "height": 500
+=======
+        "height": 160
+>>>>>>> tl/develop_sio_multi_user
       },
       "icons": [
         {
