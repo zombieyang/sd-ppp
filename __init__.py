@@ -48,7 +48,7 @@ else:
     try:
         import jsonpatch
     except:
-        run_script([sys.executable, "-m", "pip", "install", 'python-json-patch'])
+        run_script([sys.executable, "-m", "pip", "install", 'jsonpatch'])
 
     from server import PromptServer
 
