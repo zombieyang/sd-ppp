@@ -33,7 +33,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 | -- | -- | -- |
 | <img width=200 src="https://github.com/user-attachments/assets/ec64430f-0e6d-41cf-9b62-99ea1d9ddf0d" /> | <img width=200 src="https://github.com/user-attachments/assets/1afd47be-dc76-4ab9-ac70-ab519050fe04" /> | <img width=200 src="https://github.com/user-attachments/assets/2e23d221-1f24-4e3f-acf4-124d3c4de7be" /> |
 | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
-|  |  | [> Liblib](https://www.liblib.art/modelinfo/7d9c953777764c7fb804479bfeae9650?from=personal_page) |
+|  |  | [> Liblib.ai](https://www.liblib.art/modelinfo/7d9c953777764c7fb804479bfeae9650?from=personal_page) |
 
 [**ComfyUI Nodes Manual**](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
       
