@@ -15,15 +15,19 @@
 I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 
-#### SDWebUI/Forge Showcase
-    
+### SDWebUI/Forge
+
+**simple showcase**
+
 <img width=600 src="https://github.com/user-attachments/assets/b788c3f5-4ddc-460e-90de-93ff70c99307" />
 
-#### ComfyUI Showcase
-    
+### ComfyUI
+
+**simple showcase**
+
 <img width=600 src="https://github.com/user-attachments/assets/d5d8f673-78d8-4d3f-9a7a-0a385b862951" />
 
-and workflows...
+**workflows**
 
 | Lasso inpaint | Light Control | Regional Prompt |
 | -- | -- | -- |
@@ -31,7 +35,8 @@ and workflows...
 | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
 |  |  | [> Liblib](https://www.liblib.art/modelinfo/7d9c953777764c7fb804479bfeae9650?from=personal_page) |
 
-    
+[**ComfyUI Nodes Manual**](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
+      
 ## How to install
 
 <details>
@@ -116,8 +121,6 @@ and workflows...
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 | [猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f) |=>[Xiaohongshu](https://www.xiaohongshu.com/explore/66f0efa0000000001b0205ca)|
 
-* [ComfyUI Nodes Manual](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
-* Sample work flows on my [Discord](https://discord.com/channels/983223079226470410/1277931809740689443)
 ### Thanks
 @AbdullahAlfaraj
 @tianlang0704
