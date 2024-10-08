@@ -2,6 +2,8 @@ import React from "react";
 import { ComfyConnection, TEXTS, photoshopPageStoreMap, photoshopStore } from "../system/system.mjs";
 import { ViewModel } from "./ViewModel";
 
+const DEFAULT_BACKEND_URL = "http://127.0.0.1:8188"
+
 class WebPageList extends React.Component {
     state = {
         pageInstances: {},
@@ -119,7 +121,7 @@ export default class Main extends React.Component {
         if (ComfyConnection.instance?.isConnected || ComfyConnection.instance?.isReconnecting)
             ComfyConnection.instance.disconnect();
         else
-            ComfyConnection.createInstance(this.state.backendURL);
+            ComfyConnection.createInstance(this.state.backendURL || DEFAULT_BACKEND_URL);
     }
 
     render() {
@@ -131,7 +133,7 @@ export default class Main extends React.Component {
             onInput={(ev) => { this.state.backendURL = ev.currentTarget.value }}
             {...inputDisable}
             value={this.state.backendURL}
-            placeholder="http://127.0.0.1:8188"
+            placeholder={DEFAULT_BACKEND_URL}
         ></sp-textfield>
         return (
             <div className="container">
