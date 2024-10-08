@@ -40,7 +40,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 ## How to install
 
 <details>
-<summary>[click to expand] <b>ComfyUI</b></summary>
+<summary><i>[click to expand]</i> <b>ComfyUI</b></summary>
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
@@ -72,7 +72,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 </details>
 <details>
-<summary>[click to expand] <b>SD-WebUI or SD-Forge</b></summary>
+<summary><i>[click to expand]</i> <b>SD-WebUI or SD-Forge</b></summary>
 
 1. install in A1111's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
 
