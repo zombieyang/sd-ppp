@@ -45,9 +45,10 @@ class WebPageList extends React.Component {
     }
 
     render() {
+        const queueSize = Object.values(this.state.pageInstances || {})[0]?.queueSize || 0;
         return (
             <>
-                <sp-label>{TEXTS('webpage-list')}</sp-label>
+                <sp-label>{TEXTS('webpage-list')} {ComfyConnection.instance?.serverType != 'comfy' ? '' : `(${TEXTS('Queue:')} ${queueSize})`}</sp-label>
                 <ul className="client-list">
                     {
                         Object.keys(this.state.pageInstances).map((sid) => {
@@ -67,12 +68,6 @@ class WebPageList extends React.Component {
                                         <sp-label class="client-name">{item.progress ? `${item.progress}% - ` : ""}({item.ssid}) {item.error ? item.error.replace('sdppp PS side error:', '') : item.title}</sp-label>
                                     </div>
                                     <div className="client-list-item-right">
-                                        {item.layerNameEntries.filter(entry => entry.startsWith('$sd-ppp$/')).length ? <sp-link onClick={() => {
-                                            const validLayersName = item.layerNameEntries.filter(entry => entry.startsWith('$sd-ppp$/'));
-                                            validLayersName.forEach(layerName => {
-
-                                            });
-                                        }}>Init Layers</sp-link> : ''}
                                         <sp-action-button onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>▶</sp-action-button>
                                     </div>
                                 </li>

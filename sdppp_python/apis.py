@@ -95,7 +95,7 @@ def registerSocketEvents(sdppp, sio):
         await ProtocolPhotoshop.send_images(backendInstance, 
             document_identify=document['identify'], 
             layer_identifies=payload['layer_identifies'], 
-            bounds_identify=payload['bounds_identify'],
+            bounds_identifies=payload['bounds_identifies'],
             image_urls=payload['image_urls']
         )
 

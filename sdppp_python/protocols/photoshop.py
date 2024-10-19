@@ -21,11 +21,11 @@ class ProtocolPhotoshop:
         return result
     
     @classmethod
-    async def send_images(cls, backend_instance, document_identify, layer_identifies, bounds_identify, image_urls=[], image_blobs=[]):
+    async def send_images(cls, backend_instance, document_identify, layer_identifies, bounds_identifies, image_urls=[], image_blobs=[]):
         result = await protocol_call(backend_instance, 's_send_images', data={
             'document_identify': document_identify, 
             'layer_identifies': layer_identifies,
-            'bounds_identify': bounds_identify,
+            'bounds_identifies': bounds_identifies,
             'image_urls': image_urls,
             'image_blobs': image_blobs
         })

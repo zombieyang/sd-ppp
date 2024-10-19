@@ -26,6 +26,9 @@ def check_linked_in_prompt(prompt, unique_id, name):
 def sdppp_get_prompt_item_from_list(l, index):
     if not isinstance(l, list):
         return l
+    if len(l) <= index:
+        index = 0
+
     if len(l) == 0:
         return ''
     elif len(l) == 1:

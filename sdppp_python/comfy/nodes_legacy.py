@@ -249,7 +249,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 document_identify=document['identify'], 
                 image_blobs=[p['image_blob'] for p in params],  
                 layer_identifies=[p['layer_identify'] for p in params], 
-                bounds_identify=[p['bound_identify'] for p in params]
+                bounds_identifies=[p['bound_identify'] for p in params]
             ), True)
 
             return (None,)

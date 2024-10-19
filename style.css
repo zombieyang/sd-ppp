@@ -52,7 +52,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ffffff;
+    background-color: var(--body-background-fill);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -100,6 +100,7 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
+    color: var(--body-text-color);
 }
 
 .sdppp-confirm-button {
@@ -116,7 +117,6 @@
     top: 10px;
     right: 10px;
     background-color: #f44336;
-    color: white;
 }
 
 .sdppp-close-button:hover {
@@ -132,7 +132,7 @@
 
 .sdppp-page-id {
     font-size: 14px;
-    color: #333;
+    color: unset;
     font-weight: bold;
     text-align: center;
     width: 100%;
