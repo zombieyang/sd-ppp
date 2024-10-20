@@ -1,10 +1,12 @@
 ## [1.4.1] - 2024-10-20
 1. bugfix: data synchronous bug fix
 2. bugfix: bugs when send image to PS with boundary
-3. bugfix: layer order not correct after move. 
-4. feature: show ComfyUI queue size at the panel
-5. feature: show a guide after ccx downloaded
-6. feature: automatic reset document if not exists
+3. bugfix: layer order not correct after move.
+4. bugfix: getting gradient layer fail
+5. bugfix: connect with default `127.0.0.1:8188` will fail
+6. feature: show ComfyUI queue size at the panel
+7. feature: show a guide after ccx downloaded
+8. feature: automatic reset document if not exists
 
 ## [1.4.0] - 2024-10-03
 1. optimize: getImage node add only selection option, with lasso can only get the lasso area content. The original bounds parameter is now changed to only be able to connect lines, only used to control the square area, in general, need to limit the square work area, will need to connect the area to several nodes
