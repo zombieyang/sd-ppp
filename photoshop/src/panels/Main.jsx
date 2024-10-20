@@ -65,7 +65,7 @@ class WebPageList extends React.Component {
                                                 autoRunning: !e.target.checked ? sid : ''
                                             })
                                         }}></sp-checkbox>
-                                        <sp-label class="client-name">{item.progress ? `${item.progress}% - ` : ""}({item.ssid}) {item.error ? item.error.replace('sdppp PS side error:', '') : item.title}</sp-label>
+                                        <sp-label class="client-name">({item.ssid}) {item.error ? item.error.replace('sdppp PS side error:', '') : item.title}</sp-label>
                                     </div>
                                     <div className="client-list-item-right">
                                         <sp-action-button onClick={() => { ComfyConnection.instance?.pageInstanceRun(item.sid) }}>▶</sp-action-button>

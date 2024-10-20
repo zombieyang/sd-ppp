@@ -191,6 +191,10 @@ def define_comfyui_nodes_legacy(sdppp):
             return validate_sdppp()
         
         @classmethod
+        def IS_CHANGED(self):
+            return np.random.rand()
+        
+        @classmethod
         def INPUT_TYPES(cls):
             return {
                 "required": {
