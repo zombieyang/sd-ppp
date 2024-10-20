@@ -49,7 +49,7 @@ class SDPPP:
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
-            if 'api_level' not in qsobj or qsobj['api_level'] != "409":
+            if 'api_level' not in qsobj or qsobj['api_level'] != "410":
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
         @sio.event
