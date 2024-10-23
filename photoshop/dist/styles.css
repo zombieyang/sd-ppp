@@ -1,0 +1,104 @@
+.tabbar {
+    display: flex;
+    flex: 0 0 auto;
+    padding: 12px;
+    background-color: rgba(0,0,0,.25);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    flex-wrap: wrap;
+}
+.tabsection {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.tabsection:nth-of-type(2) {
+    justify-content: flex-end;
+}
+
+.tabsection * {
+    margin: 0 4px;
+}
+
+#url-bar {
+    flex: 2;
+}
+.status-bar {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.status-bar.connected { color: lightgreen; }
+.status-bar.reconnecting { color: lightyellow; }
+.status-bar.disconnected { color: lightcoral; }
+.status-icon {
+    margin-right: 5px;
+}
+.connect-box {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    margin: 5px 0;
+}
+#connect-btn {
+    margin-left: 8px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    line-height: 30px;
+    margin-left: 5px;
+}
+.container {
+    flex-direction: column;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.panel-body {
+    flex: 1;
+    margin-top: 8px;
+}
+.client-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 24px;
+}
+.client-list-item .client-list-item-left {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    flex: 2;
+}
+.client-list-item sp-checkbox {
+    margin-right: 2px;
+}
+.client-list-item .client-progress {
+    margin-right: 5px;
+    text-align: right;
+    display: flex;
+    justify-content: end;
+}
+.client-list-item .client-list-item-right {
+    display: flex;
+    align-items: middle;
+    flex: 1;
+    text-align: right;
+    white-space: nowrap;
+    justify-content: end;
+}
+.client-list-item .client-list-item-right sp-action-button {
+    height: 20px;
+    width: 16px;
+    margin-left: 5px;
+}
+.client-list-item .client-list-item-right sp-link:active {
+    color: white;
+}
+.autorun-desc {
+    font-size: 10px;
+}
