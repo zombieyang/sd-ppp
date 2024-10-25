@@ -113,13 +113,15 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 -----------------------------
 ### Tutorials
-1. EN
+1. English
+
 | Author | Link |
 | -- | -- |
 | zombieyang | =>[Youtube](https://www.youtube.com/watch?v=tQWqvpIuk_s) |
 | zombieyang | =>[Youtube](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
 
-2. ZH_CN
+2. 汉语
+   
 | Author | Link |
 | -- | -- |
 | zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
