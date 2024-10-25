@@ -113,12 +113,16 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
 
 -----------------------------
 ### Tutorials
+1. EN
+| Author | Link |
+| -- | -- |
+| zombieyang | =>[Youtube](https://www.youtube.com/watch?v=tQWqvpIuk_s) |
+| zombieyang | =>[Youtube](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
 
+2. ZH_CN
 | Author | Link |
 | -- | -- |
 | zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1qBvse2ErN) |
-| zombieyang | =>[Youtube](https://www.youtube.com/watch?v=tQWqvpIuk_s) |
-| zombieyang | =>[Youtube](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 | [猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f) |=>[Xiaohongshu](https://www.xiaohongshu.com/explore/66f0efa0000000001b0205ca)|
 | [鸡肉爱土豆](https://space.bilibili.com/403361177) |=>[BiliBili](https://www.bilibili.com/video/BV1shakevEbf)|
