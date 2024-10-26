@@ -76,7 +76,6 @@
     gap: 15px;
     margin: -2em;
     padding: 2em;
-    background: white;
     border-radius: 5px;
 }
 
@@ -91,6 +90,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    background-color: var(--input-background-fill);
 }
 
 #sdppp_dialog button {
