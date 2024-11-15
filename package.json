@@ -1,34 +1,29 @@
 {
   "name": "sdppp",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "scripts": {
-    "watch": "cd typescripts/src && webpack -w -c webpack.config.js --mode development",
-    "build": "cd typescripts/src && NODE_ENV=production webpack -c webpack.config.js --mode production"
+    "watch": "nodemon -w typescripts/src -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build.mjs",
+    "build": "NODE_ENV=production node typescripts/src/build.mjs && bash plugins/package.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/plugin-syntax-class-properties": "^7.10.4",
     "@babel/plugin-transform-react-jsx": "^7.8.3",
-    "babel-loader": "^8.0.6",
-    "clean-webpack-plugin": "^2.0.2",
-    "copy-webpack-plugin": "^5.0.3",
-    "css-loader": "^6.8.1",
-    "file-loader": "^5.1.0",
-    "nodemon": "^2.0.7",
-    "style-loader": "^1.1.3",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.5.4",
-    "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
     "@types/jimp": "^0.2.28",
     "@types/photoshop": "^25.0.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "esbuild": "^0.24.0",
+    "javascript-obfuscator": "^4.1.1",
+    "nodemon": "^2.0.7",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "esbuild-plugin-external-global": "^1.0.1",
     "fast-json-patch": "^3.1.1",
     "jimp": "^1.6.0",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "webpack-obfuscator": "^3.5.1"
+    "react-dom": "^16.8.6"
   }
 }

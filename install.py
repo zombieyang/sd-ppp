@@ -1,4 +1,4 @@
-#launch script for stable-diffusion
+#launch script for stable-diffusion webui
 try:
     import launch
 

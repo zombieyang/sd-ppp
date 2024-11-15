@@ -103,13 +103,22 @@ def registerSocketEvents(sdppp, sio):
     async def c_psd(sid, payload = {}):
         if 'sid' not in payload:
             return {"error": "sid is not defined"}
-        result = await sdppp.sio.call('c_psd', payload, to=payload['sid'])
-        return result
+        return await sdppp.sio.call('c_psd', payload, to=payload['sid'])
 
     # only emit by photoshop instance
     @sio.event
     async def b_page_run(sid, payload = {}):
         await sdppp.sio.emit('b_page_run', to=payload['sid'])
+
+    @sio.event
+    async def b_workflow_action(sid, payload = {}):
+        if len(sdppp.page_instances) == 0:
+            return {"error": "Please connect at least one page instance"}
+        
+        print('b_workflow_action', payload, payload['sid'])
+        result = await sdppp.sio.call('b_workflow_action', payload, to=payload['sid'])
+        print('b_workflow_action result')
+        return result
 
     @sio.event
     async def b_flush_data(sid, payload = {}):

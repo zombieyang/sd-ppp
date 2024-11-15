@@ -46,10 +46,8 @@ def on_app_started(blocks: gr.Blocks, app):
                 pass
             
 script_callbacks.on_app_started(on_app_started)
-
-
-shared.options_templates.update(
-    shared.options_section(('sd-ppp', "SD-PPP", "ui"), {
-        "sd-ppp_download": shared.OptionInfo([], "Download PS plugin", gr.Button)
-    })
-)
+# shared.options_templates.update(
+#     shared.options_section(('sd-ppp', "SD-PPP", "ui"), {
+#         "sd-ppp_download": shared.OptionInfo([], "Download PS plugin", gr.Button)
+#     })
+# )

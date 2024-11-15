@@ -1,7 +1,7 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
@@ -38,7 +38,7 @@
       "type": "panel",
       "id": "sdppp-connect",
       "label": {
-        "default": "Connect SD or ComfyUI"
+        "default": "Connect WebUI or ComfyUI"
       },
       "minimumSize": {
         "width": 300,

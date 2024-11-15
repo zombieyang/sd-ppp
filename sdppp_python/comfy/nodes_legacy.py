@@ -64,7 +64,7 @@ def define_comfyui_nodes_legacy(sdppp):
             return validate_sdppp()
         
         @classmethod
-        def IS_CHANGED(self, unique_id, prompt, layer_or_group, bound="", document="", selection_only=False):
+        def IS_CHANGED(self, unique_id, prompt, layer_or_group, bound="", document=""):
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
 
             if ('instance_id' not in document) or (document['instance_id'] not in sdppp.backend_instances):
@@ -76,8 +76,7 @@ def define_comfyui_nodes_legacy(sdppp):
         def INPUT_TYPES(cls):
             return {
                 "required": {
-                    "layer_or_group": ('LAYER', {"default": None}),
-                    "selection_only": ("STRING", {"default": "false", "sdppp_type": "LAYER_selection_only"}),
+                    "layer_or_group": ('LAYER', {"default": None})
                 },
                 "optional": {
                     # compat combo selection type
@@ -90,7 +89,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 }
             }
 
-        def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", selection_only=False):
+        def get_image(self, unique_id, prompt, layer_or_group, bound="", document=""):
             if validate_sdppp() is not True:
                 raise ValueError('Photoshop is not connected')
 
@@ -105,15 +104,13 @@ def define_comfyui_nodes_legacy(sdppp):
                 if linked_style:
                     item_layer = item_layer['layer_identify']
                 item_bound = sdppp_get_prompt_item_from_list(bound, i)
-                item_selection_only = sdppp_get_prompt_item_from_list(selection_only, i)
                 start = time.time()
                 result = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_image(
                         backend_instance=sdppp.backend_instances[document['instance_id']], 
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
-                        bound_identify=item_bound,
-                        selection_only=(item_selection_only==True or item_selection_only=="True")
+                        bound_identify=item_bound
                     )
                 )
                 (output_image, output_mask) = self._load_image(

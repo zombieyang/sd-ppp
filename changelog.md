@@ -1,3 +1,9 @@
+## [1.5.0] - 2024-11-13
+1. feature: new node `GetSelection` to replace the `selection_only` option in `GetImageFromPS` Node
+2. feature: run workflow directly (work with new ComfyUI's layout).
+3. feature: run workflow with a WebUI like panel in PS plugin.
+4. optimize: now can access ComfyUI webview in workflow running panel.
+
 ## [1.4.1] - 2024-10-20
 1. bugfix: data synchronous bug fix
 2. bugfix: bugs when send image to PS with boundary

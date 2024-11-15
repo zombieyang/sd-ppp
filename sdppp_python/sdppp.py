@@ -39,17 +39,22 @@ class SDPPP:
         
         self._registerSocketListeners()
         registerSDHTTPEndpoints(self, app)
-        self.server_type = "SD"
+        self.server_type = "a1111"
 
     def _registerSocketListeners(self):
         sio = self.sio
 
         @sio.event
+        def connect_error(data):
+            print("The connection failed!")
+            print(data)
+            
+        @sio.event
         async def connect(sid, environ):
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
-            if 'api_level' not in qsobj or qsobj['api_level'] != "410":
+            if 'api_level' not in qsobj or qsobj['api_level'] != "411":
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
         @sio.event

@@ -3,16 +3,16 @@
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ群密码是单数字-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
 ------ 
-> ppp for Professional Portal Protocol
-
-### Communicate between Photoshop and ComfyUI/SDWebUI/Forge
+### Photoshop Picture Portal for ComfyUI/SDWebUI/Forge
 
 * ✅ Multi layer supported (including text layer/image layer)
 * ✅ Multi document supported
 * ✅ Multi Photoshop supported
 * ✅ Work in specific region of your Document
 
-I hope it can make Photoshop become the workspace of your SD/ComfyUI
+**more powerful in ComfyUI:**
+
+![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
 
 
 ### SDWebUI/Forge
@@ -57,7 +57,7 @@ I hope it can make Photoshop become the workspace of your SD/ComfyUI
         3. [option2] rename `.ccx` to `.zip` and extract it into photoshop's `Plug-ins` directory or `Plug-ins/Generator` directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
     2. by UXP develop Tool (you can debug the code this way):
         1. clone this repository
-        2. click `Add Plugin` in UXP Develop Tool by selecting `photoshop/dist/manifest.json`.
+        2. click `Add Plugin` in UXP Develop Tool by selecting `plugins/photoshop/manifest.json`.
 
 3. connect to ComfyUI in Photoshop
 

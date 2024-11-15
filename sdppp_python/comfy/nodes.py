@@ -1,7 +1,9 @@
 import numpy as np
 import time
+import torch
 import json
 from ..protocols.photoshop import ProtocolPhotoshop
+from PIL import Image, ImageOps, ImageSequence, ImageFile
 
 class SDPPPOptional(dict):
     def __init__(self, optional_dict):
@@ -226,6 +228,73 @@ def define_comfyui_nodes(sdppp):
                 result['layer_identifies'], 
                 result['layer_infos']
             )
+
+
+    class GetSelectionNode:
+        RETURN_TYPES = ("MASK",)
+        RETURN_NAMES = ("mask",)
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
+        @classmethod
+        def IS_CHANGED(self, **kwargs):
+            return np.random.rand()
+
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
+                },
+                "optional": {
+                    "bound": ('BOUND', {"default": None}),
+                }
+            }
+        
+        def action(self, document, bound="", **kwargs):
+            if validate_sdppp() is not True:
+                raise ValueError('Photoshop is not connected')
+
+            result = call_async_func_in_server_thread(
+                ProtocolPhotoshop.get_selection(
+                    backend_instance=sdppp.backend_instances[document['instance_id']],
+                    document_identify=document['identify'],
+                    bound_identify=bound,
+                )
+            )
+            return self._load_mask(
+                result['blob'],
+                result['width'],
+                result['height']
+            )
+
+        # modify from Comfyui/nodes.py LoadImage
+        def _load_mask(self, imagebuffer, width, height):
+            output_images = []
+            output_masks = []
+            w, h = None, None
+
+            excluded_formats = ['MPO']
+            
+            image_mode = "L"
+
+            i = Image.frombytes(image_mode, (width, height), imagebuffer, "raw")
+            
+            if i.mode == 'I':
+                i = i.point(lambda i: i * (1 / 255))
+
+            if len(output_images) == 0:
+                w = i.size[0]
+                h = i.size[1]
+                
+            if i.size[0] != w or i.size[1] != h:
+                return (None, )
+            mask = np.array(i.getchannel('L')).astype(np.float32) / 255.0
+            mask = torch.from_numpy(mask)
+            output_mask = mask.unsqueeze(0)
+
+            return (output_mask, )
+
         
     class GetTextFromLayerNode:
         RETURN_TYPES = ("STRING",)
@@ -289,6 +358,7 @@ def define_comfyui_nodes(sdppp):
         'SDPPP Get Linked Layers': GetLinkedLayersNode,
         'SDPPP Get Layers In Group': GetLayersInGroupNode,
         'SDPPP Get Text From Layer': GetTextFromLayerNode,
+        'SDPPP Get Selection': GetSelectionNode,
 
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
     }

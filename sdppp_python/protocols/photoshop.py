@@ -11,12 +11,11 @@ async def protocol_call(backend_instance, protocol_name, data):
 
 class ProtocolPhotoshop:
     @classmethod
-    async def get_image(cls, backend_instance, document_identify, layer_identify, bound_identify, selection_only=False):
+    async def get_image(cls, backend_instance, document_identify, layer_identify, bound_identify):
         result = await protocol_call(backend_instance, 's_get_image', data={
             'document_identify': document_identify, 
             'layer_identify': layer_identify, 
-            'bound_identify': bound_identify, 
-            'selection_only': selection_only
+            'bound_identify': bound_identify
         })
         return result
     
@@ -38,6 +37,14 @@ class ProtocolPhotoshop:
             'layer_identify': layer_identify
         })
         return result['text']
+
+    @classmethod
+    async def get_selection(cls, backend_instance, document_identify, bound_identify):
+        result = await protocol_call(backend_instance, 's_get_selection', data={
+            'document_identify': document_identify, 
+            'bound_identify': bound_identify
+        })
+        return result
 
     @classmethod
     async def get_layer_info(cls, backend_instance, document_identify, layer_identify="", layer_name=""):
