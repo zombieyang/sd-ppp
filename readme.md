@@ -3,39 +3,30 @@
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ群密码是单数字-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
 ------ 
-### Photoshop Picture Portal for ComfyUI/SDWebUI/Forge
+## Photoshop Picture Portal for ComfyUI/SDWebUI/Forge
 
 * ✅ Multi layer supported (including text layer/image layer)
 * ✅ Multi document supported
 * ✅ Multi Photoshop supported
 * ✅ Work in specific region of your Document
 
-**more powerful in ComfyUI:**
+> attention: only PS 24.4.0+ is supported.
+
+## ComfyUI
+
+**from v1.5.0**
 
 ![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
 
-
-### SDWebUI/Forge
-
-**simple showcase**
-
-<img width=600 src="https://github.com/user-attachments/assets/b788c3f5-4ddc-460e-90de-93ff70c99307" />
-
-### ComfyUI
-
-**simple showcase**
+**from v1.2.0**
 
 <img width=600 src="https://github.com/user-attachments/assets/d5d8f673-78d8-4d3f-9a7a-0a385b862951" />
 
-**workflows**
+## SDWebUI/Forge
 
-| Basic SDXL or Flux.dev | Lasso inpaint | Light Control | Regional Prompt |
-| -- | -- | -- | -- |
-| <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/GwQjoI1nEKDeKY2cuCn3/image__upB8jB0_1731936363260_raw.jpg" /> | <img width=200 src="https://github.com/user-attachments/assets/ec64430f-0e6d-41cf-9b62-99ea1d9ddf0d" /> | <img width=200 src="https://github.com/user-attachments/assets/1afd47be-dc76-4ab9-ac70-ab519050fe04" /> | <img width=200 src="https://github.com/user-attachments/assets/2e23d221-1f24-4e3f-acf4-124d3c4de7be" /> |
-| [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-sdxl-by-ui-widgets-ui/2HTFV9wKjCmrmOJuVicZ) [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-fluxdev-by-ui-widgets-ui/OgNATIBYgoZhk5DHRwE4) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
-| [> Quark夸克盘](https://pan.quark.cn/s/a0aaa54f4521) | [> Quark夸克盘](https://pan.quark.cn/s/79cb8c91ef29) | [> Quark夸克盘](https://pan.quark.cn/s/882e139fbcc8) | [> Quark夸克盘](https://pan.quark.cn/s/0f0474a2f194) |
+**from v1.2.0**
 
-[**ComfyUI Nodes Manual**](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
+<img width=600 src="https://github.com/user-attachments/assets/b788c3f5-4ddc-460e-90de-93ff70c99307" />
       
 ## How to install
 
@@ -112,7 +103,21 @@
 </details>
 
 -----------------------------
-### Tutorials
+
+## More Resources
+
+[**ComfyUI Nodes Manual**](https://github.com/zombieyang/sd-ppp/wiki/All-ComfyUI-Nodes-Manual)
+
+### ComfyUI workflows
+
+| Basic SDXL or Flux.dev | Lasso inpaint | Light Control | Regional Prompt |
+| -- | -- | -- | -- |
+| <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/GwQjoI1nEKDeKY2cuCn3/image__upB8jB0_1731936363260_raw.jpg" /> | <img width=200 src="https://github.com/user-attachments/assets/ec64430f-0e6d-41cf-9b62-99ea1d9ddf0d" /> | <img width=200 src="https://github.com/user-attachments/assets/1afd47be-dc76-4ab9-ac70-ab519050fe04" /> | <img width=200 src="https://github.com/user-attachments/assets/2e23d221-1f24-4e3f-acf4-124d3c4de7be" /> |
+| [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-sdxl-by-ui-widgets-ui/2HTFV9wKjCmrmOJuVicZ) [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-fluxdev-by-ui-widgets-ui/OgNATIBYgoZhk5DHRwE4) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
+| [> Quark夸克盘](https://pan.quark.cn/s/a0aaa54f4521) | [> Quark夸克盘](https://pan.quark.cn/s/79cb8c91ef29) | [> Quark夸克盘](https://pan.quark.cn/s/882e139fbcc8) | [> Quark夸克盘](https://pan.quark.cn/s/0f0474a2f194) |
+
+
+### Video Tutorials
 1. English
 
 | Author | Link |
@@ -136,11 +141,7 @@
 
 
 
-### Thanks
+## Thanks
 @AbdullahAlfaraj
 @tianlang0704
 @猫咪老师
-
------------------------------
-
-> attention: only PS 24.4.0+ is supported by now.
