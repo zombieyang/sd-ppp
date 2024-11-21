@@ -1,4 +1,4 @@
-# SD-PPP: Use Photoshop as your A1111/ComfyUI's workspace
+![image](https://github.com/user-attachments/assets/7bafae9c-5ac3-4603-a652-7f5fc85094f7)# SD-PPP: Use Photoshop as your A1111/ComfyUI's workspace
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ群密码是单数字-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
@@ -110,11 +110,19 @@
 
 ### ComfyUI workflows
 
+
 | Basic SDXL or Flux.dev | Lasso inpaint | Light Control | Regional Prompt |
 | -- | -- | -- | -- |
 | <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/GwQjoI1nEKDeKY2cuCn3/image__upB8jB0_1731936363260_raw.jpg" /> | <img width=200 src="https://github.com/user-attachments/assets/ec64430f-0e6d-41cf-9b62-99ea1d9ddf0d" /> | <img width=200 src="https://github.com/user-attachments/assets/1afd47be-dc76-4ab9-ac70-ab519050fe04" /> | <img width=200 src="https://github.com/user-attachments/assets/2e23d221-1f24-4e3f-acf4-124d3c4de7be" /> |
 | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-sdxl-by-ui-widgets-ui/2HTFV9wKjCmrmOJuVicZ) [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-fluxdev-by-ui-widgets-ui/OgNATIBYgoZhk5DHRwE4) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
 | [> Quark夸克盘](https://pan.quark.cn/s/a0aaa54f4521) | [> Quark夸克盘](https://pan.quark.cn/s/79cb8c91ef29) | [> Quark夸克盘](https://pan.quark.cn/s/882e139fbcc8) | [> Quark夸克盘](https://pan.quark.cn/s/0f0474a2f194) |
+
+| SDPPP + Enricos Nodes |
+| -- |
+| <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/9fmtq1rOJW3SQ63j4IXQ/image_fNPWrKgP_1732148698438_raw.jpg" /> |
+| [@jeffufu](https://github.com/jeffufu) |
+| [> OpenArt.ai](https://openart.ai/workflows/qbWyplAHquJcPdw3Vjhr) |
+
 
 
 ### Video Tutorials
