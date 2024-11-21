@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7bafae9c-5ac3-4603-a652-7f5fc85094f7)# SD-PPP: Use Photoshop as your A1111/ComfyUI's workspace
+# SD-PPP: Use Photoshop as your A1111/ComfyUI's workspace
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ群密码是单数字-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
