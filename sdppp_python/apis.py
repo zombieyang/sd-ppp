@@ -115,9 +115,7 @@ def registerSocketEvents(sdppp, sio):
         if len(sdppp.page_instances) == 0:
             return {"error": "Please connect at least one page instance"}
         
-        print('b_workflow_action', payload, payload['sid'])
         result = await sdppp.sio.call('b_workflow_action', payload, to=payload['sid'])
-        print('b_workflow_action result')
         return result
 
     @sio.event

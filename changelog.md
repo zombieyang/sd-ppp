@@ -1,3 +1,16 @@
+## [1.5.1] - 2024-11-24
+1. optimize: Widget list will now sort by name.
+2. optimize: Textarea widget will auto resize.
+3. optimize: add a tips for Comfy with `--multi-user` that makes sdppp not able to load workflow. #58
+4. fix: `Save` button sometimes would not work.
+5. fix: Did not load the lastest workflow content when just enter Edit panel. #57 #58
+6. fix: The height and width of ParseLayerInfo was reversed.
+7. fix: SDPPP comfy nodes would become smaller after refresh.
+8. fix: Cannot get contents when there are multiple instance with same name. #56
+9. fix: Did not refresh layer option when just extracted PSD.
+10. fix: selected hidden layer will become visible after send to PS. #53
+
+
 ## [1.5.0] - 2024-11-13
 1. feature: new node `GetSelection` to replace the `selection_only` option in `GetImageFromPS` Node
 2. feature: run workflow directly (work with new ComfyUI's layout).

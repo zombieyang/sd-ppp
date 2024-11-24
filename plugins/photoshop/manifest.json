@@ -1,7 +1,7 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
@@ -12,7 +12,6 @@
     "enableAlerts": true
   },
   "requiredPermissions": {
-    "enableUserInfo": true,
     "network": {
       "domains": "all"
     },
@@ -45,8 +44,8 @@
         "height": 100
       },
       "maximumSize": {
-        "width": 1280,
-        "height": 960
+        "width": 3440,
+        "height": 1440
       },
       "preferredDockedSize": {
         "width": 300,

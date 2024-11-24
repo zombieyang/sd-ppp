@@ -1,6 +1,6 @@
 {
   "name": "sdppp",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "scripts": {
     "watch": "nodemon -w typescripts/src -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build.mjs",
     "build": "NODE_ENV=production node typescripts/src/build.mjs && bash plugins/package.sh"

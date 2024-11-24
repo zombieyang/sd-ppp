@@ -7,6 +7,8 @@ class SDPPP:
         self.page_instances = dict()
         self.backend_instances = dict()
 
+        self.extra_server_info = {}
+
     def attach_to_comfyui(self, PromptServer):
         self.sio = socketio.AsyncServer(
             async_mode='aiohttp', 
@@ -74,9 +76,12 @@ class SDPPP:
             else:
                 raise socketio.exceptions.ConnectionRefusedError('unknown instance type ' + payload['type'])
                 
-            return {
-                "server_type": self.server_type
+            ret = {
+                "server_type": self.server_type,
+                **self.extra_server_info
             }
+
+            return ret
 
 
         @sio.event

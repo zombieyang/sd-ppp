@@ -55,6 +55,10 @@ else:
     from .sdppp_python.sdppp import SDPPP
     sdppp = SDPPP()
     sdppp.attach_to_comfyui(PromptServer)
+    from comfy.cli_args import args
+    if (args.multi_user):
+        sdppp.extra_server_info['multi_user'] = True
+
 
     from .sdppp_python.comfy.nodes import define_comfyui_nodes
     from .sdppp_python.comfy.nodes_legacy import define_comfyui_nodes_legacy
