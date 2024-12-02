@@ -1,6 +1,6 @@
 # SD-PPP: Use Photoshop as your A1111/ComfyUI's workspace
 
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ群密码是单数字-299257207-brightgreen.svg)](https://qm.qq.com/q/iQ6ydtJEGI) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ频道-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
 ------ 
 ## Photoshop Picture Portal for ComfyUI/SDWebUI/Forge
