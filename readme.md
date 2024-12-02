@@ -117,11 +117,11 @@
 | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-sdxl-by-ui-widgets-ui/2HTFV9wKjCmrmOJuVicZ) [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-fluxdev-by-ui-widgets-ui/OgNATIBYgoZhk5DHRwE4) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-lasso-inpaint-inpaint/p6rsG9IVzGk2OP7RoGVE) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-light-control/oNzznyLtfPPXQsEbeF4p) | [> OpenArt.ai](https://openart.ai/workflows/tiger_vicious_50/photoshop-regional-prompt/R2RIyZxRw91KFEpN9MnI) |
 | [> Quark夸克盘](https://pan.quark.cn/s/a0aaa54f4521) | [> Quark夸克盘](https://pan.quark.cn/s/79cb8c91ef29) | [> Quark夸克盘](https://pan.quark.cn/s/882e139fbcc8) | [> Quark夸克盘](https://pan.quark.cn/s/0f0474a2f194) |
 
-| SDPPP + Enricos Nodes |
-| -- |
-| <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/9fmtq1rOJW3SQ63j4IXQ/image_fNPWrKgP_1732148698438_raw.jpg" /> |
-| [@jeffufu](https://github.com/jeffufu) |
-| [> OpenArt.ai](https://openart.ai/workflows/qbWyplAHquJcPdw3Vjhr) |
+| SDPPP + Enricos Nodes | Flux全家桶 |
+| -- | -- |
+| <img width=200 src="https://cdn.openart.ai/workflow_thumbnails/9fmtq1rOJW3SQ63j4IXQ/image_fNPWrKgP_1732148698438_raw.jpg" /> |<img width=200 src="https://i0.hdslb.com/bfs/archive/0d3a63a059034c47742975c833ad4d59cb788687.jpg@320w_200h_1c_!web-space-index-myvideo.webp" /> |
+| [@jeffufu](https://github.com/jeffufu) | [@猫咪老师Reimagined](https://space.bilibili.com/1054925384) |
+| [> OpenArt.ai](https://openart.ai/workflows/qbWyplAHquJcPdw3Vjhr) | [> 百度盘](https://pan.baidu.com/s/1jlpCGXbBPO3pdWpSr0WW9Q?pwd=bwbx) |
 
 
 
