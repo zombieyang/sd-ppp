@@ -107,9 +107,13 @@ def define_comfyui_nodes(sdppp):
 
     class GetLayerNode:
         RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
-        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        RETURN_NAMES = ("layer_or_group", "layer boundary", "layer_info")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
+
+        @classmethod
+        def IS_CHANGED(self, **kwargs):
+            print('getlayer is_changed')
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -247,7 +251,7 @@ def define_comfyui_nodes(sdppp):
                     "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                 },
                 "optional": {
-                    "bound": ('BOUND', {"default": None}),
+                    "bounds [optional]": ('BOUND', {"default": None}),
                 }
             }
         

@@ -87,7 +87,6 @@ sp-slider.sdppp-slider {
 
 .panel-body {
     flex: 1;
-    margin-top: 8px;
     width: 400%;
     display: flex;
     flex-direction: row;
@@ -122,28 +121,26 @@ sp-slider.sdppp-slider {
 .workflow-edit-button {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     margin-bottom: 10px;
-}
-
-.workflow-edit-button sp-button {
-    flex: 1;
-    margin: 0 5px;
-    white-space: nowrap;
-    text-align: center;
-    overflow: hidden;
 }
 
 
 .workflow-edit-button sp-action-button {
     cursor: pointer;
-    text-decoration: underline;
+}
+
+.client-list {
+    margin-top: -10px;
+    margin-bottom: 10px;
 }
 
 .client-list-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    height: 24px;
+    align-items: baseline;
+    position: relative;
+    margin: -6px 0;
 }
 
 .client-list-item .client-list-item-left {
@@ -165,12 +162,15 @@ sp-slider.sdppp-slider {
 }
 
 .client-list-item .client-list-item-right {
-    display: flex;
-    align-items: middle;
-    flex: 1;
+    /* display: flex;
+    align-items: middle; */
+/*     flex: 1;
     text-align: right;
     white-space: nowrap;
-    justify-content: end;
+    justify-content: end; */
+    position: absolute;
+    right: 0;
+    bottom: 2px;
 }
 
 .client-list-item .client-list-item-right sp-action-button {

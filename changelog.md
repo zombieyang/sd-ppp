@@ -1,3 +1,14 @@
+## [1.5.2] - 2024-12-02
+1. optimize: provide queueX3 and queueX10 button in Edit panel.
+2. optimize: new icon button for workflow save and comfy edit.
+3. optimize: workflow list & page list style optimize
+4. fix: some i18n didn't work in Comfy side.
+5. fix: text area will blur automatically after linenum changed.
+6. fix: extremely slow after reconnect.
+7. fix: get image from PS would not cache image even canvas is not modified.
+8. fix: live painting somethimes would not work in PageList, always would not work in WorkflowList.
+9. fix: issues of Edit panel when many instances connecting with one Comfy.
+
 ## [1.5.1] - 2024-11-24
 1. optimize: Widget list will now sort by name.
 2. optimize: Textarea widget will auto resize.

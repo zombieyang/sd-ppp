@@ -65,12 +65,17 @@ def define_comfyui_nodes_legacy(sdppp):
         
         @classmethod
         def IS_CHANGED(self, unique_id, prompt, layer_or_group, bound="", document=""):
-            linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
+            # 'prompt' is not valid in IS_CHANGED
+            # so we cant figure out if this node is using linked style or not
+            # just consider to support linked style here.
+            if not isinstance(document, list) or len(document) == 0 or not isinstance(document[0], str):
+                return np.random.rand()
 
+            document = json.loads(document[0])
             if ('instance_id' not in document) or (document['instance_id'] not in sdppp.backend_instances):
                 return np.random.rand()
 
-            return sdppp.backend_instances[document['instance_id']].data['canvasStateID']
+            return sdppp.backend_instances[document['instance_id']].store.data['canvasStateID']
         
         @classmethod
         def INPUT_TYPES(cls):
@@ -81,7 +86,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 "optional": {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bound": ('BOUND', {"default": None}),
+                    "bounds [optional]": ('BOUND', {"default": None}),
                 },
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
@@ -201,7 +206,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 "optional": {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bound": ('BOUND', {"default": None}),
+                    "bounds [optional]": ('BOUND', {"default": None}),
                 },
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
