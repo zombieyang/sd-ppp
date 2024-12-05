@@ -251,7 +251,7 @@ def define_comfyui_nodes(sdppp):
                     "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                 },
                 "optional": {
-                    "bounds [optional]": ('BOUND', {"default": None}),
+                    "bound": ('BOUND', {"default": None}),
                 }
             }
         

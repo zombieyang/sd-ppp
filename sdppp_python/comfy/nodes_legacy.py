@@ -86,7 +86,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 "optional": {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bounds [optional]": ('BOUND', {"default": None}),
+                    "bound": ('BOUND', {"default": None}),
                 },
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
@@ -206,7 +206,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 "optional": {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bounds [optional]": ('BOUND', {"default": None}),
+                    "bound": ('BOUND', {"default": None}),
                 },
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
