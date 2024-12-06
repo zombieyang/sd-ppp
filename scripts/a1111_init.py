@@ -40,10 +40,10 @@ def on_app_started(blocks: gr.Blocks, app):
             all_galleries[elem.elem_id] = elem
         if inForge and isinstance(elem, LogicalImage) and elem.label == 'background':
             all_forge_input[elem.elem_id] = elem
-    with blocks:
-        with gr.Box(elem_id=f"sdppp_dialog", elem_classes="popup-dialog") as sdppp_dialog:
-            with gr.Row():
-                pass
+    # with blocks:
+    #     with gr.Box(elem_id=f"sdppp_dialog", elem_classes="popup-dialog") as sdppp_dialog:
+    #         with gr.Row():
+    #             pass
             
 script_callbacks.on_app_started(on_app_started)
 # shared.options_templates.update(

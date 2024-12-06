@@ -38,9 +38,9 @@ def sdppp_get_prompt_item_from_list(l, index):
     else:
         return l[index]
 
-def define_comfyui_nodes(sdppp):
+def define_comfyui_nodes(sdpppServer):
     def validate_sdppp():
-        if not sdppp.has_ps_instance():
+        if not sdpppServer.has_ps_instance():
             return 'Photoshop is not connected'
         return True
 
@@ -50,7 +50,7 @@ def define_comfyui_nodes(sdppp):
             'result': None,
             'error': None
         }
-        loop = sdppp.loop
+        loop = sdpppServer.loop
         async def do_call():
             try: 
                 handle['result'] = await coro
@@ -75,6 +75,10 @@ def define_comfyui_nodes(sdppp):
         RETURN_NAMES = ("opacity", "bound_left", "bound_top", "bound_width", "bound_height")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
+
+        @classmethod
+        def IS_CHANGED(self, **kwargs):
+            return np.random.rand()
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -113,7 +117,7 @@ def define_comfyui_nodes(sdppp):
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            print('getlayer is_changed')
+            return np.random.rand()
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -132,7 +136,7 @@ def define_comfyui_nodes(sdppp):
                 raise ValueError('Photoshop is not connected')
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layer_info(
-                    sdppp.backend_instances[document['instance_id']], 
+                    sdpppServer.backend_instances[document['instance_id']], 
                     document['identify'], 
                     layer_identify=layer_or_group
                 )
@@ -176,7 +180,7 @@ def define_comfyui_nodes(sdppp):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layers_in_group(
-                    backend_instance=sdppp.backend_instances[document['instance_id']],
+                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
                     document_identify=document['identify'], 
                     select=select[0],
                     layer_identifies=layer_identifies
@@ -221,7 +225,7 @@ def define_comfyui_nodes(sdppp):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_linked_layers(
-                    backend_instance=sdppp.backend_instances[document['instance_id']],
+                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
                     document_identify=document['identify'], 
                     select=select[0],
                     layer_identifies=layer_identifies
@@ -241,8 +245,16 @@ def define_comfyui_nodes(sdppp):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+        def VALIDATE_INPUTS(s):
+            return validate_sdppp()
+
+        @classmethod
+        def IS_CHANGED(self, sdppp, **kwargs):
+            document = json.loads(json.loads(sdppp)['document'])
+            if ('instance_id' not in document) or (document['instance_id'] not in sdpppServer.backend_instances):
+                return np.random.rand()
+
+            return sdpppServer.backend_instances[document['instance_id']].store.data['selectionStateID']
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -250,8 +262,13 @@ def define_comfyui_nodes(sdppp):
                 "required": {
                     "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                 },
-                "optional": {
+                "optional": SDPPPOptional({
                     "bound": ('BOUND', {"default": None}),
+                    "sdppp": ("STRING", {"default": ""}),
+                }),
+                "hidden": {
+                    "unique_id": "UNIQUE_ID",
+                    "prompt": "PROMPT", 
                 }
             }
         
@@ -261,7 +278,7 @@ def define_comfyui_nodes(sdppp):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_selection(
-                    backend_instance=sdppp.backend_instances[document['instance_id']],
+                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
                     document_identify=document['identify'],
                     bound_identify=bound,
                 )
@@ -337,7 +354,7 @@ def define_comfyui_nodes(sdppp):
             else:
                 document = layer_or_group[0]['document']
                 
-            if document['instance_id'] not in sdppp.backend_instances:
+            if document['instance_id'] not in sdpppServer.backend_instances:
                 raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             res_text = []
@@ -347,7 +364,7 @@ def define_comfyui_nodes(sdppp):
 
                 text = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_text(
-                        backend_instance=sdppp.backend_instances[document['instance_id']],
+                        backend_instance=sdpppServer.backend_instances[document['instance_id']],
                         document_identify=document['identify'], 
                         layer_identify=item_layer
                     )

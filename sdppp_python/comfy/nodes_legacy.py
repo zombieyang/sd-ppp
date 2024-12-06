@@ -193,7 +193,7 @@ def define_comfyui_nodes_legacy(sdppp):
             return validate_sdppp()
         
         @classmethod
-        def IS_CHANGED(self):
+        def IS_CHANGED(self, **kwargs):
             return np.random.rand()
         
         @classmethod

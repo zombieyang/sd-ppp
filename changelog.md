@@ -1,3 +1,11 @@
+## [1.5.3] - 2024-12-06
+1. optimize: favorited workflow will be at the top of the list.
+2. fix: move tool would not trigger live paint & cache update.
+3. fix: cache for GetSelection Node.
+4. fix: the `[optional]` label will cause error in GetImageFromPS node.
+5. fix: init failure in forge.
+6. fix: cannot select layer if GetLayer node is connect to GetDocument node via a reroute.
+
 ## [1.5.2] - 2024-12-02
 1. optimize: provide queueX3 and queueX10 button in Edit panel.
 2. optimize: new icon button for workflow save and comfy edit.

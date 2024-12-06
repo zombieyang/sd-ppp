@@ -52,11 +52,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--body-background-fill);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000; /* 确保对话框在遮罩层之上 */
+}
+#sdppp_dialog form {
+    background-color: white;
 }
 
 #sdppp_dialog::after {
@@ -90,7 +92,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
-    background-color: var(--input-background-fill);
+    background-color: white;
 }
 
 #sdppp_dialog button {
@@ -100,7 +102,7 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
-    color: var(--body-text-color);
+    color: white;
 }
 
 .sdppp-confirm-button {
