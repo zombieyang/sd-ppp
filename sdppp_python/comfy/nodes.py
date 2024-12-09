@@ -5,21 +5,29 @@ import json
 from ..protocols.photoshop import ProtocolPhotoshop
 from PIL import Image, ImageOps, ImageSequence, ImageFile
 
+# def SDPPPOptional(visible_dict, hidden_dict):
+#     visible_dict.__contains__ = lambda key: key in visible_dict.keys() or key in hidden_dict.keys()
+#     visible_dict.__getitem__ = lambda key: visible_dict[key] if key in visible_dict.keys() else hidden_dict[key]
+#     return visible_dict
+
 class SDPPPOptional(dict):
-    def __init__(self, optional_dict):
+    def __init__(self, visible_dict, optional_dict):
         super().__init__()
         # self.contains_key_arr = args[0] # list of keys that can be existed in the dict
-        self.contains_key_arr = optional_dict.keys()
         self.optional_dict = optional_dict
-
+        self.visible_dict = visible_dict
+        for key in self.visible_dict.keys():
+            self[key] = self.visible_dict[key]
+            
     def __contains__(self, key):
-        return key in self.contains_key_arr
+        return key in self.visible_dict.keys() or key in self.optional_dict.keys()
 
     def __getitem__(self, key):
-        
-        if key in self.contains_key_arr:
-            return self.optional_dict[key]
-        return None
+        if key in self.visible_dict.keys():
+            return self.visible_dict[key]
+        return self.optional_dict[key]
+
+
 
 def check_linked_in_prompt(prompt, unique_id, name):
     node_prompt = prompt[0][unique_id[0]]
@@ -126,7 +134,7 @@ def define_comfyui_nodes(sdpppServer):
                     "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                     "layer_or_group": ("STRING", {"default": "", "sdppp_type": "LAYER_select"})
                 },
-                "optional": SDPPPOptional({
+                "optional": SDPPPOptional({}, {
                     "sdppp": ("STRING", {"default": ""}),
                 })
             }
@@ -166,7 +174,7 @@ def define_comfyui_nodes(sdpppServer):
                     "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                     "select": (['all', 'text', 'image', 'first'], {"default": "all"}),
                 },
-                "optional": SDPPPOptional({
+                "optional": SDPPPOptional({}, {
                     "sdppp": ("STRING", {"default": ""}),
                 })
             }
@@ -211,7 +219,7 @@ def define_comfyui_nodes(sdpppServer):
                     "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                     "select": (['all', 'text', 'image', 'first'], {"default": "all"}),
                 },
-                "optional": SDPPPOptional({
+                "optional": SDPPPOptional({}, {
                     "sdppp": ("STRING", {"default": ""}),
                 })
             }
@@ -236,7 +244,6 @@ def define_comfyui_nodes(sdpppServer):
                 result['layer_identifies'], 
                 result['layer_infos']
             )
-
 
     class GetSelectionNode:
         RETURN_TYPES = ("MASK",)
@@ -264,6 +271,7 @@ def define_comfyui_nodes(sdpppServer):
                 },
                 "optional": SDPPPOptional({
                     "bound": ('BOUND', {"default": None}),
+                }, {
                     "sdppp": ("STRING", {"default": ""}),
                 }),
                 "hidden": {
