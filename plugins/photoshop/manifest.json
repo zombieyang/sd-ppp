@@ -1,7 +1,7 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
