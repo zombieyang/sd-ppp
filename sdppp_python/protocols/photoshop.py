@@ -11,20 +11,20 @@ async def protocol_call(backend_instance, protocol_name, data):
 
 class ProtocolPhotoshop:
     @classmethod
-    async def get_image(cls, backend_instance, document_identify, layer_identify, bound_identify):
+    async def get_image(cls, backend_instance, document_identify, layer_identify, boundary):
         result = await protocol_call(backend_instance, 's_get_image', data={
             'document_identify': document_identify, 
             'layer_identify': layer_identify, 
-            'bound_identify': bound_identify
+            'boundary': boundary
         })
         return result
     
     @classmethod
-    async def send_images(cls, backend_instance, document_identify, layer_identifies, bounds_identifies, image_urls=[], image_blobs=[]):
+    async def send_images(cls, backend_instance, document_identify, layer_identifies, boundaries, image_urls=[], image_blobs=[]):
         result = await protocol_call(backend_instance, 's_send_images', data={
             'document_identify': document_identify, 
             'layer_identifies': layer_identifies,
-            'bounds_identifies': bounds_identifies,
+            'boundaries': boundaries,
             'image_urls': image_urls,
             'image_blobs': image_blobs
         })
@@ -39,10 +39,17 @@ class ProtocolPhotoshop:
         return result['text']
 
     @classmethod
-    async def get_selection(cls, backend_instance, document_identify, bound_identify):
+    async def get_selection(cls, backend_instance, document_identify, boundary):
         result = await protocol_call(backend_instance, 's_get_selection', data={
             'document_identify': document_identify, 
-            'bound_identify': bound_identify
+            'boundary': boundary
+        })
+        return result
+
+    @classmethod    
+    async def get_document_info(cls, backend_instance, document_identify):
+        result = await protocol_call(backend_instance, 's_get_document_info', data={
+            'document_identify': document_identify
         })
         return result
 

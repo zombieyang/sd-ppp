@@ -8,14 +8,9 @@ from PIL import Image, ImageOps, ImageSequence, ImageFile
 from nodes import CLIPTextEncode, ConditioningConcat, ConditioningSetMask
 from ..apis import addImageCache
 from ..protocols.photoshop import ProtocolPhotoshop
-from .nodes import check_linked_in_prompt, sdppp_get_prompt_item_from_list
+from .nodes import check_linked_in_prompt, sdppp_get_prompt_item_from_list, convert_mask_to_boundary, SDPPPOptional, sdppp_is_changed
 
 def define_comfyui_nodes_legacy(sdppp):
-    def validate_sdppp():
-        if not sdppp.has_ps_instance():
-            return 'Photoshop is not connected'
-        return True
-
     def call_async_func_in_server_thread(coro, dontwait = False):
         handle = {
             'done': False,
@@ -60,22 +55,10 @@ def define_comfyui_nodes_legacy(sdppp):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def VALIDATE_INPUTS(s):
-            return validate_sdppp()
-        
-        @classmethod
-        def IS_CHANGED(self, unique_id, prompt, layer_or_group, bound="", document=""):
-            # 'prompt' is not valid in IS_CHANGED
-            # so we cant figure out if this node is using linked style or not
-            # just consider to support linked style here.
-            if not isinstance(document, list) or len(document) == 0 or not isinstance(document[0], str):
-                return np.random.rand()
-
-            document = json.loads(document[0])
-            if ('instance_id' not in document) or (document['instance_id'] not in sdppp.backend_instances):
-                return np.random.rand()
-
-            return sdppp.backend_instances[document['instance_id']].store.data['canvasStateID']
+        def IS_CHANGED(self, **kwargs):
+            sdppp_arg = kwargs['sdppp'][0]
+            document_arg = kwargs['document'][0] if 'document' in kwargs and kwargs['document'] != None else ''
+            return sdppp_is_changed(sdppp, sdppp_arg, document_arg)
         
         @classmethod
         def INPUT_TYPES(cls):
@@ -83,20 +66,21 @@ def define_comfyui_nodes_legacy(sdppp):
                 "required": {
                     "layer_or_group": ('LAYER', {"default": None})
                 },
-                "optional": {
+                "optional": SDPPPOptional({
+                    "bound": ('MASK', {"default": None}),
+                }, {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bound": ('BOUND', {"default": None}),
-                },
+                    "sdppp": ("STRING", {"default": ""}),
+                }),
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
                     "prompt": "PROMPT", 
                 }
             }
 
-        def get_image(self, unique_id, prompt, layer_or_group, bound="", document=""):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+        def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", **kwargs):
+            sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
             if document['instance_id'] not in sdppp.backend_instances:
@@ -115,7 +99,7 @@ def define_comfyui_nodes_legacy(sdppp):
                         backend_instance=sdppp.backend_instances[document['instance_id']], 
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
-                        bound_identify=item_bound
+                        boundary=convert_mask_to_boundary(item_bound)
                     )
                 )
                 (output_image, output_mask) = self._load_image(
@@ -189,10 +173,6 @@ def define_comfyui_nodes_legacy(sdppp):
         OUTPUT_NODE = True
 
         @classmethod
-        def VALIDATE_INPUTS(s):
-            return validate_sdppp()
-        
-        @classmethod
         def IS_CHANGED(self, **kwargs):
             return np.random.rand()
         
@@ -203,20 +183,20 @@ def define_comfyui_nodes_legacy(sdppp):
                     "images": ("IMAGE", ),
                     "layer_or_group": ('LAYER', {"default": None}),
                 },
-                "optional": {
-                    # compat combo selection type
+                "optional": SDPPPOptional({
+                    "bound": ('MASK', {"default": None}),
+                }, {
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
-                    "bound": ('BOUND', {"default": None}),
-                },
+                    "sdppp": ("STRING", {"default": ""}),
+                }),
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
                     "prompt": "PROMPT", 
                 }
             }
 
-        def send_image(self, unique_id, prompt, images, layer_or_group, bound="", document=""):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+        def send_image(self, unique_id, prompt, images, layer_or_group, bound="", document="", **kwargs):
+            sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
 
@@ -242,7 +222,7 @@ def define_comfyui_nodes_legacy(sdppp):
                     img = img.convert("RGBA")
                 params.append({
                     'layer_identify': item_layer, 
-                    'bound_identify': item_bound, 
+                    'boundary': convert_mask_to_boundary(item_bound), 
                     'image_blob': {
                         'buffer': img.tobytes('raw'),
                         'width': img.width,
@@ -255,47 +235,11 @@ def define_comfyui_nodes_legacy(sdppp):
                 document_identify=document['identify'], 
                 image_blobs=[p['image_blob'] for p in params],  
                 layer_identifies=[p['layer_identify'] for p in params], 
-                bounds_identifies=[p['bound_identify'] for p in params]
+                boundaries=[p['boundary'] for p in params]
             ), True)
 
             return (None,)
-        
-    class ImageTimesOpacity:
-        @classmethod
-        def INPUT_TYPES(cls):
-            return {
-                "required": {
-                    "images": ("IMAGE", ),
-                    "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
-                }
-            }
-
-        RETURN_TYPES = ("IMAGE",)
-        FUNCTION = "image_times_opacity"
-        CATEGORY = "Photoshop"
-
-        def image_times_opacity(self, images, opacity):
-            image_out = images * opacity
-            return (image_out,)
-        
-    class MaskTimesOpacity:
-        @classmethod
-        def INPUT_TYPES(cls):
-            return {
-                "required": {
-                    "masks": ("MASK", ),
-                    "opacity": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 1.0, "step": 0.01}),
-                }
-            }
-
-        RETURN_TYPES = ("MASK",)
-        FUNCTION = "mask_times_opacity"
-        CATEGORY = "Photoshop"
-
-        def mask_times_opacity(self, masks, opacity):
-            mask_out = masks * opacity
-            return (mask_out,)
-
+    
     class CLIPTextEncodePSRegional:
         @classmethod
         def INPUT_TYPES(s):
@@ -347,7 +291,5 @@ def define_comfyui_nodes_legacy(sdppp):
     return {
         'GetImageFromPhotoshopLayerNode': GetImageFromPhotoshopLayerNode,
         'SendImageToPhotoshopLayerNode': SendImageToPhotoshopLayerNode,
-        'ImageTimesOpacity': ImageTimesOpacity,
-        'MaskTimesOpacity': MaskTimesOpacity,
         'CLIPTextEncodePSRegional': CLIPTextEncodePSRegional
     }

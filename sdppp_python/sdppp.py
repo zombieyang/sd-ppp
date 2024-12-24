@@ -1,6 +1,10 @@
 import socketio
+import os.path as path
 from .instances import BackendInstance, PageInstance
 from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
+
+# Define projectRoot as parent directory of current file
+projectRoot = path.dirname(path.dirname(__file__))
 
 class SDPPP:
     def __init__(self):
@@ -25,6 +29,13 @@ class SDPPP:
         self._registerSocketListeners()
         registerComfyHTTPEndpoints(self, PromptServer)
         self.server_type = "comfy"
+
+        # serve static
+        PromptServer.instance.app.router.add_static(
+            '/sd-ppp-static', 
+            path.join(projectRoot, 'plugins'),
+            show_index=True  # Enable directory listing
+        )
 
     def attach_to_SD(self, app):
         self.sio = socketio.AsyncServer(
@@ -94,10 +105,12 @@ class SDPPP:
 
         registerSocketEvents(self, self.sio)
                 
-    def has_ps_instance(self):
+    def has_ps_instance(self, throw_error = False):
         for instance in self.backend_instances.values():
             if instance.type == 'photoshop':
                 return True
+        if throw_error:
+            raise ValueError('no Photoshop instance found')
         return False
 
     

@@ -1,15 +1,3 @@
-sp-slider.sdppp-slider {
-    position: relative;
-}
-.sdppp-slider sp-textfield {
-    position: absolute;
-    right: 0;
-    top: 5px;
-    width: 70px; 
-    height: 20px;
-    text-align: right;
-}
-
 .tabbar {
     display: flex;
     flex: 0 0 auto;
@@ -100,19 +88,33 @@ sp-slider.sdppp-slider {
     flex-direction: column;
 }
 
-.editor-card sp-picker,
-.editor-card sp-menu,
-.editor-card sp-menu-item,
-.editor-card sp-textarea {
-    width: 100%;
-}
-
 .workflow-edit {
     overflow-y: auto;
     overflow-x: hidden;
     flex: 1;
     padding: 0 5px;
 }
+.workflow-edit-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.workflow-edit-field-widgets {
+    display: flex;
+    flex-direction: row;
+}
+.workflow-edit-field-widgets sp-slider.sdppp-slider {
+    position: relative;
+}
+.workflow-edit-field-widgets sp-slider.sdppp-slider sp-textfield {
+    position: absolute;
+    right: 0;
+    top: -25px;
+    width: 70px; 
+    height: 20px;
+    text-align: right;
+}
+
 
 .workflow-edit-bottom {
     display: flex;
@@ -131,8 +133,18 @@ sp-slider.sdppp-slider {
 }
 
 .client-list {
-    margin-top: -10px;
-    margin-bottom: 10px;
+    margin-top: -5px;
+}
+
+.client-list-title-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 48px;
+}
+.client-list-title-container sp-picker {
+    width: 80px;
+    height: 20px;
 }
 
 .client-list-item {
@@ -140,14 +152,20 @@ sp-slider.sdppp-slider {
     justify-content: space-between;
     align-items: baseline;
     position: relative;
-    margin: -6px 0;
 }
 
 .client-list-item .client-list-item-left {
-    margin-left: 5px;
     display: flex;
-    align-items: center;
     flex: 2;
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+}
+.client-list-item .client-list-item-left svg {
+    cursor: pointer;
+}
+.client-list-item .client-list-item-left-active {
+    color: white;
 }
 
 .client-list-item sp-checkbox {
@@ -162,15 +180,15 @@ sp-slider.sdppp-slider {
 }
 
 .client-list-item .client-list-item-right {
-    /* display: flex;
-    align-items: middle; */
-/*     flex: 1;
-    text-align: right;
     white-space: nowrap;
-    justify-content: end; */
-    position: absolute;
-    right: 0;
-    bottom: 2px;
+}
+
+.client-list-item .client-list-item-right sp-label {
+    justify-content: flex-end;
+    cursor: pointer;
+}
+.client-list-item .client-list-item-right sp-label.active {
+    color: white;
 }
 
 .client-list-item .client-list-item-right sp-action-button {

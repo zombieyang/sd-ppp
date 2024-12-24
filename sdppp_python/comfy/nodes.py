@@ -3,7 +3,23 @@ import time
 import torch
 import json
 from ..protocols.photoshop import ProtocolPhotoshop
-from PIL import Image, ImageOps, ImageSequence, ImageFile
+from PIL import Image, ImageOps, ImageSequence, ImageFile, ImageDraw
+
+def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = 'canvasStateID'):
+    document_instance_id = None
+    try:
+        sdppp_values = json.loads(sdppp_arg)
+        if document_arg != '' and ('document' not in sdppp_values or sdppp_values['document'] == ''):
+            document = json.loads(document_arg)
+            document_instance_id = document['instance_id']
+        else:
+            document_instance_id = sdppp_values['document']['instance_id']
+        return sdppp.backend_instances[document_instance_id].store.data[key]
+    except Exception as e:
+        # print('=============error============', e)
+        # print(sdppp_arg)
+        # print(document_arg)
+        return np.random.rand()
 
 # def SDPPPOptional(visible_dict, hidden_dict):
 #     visible_dict.__contains__ = lambda key: key in visible_dict.keys() or key in hidden_dict.keys()
@@ -28,7 +44,6 @@ class SDPPPOptional(dict):
         return self.optional_dict[key]
 
 
-
 def check_linked_in_prompt(prompt, unique_id, name):
     node_prompt = prompt[0][unique_id[0]]
     return isinstance(node_prompt['inputs'][name], list)
@@ -46,12 +61,42 @@ def sdppp_get_prompt_item_from_list(l, index):
     else:
         return l[index]
 
-def define_comfyui_nodes(sdpppServer):
-    def validate_sdppp():
-        if not sdpppServer.has_ps_instance():
-            return 'Photoshop is not connected'
-        return True
+def convert_boundary_to_mask(boundary):
+    left = boundary['left']
+    top = boundary['top']
+    right = boundary['right']
+    bottom = boundary['bottom']
+    width = boundary['width']
+    height = boundary['height']
 
+    image = Image.new('L', (width + left + right, height + top + bottom), 0)
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((left, top, left + width, top + height), fill=255)
+
+    mask = np.array(image.getchannel('L')).astype(np.float32) / 255.0
+    mask = torch.from_numpy(mask)
+    output_mask = mask.unsqueeze(0)
+
+    return output_mask
+
+def convert_mask_to_boundary(mask):
+    if mask is None or mask == '':
+        return None
+    mask = mask.squeeze(0).numpy()
+    mask = (mask * 255).astype(np.uint8)
+    mask = Image.fromarray(mask)
+    bbox = mask.getbbox()
+    
+    return {
+        'left': bbox[0],
+        'top': bbox[1],
+        'width': bbox[2] - bbox[0],
+        'height': bbox[3] - bbox[1],
+        'right': mask.width - bbox[2],
+        'bottom': mask.height - bbox[3],
+    }
+
+def define_comfyui_nodes(sdpppServer):
     def call_async_func_in_server_thread(coro, dontwait = False):
         handle = {
             'done': False,
@@ -86,7 +131,9 @@ def define_comfyui_nodes(sdpppServer):
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+            sdppp_arg = kwargs['sdppp']
+            return sdppp_is_changed(sdppp, sdppp_arg, '')
+        
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -97,10 +144,16 @@ def define_comfyui_nodes(sdpppServer):
             }
 
         def action(self, layer_info):
-            return (layer_info['opacity'], layer_info['bound_left'], layer_info['bound_top'], layer_info['bound_width'], layer_info['bound_height'])
+            return (
+                layer_info['opacity'], 
+                layer_info['boundary']['left'], 
+                layer_info['boundary']['top'], 
+                layer_info['boundary']['width'], 
+                layer_info['boundary']['height']
+            )
 
     class GetDocumentNode:
-        RETURN_TYPES = ("DOCUMENT", "BOUND", "BOUND")
+        RETURN_TYPES = ("DOCUMENT", "MASK", "MASK")
         RETURN_NAMES = ("document", "document boundary", "selection boundary")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
@@ -113,19 +166,34 @@ def define_comfyui_nodes(sdpppServer):
                 }
             }
 
-        def action(self, document_name):
+        def action(self, document_name, **kwargs):
+            sdpppServer.has_ps_instance(throw_error=True)
+
             document = json.loads(document_name)
-            return (document, '### The Canvas ###', '### Selection ###')
+            result = call_async_func_in_server_thread(
+                ProtocolPhotoshop.get_document_info(
+                    sdpppServer.backend_instances[document['instance_id']], 
+                    document['identify']
+                )
+            )
+
+            return (
+                document, 
+                convert_boundary_to_mask(result['document_boundary']), 
+                convert_boundary_to_mask(result['selection_boundary'])
+            )
 
     class GetLayerNode:
-        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
+        RETURN_TYPES = ("LAYER", "MASK", "LAYER_INFO")
         RETURN_NAMES = ("layer_or_group", "layer boundary", "layer_info")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+            sdppp_arg = kwargs['sdppp']
+            document_arg = kwargs['document']
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -140,8 +208,8 @@ def define_comfyui_nodes(sdpppServer):
             }
         
         def action(self, document, layer_or_group, **kwargs):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+            sdpppServer.has_ps_instance(throw_error=True)
+
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layer_info(
                     sdpppServer.backend_instances[document['instance_id']], 
@@ -153,11 +221,11 @@ def define_comfyui_nodes(sdpppServer):
             return ({
                 "document": document,
                 "layer_identify": result['identify']
-            }, result['identify'], result)
+            }, convert_boundary_to_mask(result['boundary']), result)
         
     class GetLayersInGroupNode:
-        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
-        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        RETURN_TYPES = ("LAYER", "MASK", "LAYER_INFO")
+        RETURN_NAMES = ("layer_or_group", "layer_boundary", "layer_info")
         OUTPUT_IS_LIST = (True, True, True)
         INPUT_IS_LIST = True
         FUNCTION = "action"
@@ -165,7 +233,9 @@ def define_comfyui_nodes(sdpppServer):
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+            sdppp_arg = kwargs['sdppp'][0]
+            document_arg = ''
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -180,8 +250,7 @@ def define_comfyui_nodes(sdpppServer):
             }
         
         def action(self, layer_or_group, select, **kwargs):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+            sdpppServer.has_ps_instance(throw_error=True)
 
             document = layer_or_group[0]['document']
             layer_identifies = [item['layer_identify'] for item in layer_or_group]
@@ -196,21 +265,23 @@ def define_comfyui_nodes(sdpppServer):
             )
             return (
                 [{ "document": document, "layer_identify": item } for item in result['layer_identifies']], 
-                result['layer_identifies'], 
+                [convert_boundary_to_mask(item) for item in result['layer_boundaries']], 
                 result['layer_infos']
             )
         
     class GetLinkedLayersNode:
-        RETURN_TYPES = ("LAYER", "BOUND", "LAYER_INFO")
-        RETURN_NAMES = ("layer_or_group", "layer_bound", "layer_info")
+        RETURN_TYPES = ("LAYER", "MASK", "LAYER_INFO")
+        RETURN_NAMES = ("layer_or_group", "layer_boundary", "layer_info")
         OUTPUT_IS_LIST = (True, True, True)
         INPUT_IS_LIST = True
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
-
+        
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+            sdppp_arg = kwargs['sdppp'][0]
+            document_arg = ''
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -225,8 +296,7 @@ def define_comfyui_nodes(sdpppServer):
             }
         
         def action(self, layer_or_group, select, **kwargs):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+            sdpppServer.has_ps_instance(throw_error=True)
 
             document = layer_or_group[0]['document']
             layer_identifies = [item['layer_identify'] for item in layer_or_group]
@@ -241,7 +311,7 @@ def define_comfyui_nodes(sdpppServer):
             )
             return (
                 [{ "document": document, "layer_identify": item } for item in result['layer_identifies']], 
-                result['layer_identifies'], 
+                [convert_boundary_to_mask(item) for item in result['layer_boundaries']], 
                 result['layer_infos']
             )
 
@@ -252,16 +322,10 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def VALIDATE_INPUTS(s):
-            return validate_sdppp()
-
-        @classmethod
-        def IS_CHANGED(self, sdppp, **kwargs):
-            document = json.loads(json.loads(sdppp)['document'])
-            if ('instance_id' not in document) or (document['instance_id'] not in sdpppServer.backend_instances):
-                return np.random.rand()
-
-            return sdpppServer.backend_instances[document['instance_id']].store.data['selectionStateID']
+        def IS_CHANGED(self, **kwargs):
+            sdppp_arg = kwargs['sdppp']
+            document_arg = kwargs['document']
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg, 'selectionStateID')
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -270,7 +334,7 @@ def define_comfyui_nodes(sdpppServer):
                     "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
                 },
                 "optional": SDPPPOptional({
-                    "bound": ('BOUND', {"default": None}),
+                    "bound": ('MASK', {"default": None}),
                 }, {
                     "sdppp": ("STRING", {"default": ""}),
                 }),
@@ -281,14 +345,13 @@ def define_comfyui_nodes(sdpppServer):
             }
         
         def action(self, document, bound="", **kwargs):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+            sdpppServer.has_ps_instance(throw_error=True)
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_selection(
                     backend_instance=sdpppServer.backend_instances[document['instance_id']],
                     document_identify=document['identify'],
-                    bound_identify=bound,
+                    boundary=convert_mask_to_boundary(bound),
                 )
             )
             return self._load_mask(
@@ -335,7 +398,9 @@ def define_comfyui_nodes(sdpppServer):
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+            sdppp_arg = kwargs['sdppp'][0]
+            document_arg = kwargs['document'][0] if 'document' in kwargs and kwargs['document'] != None else ''
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -343,9 +408,10 @@ def define_comfyui_nodes(sdpppServer):
                 "required": {
                     "layer_or_group": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
                 },
-                "optional": {
+                "optional": SDPPPOptional({}, {
+                    "sdppp": ("STRING", {"default": ""}),
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"})
-                },
+                }),
                 "hidden": {
                     "unique_id": "UNIQUE_ID",
                     "prompt": "PROMPT", 
@@ -353,8 +419,7 @@ def define_comfyui_nodes(sdpppServer):
             }
         
         def action(self, layer_or_group, unique_id, prompt, document = None, **kwargs):
-            if validate_sdppp() is not True:
-                raise ValueError('Photoshop is not connected')
+            sdpppServer.has_ps_instance(throw_error=True)
 
             linked_style = check_linked_in_prompt(prompt, unique_id, 'layer_or_group')
             if not linked_style:

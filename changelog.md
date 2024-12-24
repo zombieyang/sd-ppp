@@ -1,3 +1,15 @@
+## [1.6.0] - 2024-12-25
+0. NO LONGER SUPPORT A1111 WEBUI SINCE THIS VERSION. (It may reborn in other style maybe.)
+1. feature: Workflow Panel: support rgthree's nodes.
+2. feature: Workflow Panel: Photoshop will store the widgets' value by the node's name now.
+3. feature: Workflow Panel: you can now auto run a workflow in Workflow Panel.
+4. feature: execution triggered by Photoshop and without `SendImageToPhotoshop` node, will now send the output to a default new Document.
+5. feature: ability to select Page as the workflow runner. #58
+6. feature: when execute workflow in workflow list on PS side, the `### Active Document ###` will select the document correctly.
+7. optimize: boundary input now become MASK type, so you can grow it by Comfy's builtin nodes. #66
+8. optimize: new icon for autorun.
+9. bugfixes: so many bugfixes I can't list all of them.
+
 ## [1.5.3] - 2024-12-06
 1. optimize: favorited workflow will be at the top of the list.
 2. fix: move tool would not trigger live paint & cache update.

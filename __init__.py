@@ -68,15 +68,11 @@ else:
     NODE_CLASS_MAPPINGS = { 
         'Get Image From Photoshop Layer': export_nodes_legacy['GetImageFromPhotoshopLayerNode'],
         'Send Images To Photoshop': export_nodes_legacy['SendImageToPhotoshopLayerNode'],
-        'Image Times Opacity': export_nodes_legacy['ImageTimesOpacity'],
-        'Mask Times Opacity': export_nodes_legacy['MaskTimesOpacity'],
         'CLIP Text Encode PS Regional': export_nodes_legacy['CLIPTextEncodePSRegional'],
     }
     NODE_DISPLAY_NAME_MAPPINGS = { 
         'Get Image From Photoshop Layer': 'SDPPP Get Image From Photoshop',
         'Send Images To Photoshop': 'SDPPP Send Images To Photoshop',
-        'Image Times Opacity': 'Image times opacity',
-        'Mask Times Opacity': 'Mask times opacity',
         'CLIP Text Encode PS Regional': 'CLIP Text Encode PS Regional',
     }
     for (k, v) in export_nodes.items():
