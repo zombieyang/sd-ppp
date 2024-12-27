@@ -75,9 +75,7 @@ def registerSocketEvents(sdppp, sio):
             return
         document = payload['document']
 
-        backendInstance = sdppp.backend_instances[document['instance_id']]
-        
-        return await ProtocolPhotoshop.get_image(backendInstance, 
+        return await ProtocolPhotoshop.get_image(document['instance_id'], 
             document_identify=document['identify'], 
             layer_identify=payload['layer_identify'], 
             boundaries=payload['boundaries'],
@@ -89,10 +87,8 @@ def registerSocketEvents(sdppp, sio):
         if not sdppp.has_ps_instance():
             return
         document = payload['document']        
-        print(sdppp.backend_instances.keys())
-        backendInstance = sdppp.backend_instances[document['instance_id']]
 
-        await ProtocolPhotoshop.send_images(backendInstance, 
+        await ProtocolPhotoshop.send_images(document['instance_id'], 
             document_identify=document['identify'], 
             layer_identifies=payload['layer_identifies'], 
             boundaries=payload['boundaries'],

@@ -59,6 +59,8 @@ else:
     if (args.multi_user):
         sdppp.extra_server_info['multi_user'] = True
 
+    from .sdppp_python.protocols.photoshop import ProtocolPhotoshop
+    ProtocolPhotoshop.set_sdppp_server(sdppp)
 
     from .sdppp_python.comfy.nodes import define_comfyui_nodes
     from .sdppp_python.comfy.nodes_legacy import define_comfyui_nodes_legacy

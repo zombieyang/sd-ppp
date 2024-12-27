@@ -37,7 +37,7 @@
       "type": "panel",
       "id": "sdppp-connect",
       "label": {
-        "default": "Connect WebUI or ComfyUI"
+        "default": "SD-PPP 1.6.1"
       },
       "minimumSize": {
         "width": 300,
