@@ -10,8 +10,15 @@ async def protocol_call(backend_instance, protocol_name, data):
     return result
 
 class ProtocolPhotoshop:
+    sdpppServer = None
+
     @classmethod
-    async def get_image(cls, backend_instance, document_identify, layer_identify, boundary):
+    def set_sdppp_server(cls, sdpppServer):
+        cls.sdpppServer = sdpppServer
+
+    @classmethod
+    async def get_image(cls, instance_id, document_identify, layer_identify, boundary):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_image', data={
             'document_identify': document_identify, 
             'layer_identify': layer_identify, 
@@ -20,7 +27,8 @@ class ProtocolPhotoshop:
         return result
     
     @classmethod
-    async def send_images(cls, backend_instance, document_identify, layer_identifies, boundaries, image_urls=[], image_blobs=[]):
+    async def send_images(cls, instance_id, document_identify, layer_identifies, boundaries, image_urls=[], image_blobs=[]):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_send_images', data={
             'document_identify': document_identify, 
             'layer_identifies': layer_identifies,
@@ -31,7 +39,8 @@ class ProtocolPhotoshop:
         return result
     
     @classmethod
-    async def get_text(cls, backend_instance, document_identify, layer_identify):
+    async def get_text(cls, instance_id, document_identify, layer_identify):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_text', data={
             'document_identify': document_identify, 
             'layer_identify': layer_identify
@@ -39,7 +48,8 @@ class ProtocolPhotoshop:
         return result['text']
 
     @classmethod
-    async def get_selection(cls, backend_instance, document_identify, boundary):
+    async def get_selection(cls, instance_id, document_identify, boundary):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_selection', data={
             'document_identify': document_identify, 
             'boundary': boundary
@@ -47,14 +57,16 @@ class ProtocolPhotoshop:
         return result
 
     @classmethod    
-    async def get_document_info(cls, backend_instance, document_identify):
+    async def get_document_info(cls, instance_id, document_identify):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_document_info', data={
             'document_identify': document_identify
         })
         return result
 
     @classmethod
-    async def get_layer_info(cls, backend_instance, document_identify, layer_identify="", layer_name=""):
+    async def get_layer_info(cls, instance_id, document_identify, layer_identify="", layer_name=""):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_layer_info', data={
             'document_identify': document_identify, 
             'layer_identify': layer_identify,
@@ -63,7 +75,8 @@ class ProtocolPhotoshop:
         return result
 
     @classmethod
-    async def get_layers_in_group(cls, backend_instance, document_identify, layer_identifies, select):
+    async def get_layers_in_group(cls, instance_id, document_identify, layer_identifies, select):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_layers_in_group', data={
             'document_identify': document_identify, 
             'select': select,
@@ -72,7 +85,8 @@ class ProtocolPhotoshop:
         return result
 
     @classmethod
-    async def get_linked_layers(cls, backend_instance, document_identify, layer_identifies, select):
+    async def get_linked_layers(cls, instance_id, document_identify, layer_identifies, select):
+        backend_instance = cls.sdpppServer.backend_instances[instance_id]
         result = await protocol_call(backend_instance, 's_get_linked_layers', data={
             'document_identify': document_identify, 
             'select': select,

@@ -1,3 +1,12 @@
+## [1.6.1] - 2024-12-27
+1. feature: show workflows by folder.
+2. feature: refresh button in workflow panel
+3. optimize: new LivePainting icon again..
+4. bugfix: the latest preview logic is not work in webview execution
+5. bugfix: workflow did not refresh after secondary opening.
+6. bugfix: uncorrect caching when active document is changed.
+7. bugfix: some version of python will always throw PS missing error in sending.
+
 ## [1.6.0] - 2024-12-25
 0. NO LONGER SUPPORT A1111 WEBUI SINCE THIS VERSION. (It may reborn in other style maybe.)
 1. feature: Workflow Panel: support rgthree's nodes.

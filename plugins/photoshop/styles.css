@@ -41,7 +41,8 @@
     color: lightyellow;
 }
 
-.status-bar.disconnected {
+.status-bar.disconnected,
+.status-error {
     color: lightcoral;
 }
 
@@ -78,12 +79,19 @@
     width: 400%;
     display: flex;
     flex-direction: row;
+    overflow-y: scroll;
 }
 
 .editor-card {
     width: 25%;
     margin-right: 8.333%;
     height: 100%;
+}
+.editor-card.webview-container {
+    display: flex;
+    flex-direction: column;
+}
+.workflow-edit-wrap {
     display: flex;
     flex-direction: column;
 }
@@ -94,23 +102,27 @@
     flex: 1;
     padding: 0 5px;
 }
+
 .workflow-edit-field {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
 }
+
 .workflow-edit-field-widgets {
     display: flex;
     flex-direction: row;
 }
+
 .workflow-edit-field-widgets sp-slider.sdppp-slider {
     position: relative;
 }
+
 .workflow-edit-field-widgets sp-slider.sdppp-slider sp-textfield {
     position: absolute;
     right: 0;
     top: -25px;
-    width: 70px; 
+    width: 70px;
     height: 20px;
     text-align: right;
 }
@@ -120,6 +132,7 @@
     display: flex;
     flex-direction: column;
 }
+
 .workflow-edit-button {
     display: flex;
     flex-direction: row;
@@ -136,22 +149,32 @@
     margin-top: -5px;
 }
 
+.client-list-title {
+    min-height: 15px;
+}
 .client-list-title-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-size: 48px;
 }
+
 .client-list-title-container sp-picker {
     width: 80px;
     height: 20px;
 }
 
 .client-list-item {
+    min-height: 15px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     position: relative;
+    cursor: pointer;
+}
+
+.client-list-item:hover {
+    background-color: rgba(127, 127, 127, .1);
 }
 
 .client-list-item .client-list-item-left {
@@ -161,9 +184,15 @@
     align-items: center;
     height: 20px;
 }
+
+.client-list-item .client-list-item-left>div, .client-list-item .client-list-item-left>span {
+    margin-left: 5px;
+}
+
 .client-list-item .client-list-item-left svg {
     cursor: pointer;
 }
+
 .client-list-item .client-list-item-left-active {
     color: white;
 }
@@ -181,19 +210,36 @@
 
 .client-list-item .client-list-item-right {
     white-space: nowrap;
+    color: #bbb;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+    cursor: default;
+}
+
+.client-list-item:hover .client-list-item-right .tips-icon {
+    display: inline-flex;
+}
+
+.client-list-item .client-list-item-right .tips-icon {
+    cursor: pointer;
+    display: none;
 }
 
 .client-list-item .client-list-item-right sp-label {
     justify-content: flex-end;
     cursor: pointer;
+    height: 20px;
 }
+
 .client-list-item .client-list-item-right sp-label.active {
     color: white;
 }
 
-.client-list-item .client-list-item-right sp-action-button {
+.client-list-item .client-list-item-right .action-button {
     height: 20px;
-    width: 16px;
+    width: 30px;
     margin-left: 5px;
 }
 
@@ -210,4 +256,33 @@
 .autorun-desc {
     font-size: 10px;
     display: block;
+}
+
+.action-button {
+    cursor: pointer;
+    background-color: #333;
+    border: 1px solid rgba(255, 255, 255, .2);
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-button:hover {
+    background-color: #444;
+}
+
+.panel-foot {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 12px;
+    background-color: rgba(127, 127, 127, .2);
+}
+.panel-foot a {
+    color: white;
+    text-decoration: underline;
 }

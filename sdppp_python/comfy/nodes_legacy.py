@@ -96,7 +96,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 start = time.time()
                 result = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_image(
-                        backend_instance=sdppp.backend_instances[document['instance_id']], 
+                        instance_id=document['instance_id'],
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
                         boundary=convert_mask_to_boundary(item_bound)
@@ -231,7 +231,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 })
 
             call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
-                backend_instance=sdppp.backend_instances[document['instance_id']],
+                instance_id=document['instance_id'],
                 document_identify=document['identify'], 
                 image_blobs=[p['image_blob'] for p in params],  
                 layer_identifies=[p['layer_identify'] for p in params], 

@@ -2,6 +2,8 @@ import socketio
 import os.path as path
 from .instances import BackendInstance, PageInstance
 from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
+import re
+import threading
 
 # Define projectRoot as parent directory of current file
 projectRoot = path.dirname(path.dirname(__file__))
@@ -67,7 +69,10 @@ class SDPPP:
             qs = environ['QUERY_STRING']
             
             qsobj = dict(x.split('=') for x in qs.split('&'))
-            if 'api_level' not in qsobj or qsobj['api_level'] != "411":
+            api_level = None
+            with open(path.join(projectRoot, 'sdppp_python', 'version.txt'), 'r') as f:
+                api_level = f.read()
+            if api_level is not None and ('api_level' not in qsobj or qsobj['api_level'] != api_level):
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
         @sio.event
@@ -106,11 +111,12 @@ class SDPPP:
         registerSocketEvents(self, self.sio)
                 
     def has_ps_instance(self, throw_error = False):
-        for instance in self.backend_instances.values():
-            if instance.type == 'photoshop':
-                return True
-        if throw_error:
-            raise ValueError('no Photoshop instance found')
-        return False
+        return True
+        # for instance in self.backend_instances.values():
+        #     if instance.type == 'photoshop':
+        #         return True
+        # if throw_error:
+        #     raise ValueError('no Photoshop instance found')
+        # return False
 
     

@@ -159,6 +159,11 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
+        def IS_CHANGED(self, **kwargs):
+            sdppp_arg = kwargs['sdppp']
+            return sdppp_is_changed(sdppp, sdppp_arg, '')
+            
+        @classmethod
         def INPUT_TYPES(cls):
             return {
                 "required": {
@@ -172,8 +177,8 @@ def define_comfyui_nodes(sdpppServer):
             document = json.loads(document_name)
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_document_info(
-                    sdpppServer.backend_instances[document['instance_id']], 
-                    document['identify']
+                    instance_id=document['instance_id'], 
+                    document_identify=document['identify']
                 )
             )
 
@@ -212,8 +217,8 @@ def define_comfyui_nodes(sdpppServer):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layer_info(
-                    sdpppServer.backend_instances[document['instance_id']], 
-                    document['identify'], 
+                    instance_id=document['instance_id'], 
+                    document_identify=document['identify'], 
                     layer_identify=layer_or_group
                 )
             )
@@ -257,7 +262,7 @@ def define_comfyui_nodes(sdpppServer):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layers_in_group(
-                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
+                    instance_id=document['instance_id'],
                     document_identify=document['identify'], 
                     select=select[0],
                     layer_identifies=layer_identifies
@@ -303,7 +308,7 @@ def define_comfyui_nodes(sdpppServer):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_linked_layers(
-                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
+                    instance_id=document['instance_id'],
                     document_identify=document['identify'], 
                     select=select[0],
                     layer_identifies=layer_identifies
@@ -349,7 +354,7 @@ def define_comfyui_nodes(sdpppServer):
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_selection(
-                    backend_instance=sdpppServer.backend_instances[document['instance_id']],
+                    instance_id=document['instance_id'],
                     document_identify=document['identify'],
                     boundary=convert_mask_to_boundary(bound),
                 )
@@ -437,7 +442,7 @@ def define_comfyui_nodes(sdpppServer):
 
                 text = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_text(
-                        backend_instance=sdpppServer.backend_instances[document['instance_id']],
+                        instance_id=document['instance_id'],
                         document_identify=document['identify'], 
                         layer_identify=item_layer
                     )
