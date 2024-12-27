@@ -22,7 +22,7 @@
 
 <img width=600 src="https://github.com/user-attachments/assets/d5d8f673-78d8-4d3f-9a7a-0a385b862951" />
 
-## SDWebUI/Forge
+## SDWebUI/Forge (No longer support in 1.6.0)
 
 **from v1.2.0**
 
