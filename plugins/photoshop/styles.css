@@ -1,3 +1,7 @@
+sp-label.error-label {
+    color: lightcoral;
+    white-space: normal;
+}
 .tabbar {
     display: flex;
     flex: 0 0 auto;
@@ -41,9 +45,9 @@
     color: lightyellow;
 }
 
-.status-bar.disconnected,
-.status-error {
+.status-bar.disconnected {
     color: lightcoral;
+    white-space: normal;
 }
 
 .connect-box {
@@ -79,13 +83,19 @@
     width: 400%;
     display: flex;
     flex-direction: row;
-    overflow-y: scroll;
+    height: 100%;
+    overflow: hidden;
 }
-
+.comfy-list-wrap {
+    height: 100%;
+    overflow-y: scroll;
+    margin-right: -12px;
+}
 .editor-card {
     width: 25%;
     margin-right: 8.333%;
     height: 100%;
+    overflow: hidden;
 }
 .editor-card.webview-container {
     display: flex;
@@ -94,10 +104,13 @@
 .workflow-edit-wrap {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
 }
 
 .workflow-edit {
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-width: thin;
     overflow-x: hidden;
     flex: 1;
     padding: 0 5px;
@@ -151,6 +164,13 @@
 
 .client-list-title {
     min-height: 15px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.client-list-title h3 {
+    color: white;
 }
 .client-list-title-container {
     display: flex;
@@ -218,7 +238,7 @@
     cursor: default;
 }
 
-.client-list-item:hover .client-list-item-right .tips-icon {
+.client-list-item.show-tips .client-list-item-right .tips-icon, .client-list-item:hover .client-list-item-right .tips-icon {
     display: inline-flex;
 }
 
@@ -273,16 +293,32 @@
     background-color: #444;
 }
 
-.panel-foot {
+.about-card {
+    font-size: 12px;
+    background-color: rgba(127, 127, 127, .2);
+    width: 100%;
+    color: white;
+    overflow-y: scroll;
+}
+.about-card h2 {
+    display: block;
+    text-align: center;;
+}
+.about-card-sections {
     display: flex;
+    width: 100%;
+    margin-bottom: 15px;;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    padding: 5px 0;
-    font-size: 12px;
-    background-color: rgba(127, 127, 127, .2);
 }
-.panel-foot a {
+.about-card-sections:first-child {
+    margin-top: 15px;
+}
+.about-card-sections.about-card-title {
+    flex-direction: column;
+}
+.about-card a {
     color: white;
     text-decoration: underline;
 }

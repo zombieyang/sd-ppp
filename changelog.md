@@ -1,3 +1,12 @@
+## [1.6.2] - 2024-01-10
+1. optimize: the name of the new layer will now have an auto-incremented id.
+2. optimize: list page style optimization.
+3. optimize: when the connection fails, if it is 404 or 502, a tips will now be displayed.
+4. optimize: add a tips to go to save when the workflow list is empty.
+5. optimize: the official link/friend link will now be displayed when not connected.
+6. fix: the rgthree group control node does not display text.
+7. fix: the problem that the image cannot be sent to the grayscale document.
+
 ## [1.6.1] - 2024-12-27
 1. feature: show workflows by folder.
 2. feature: refresh button in workflow panel

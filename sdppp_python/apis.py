@@ -120,7 +120,6 @@ def registerSocketEvents(sdppp, sio):
     async def b_set_widget_value(sid, payload = {}):
         if len(sdppp.page_instances) == 0:
             return {"error": "Please connect at least one page instance"}
-        
         result = await sdppp.sio.call('b_set_widget_value', payload, to=payload['sid'])
         return result
 
