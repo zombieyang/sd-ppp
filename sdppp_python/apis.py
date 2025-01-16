@@ -67,125 +67,61 @@ def registerSDHTTPEndpoints(sdppp, app):
         return {'name': name}
 
 def registerSocketEvents(sdppp, sio):
-
-    # only emit by sd webui instance
     @sio.event
-    async def c_get_image(sid, payload={}):
-        if not sdppp.has_ps_instance():
-            return
-        document = payload['document']
-
-        return await ProtocolPhotoshop.get_image(document['instance_id'], 
-            document_identify=document['identify'], 
-            layer_identify=payload['layer_identify'], 
-            boundaries=payload['boundaries'],
-        )
-
-    # only emit by sd webui instance
-    @sio.event
-    async def c_send_image(sid, payload={}):
-        if not sdppp.has_ps_instance():
-            return
-        document = payload['document']        
-
-        await ProtocolPhotoshop.send_images(document['instance_id'], 
-            document_identify=document['identify'], 
-            layer_identifies=payload['layer_identifies'], 
-            boundaries=payload['boundaries'],
-            image_urls=payload['image_urls']
-        )
+    async def B_photoshop(sid, payload = {}):
+        if 'sid' not in payload or payload['sid'] not in sdppp.ppp_instances or sdppp.ppp_instances[payload['sid']].type != 'photoshop':
+            return {"error": f"sid {payload['sid']} not found"}
+        return await sdppp.sio.call('B_photoshop', payload, to=payload['sid'])
 
     @sio.event
-    async def c_psd(sid, payload = {}):
-        if 'sid' not in payload:
-            return {"error": "sid is not defined"}
-        return await sdppp.sio.call('c_psd', payload, to=payload['sid'])
-
-    # only emit by photoshop instance
-    @sio.event
-    async def b_page_run(sid, payload = {}):
-        to_sid = payload['sid']
-        del payload['sid']
-        await sdppp.sio.emit('b_page_run', payload, to=to_sid)
-
-    @sio.event
-    async def b_workflow_action(sid, payload = {}):
-        if len(sdppp.page_instances) == 0:
-            return {"error": "Please connect at least one page instance"}
+    async def F_workflow(sid, payload = {}):
+        if 'sid' not in payload or payload['sid'] not in sdppp.ppp_instances:
+            return {"error": f"sid {sid} not found"}
         
-        result = await sdppp.sio.call('b_workflow_action', payload, to=payload['sid'])
+        result = await sdppp.sio.call('F_workflow', payload, to=payload['sid'])
         return result
 
     @sio.event
-    async def b_set_widget_value(sid, payload = {}):
-        if len(sdppp.page_instances) == 0:
-            return {"error": "Please connect at least one page instance"}
-        result = await sdppp.sio.call('b_set_widget_value', payload, to=payload['sid'])
+    async def B_workflow(sid, payload = {}):
+        if 'sid' not in payload or payload['sid'] not in sdppp.ppp_instances:
+            return {"error": f"sid {sid} not found"}
+        
+        result = await sdppp.sio.call('B_workflow', payload, to=payload['sid'])
         return result
 
     @sio.event
-    async def b_flush_data(sid, payload = {}):
-        try: 
-            store = sdppp.backend_instances[sid].store
-            if store.patch_version_acceptable(payload['fromVersion']):
-                store.patch_data(payload['operations'], payload['fromVersion'])
-            else:
-                result = await sio.call('s_request_data', {}, to=sid)
-                sdppp.backend_instances[sid].store.sync_data(result['data'], result['version'])
-        except Exception as e:
-            return {"error": str(e)}
+    async def store_flush(sid, payload = {}):
+        if sid not in sdppp.ppp_instances:
+            return {"error": f"sid {sid} not found"}
+        instance = sdppp.ppp_instances[sid]
+        store = instance.store
+
+        if store.patch_version_acceptable(payload['fromVersion']):
+            store.patch_data(payload['operations'], payload['fromVersion'])
+        else:
+            result = await sio.call('store_request', {}, to=sid)
+            store.sync_data(result['data'], result['version'])
 
         payload['sid'] = sid
-        if len(sdppp.page_instances):
-            await sio.emit('s_flush_data', payload, to=[page.sid for page in sdppp.page_instances.values()])
+        payload['type'] = instance.type
+        if len(sdppp.ppp_instances):
+            await sio.emit('store_flush', payload)
 
     @sio.event
-    async def c_flush_data(sid, payload = {}):
-        try:
-            store = sdppp.page_instances[sid].store
-            if store.patch_version_acceptable(payload['fromVersion']):
-                store.patch_data(payload['operations'], payload['fromVersion'])
-            else:
-                result = await sio.call('s_request_data', {}, to=sid)
-                sdppp.page_instances[sid].store.sync_data(result['data'], result['version'])
-        except Exception as e:
-            print('=============error============', e)
-            return {"error": str(e)}
-
-        payload['sid'] = sid
-        if len(sdppp.backend_instances):
-            await sio.emit('s_flush_data', payload, to=[backend.sid for backend in sdppp.backend_instances.values()])
-
-    @sio.event
-    async def c_request_data(sid, payload = {}):
-        if 'sid' in payload:
+    async def store_request(sid, payload = {}):
+        if 'sid' in payload: # request single
             return {
                 'sid': payload['sid'],
-                'data': sdppp.backend_instances[payload['sid']].store.data,
-                'version': sdppp.backend_instances[payload['sid']].store.version
+                'data': sdppp.ppp_instances[payload['sid']].store.data,
+                'version': sdppp.ppp_instances[payload['sid']].store.version
             }
-        else:
-            ret = {}
-            for backend in sdppp.backend_instances.values():
-                ret[backend.sid] = {
-                    'data': backend.store.data,
-                    'version': backend.store.version
-                }
-            return ret
 
-    @sio.event
-    async def b_request_data(sid, payload = {}):
-        if 'sid' in payload:
-            return {
-                'sid': payload['sid'],
-                'data': sdppp.page_instances[payload['sid']].store.data,
-                'version': sdppp.page_instances[payload['sid']].store.version
-            }
-        else:
+        elif 'type' in payload: # request all 
             ret = {}
-            for page in sdppp.page_instances.values():
-                ret[page.sid] = {
-                    'data': page.store.data,
-                    'version': page.store.version
-                }
+            for ppp in sdppp.ppp_instances.values():
+                if ppp.type == payload['type']:
+                    ret[ppp.sid] = {
+                        'data': ppp.store.data,
+                        'version': ppp.store.version
+                    }
             return ret
