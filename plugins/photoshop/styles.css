@@ -1,3 +1,26 @@
+/* from https://developer.adobe.com/photoshop/uxp/2022/guides/theme-awareness/
+ * The easiest way to make your plugin theme-aware is to make use of a CSS feature called CSS variables. CSS variables are just what they sound like: a way to have dynamic property definitions in CSS.
+ * 
+ * Luckily, Photoshop exposes a number of theme-specific CSS variables that are perfect for making your plugin respond to the user's theme color choice. These variables are:
+ * 
+ * --uxp-host-background-color
+ * --uxp-host-text-color
+ * --uxp-host-border-color
+ * --uxp-host-widget-hover-text-color
+ * --uxp-host-widget-hover-background-color
+ * --uxp-host-widget-hover-text-color
+ * --uxp-host-widget-hover-border-color
+ * And a few more:
+ * 
+ * --uxp-host-text-color-secondary
+ * --uxp-host-link-hover-text-color
+ * --uxp-host-label-text-color
+ * Finally, there are three dealing with font size:
+ * 
+ * --uxp-host-font-size
+ * --uxp-host-font-size-smaller
+ * --uxp-host-font-size-larger
+ */
 sp-label.error-label {
     color: lightcoral;
     white-space: normal;
@@ -116,15 +139,33 @@ sp-label.error-label {
     padding: 0 5px;
 }
 
+.workflow-edit-title {
+    flex-direction: row;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}
+.workflow-edit-title a {
+    color: white;
+    text-decoration: underline;
+}
+
 .workflow-edit-field {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
 }
 
+.workflow-edit-field-title {
+    color: var(--uxp-host-text-color-secondary);
+}
 .workflow-edit-field-widgets {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+}
+.workflow-edit-field-widgets > *:only-child {
+    flex: 1 0 100%;
 }
 
 .workflow-edit-field-widgets sp-slider.sdppp-slider {
@@ -139,13 +180,102 @@ sp-label.error-label {
     height: 20px;
     text-align: right;
 }
-
+.workflow-edit-field-widgets .image-widget {
+    display: flex;
+    flex-direction: row;
+}
+.workflow-edit-field-widgets .image-widget .image-widget-left {
+    width: 100px;
+    height: 100px;
+    flex: none;
+}
+.workflow-edit-field-widgets .image-widget .image-widget-left img {
+    width: 100%;
+    height: 100%;
+}
+.workflow-edit-field-widgets .image-widget .image-widget-right {
+    flex: 1 1 0;
+    margin-left: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+}
+.workflow-edit-field-widgets .image-widget .image-widget-right .image-widget-lock-block {
+    color: var(--uxp-host-text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: rgba(127, 127, 127, .4);
+    padding: 5px;
+    cursor: pointer;
+    margin-bottom: -15px;
+}
+.workflow-edit-field-widgets .image-widget .image-widget-right .image-widget-lock-block:hover {
+    background: rgba(127, 127, 127, .6);
+}
+.sdppp-dropdown-widget {
+    position: relative;
+}
+.sdppp-dropdown-widget-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    background-color: var(--uxp-host-background-color);
+    color: var(--uxp-host-text-color-secondary);
+    width: 100%;
+}
+.sdppp-dropdown-widget-options ul {
+    margin: 0;
+    padding: 4px 0;
+    list-style: none
+}
+.sdppp-dropdown-widget-options ul li {
+    padding: 6px 12px;
+    cursor: pointer;
+}
+.sdppp-dropdown-widget-options ul li:hover {
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: var(--spectrum-global-color-gray-200);
+}
+.sdppp-layer-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+}
+.sdppp-layer-widget-dropdown {
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+}
+.sdppp-layer-widget-quick-set {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+.sdppp-layer-widget:hover .sdppp-layer-widget-quick-set, .sdppp-layer-widget-quick-set.sdppp-layer-widget-quick-set-only {
+    display: flex;
+}
+.sdppp-layer-widget-quick-set a, .image-widget-more-quickset a {
+    color: var(--uxp-host-widget-hover-text-color);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.image-widget-right .sdppp-layer-widget-quick-set {
+    align-items: start;
+    flex-direction: column; 
+}
 
 .workflow-edit-bottom {
     display: flex;
     flex-direction: column;
 }
-
 .workflow-edit-button {
     display: flex;
     flex-direction: row;
@@ -170,7 +300,7 @@ sp-label.error-label {
     margin-top: 10px;
 }
 .client-list-title h3 {
-    color: white;
+    color: var(--uxp-host-text-color);
 }
 .client-list-title-container {
     display: flex;
@@ -214,7 +344,7 @@ sp-label.error-label {
 }
 
 .client-list-item .client-list-item-left-active {
-    color: white;
+    color: var(--uxp-host-widget-hover-text-color);
 }
 
 .client-list-item sp-checkbox {
@@ -254,7 +384,7 @@ sp-label.error-label {
 }
 
 .client-list-item .client-list-item-right sp-label.active {
-    color: white;
+    color: var(--uxp-host-widget-hover-text-color);
 }
 
 .client-list-item .client-list-item-right .action-button {
@@ -264,10 +394,11 @@ sp-label.error-label {
 }
 
 .client-list-item .client-list-item-right sp-link:active {
-    color: white;
+    color: var(--uxp-host-widget-hover-text-color)
 }
 
 .list-error-label {
+    color: var(--uxp-host-text-color-secondary);
     text-align: center;
     word-break: break-all;
     white-space: normal;
@@ -280,8 +411,9 @@ sp-label.error-label {
 
 .action-button {
     cursor: pointer;
-    background-color: #333;
-    border: 1px solid rgba(255, 255, 255, .2);
+    background-color: var(--uxp-host-background-color);
+    color: var(--uxp-host-text-color-secondary);
+    border: 1px solid var(--uxp-host-border-color);
     padding: 2px 4px;
     border-radius: 4px;
     display: inline-flex;
@@ -290,14 +422,15 @@ sp-label.error-label {
 }
 
 .action-button:hover {
-    background-color: #444;
+    background-color: var(--uxp-host-text-color-secondary);
+    color: var(--uxp-host-background-color);
 }
 
 .about-card {
     font-size: 12px;
     background-color: rgba(127, 127, 127, .2);
     width: 100%;
-    color: white;
+    color: var(--uxp-host-text-color);
     overflow-y: scroll;
 }
 .about-card h2 {
@@ -319,6 +452,6 @@ sp-label.error-label {
     flex-direction: column;
 }
 .about-card a {
-    color: white;
+    color: var(--uxp-host-widget-hover-text-color);
     text-decoration: underline;
 }

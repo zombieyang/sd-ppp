@@ -14,7 +14,7 @@ def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = 'canvasStateID'):
             document_instance_id = document['instance_id']
         else:
             document_instance_id = sdppp_values['document']['instance_id']
-        return sdppp.backend_instances[document_instance_id].store.data[key]
+        return sdppp.ppp_instances[document_instance_id].store.data[key]
     except Exception as e:
         # print('=============error============', e)
         # print(sdppp_arg)
@@ -124,8 +124,8 @@ def define_comfyui_nodes(sdpppServer):
             return None
 
     class ParseLayerInfoNode:
-        RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT")
-        RETURN_NAMES = ("opacity", "bound_left", "bound_top", "bound_width", "bound_height")
+        RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT", "STRING")
+        RETURN_NAMES = ("opacity", "bound_left", "bound_top", "bound_width", "bound_height", "name")
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
 
@@ -149,7 +149,8 @@ def define_comfyui_nodes(sdpppServer):
                 layer_info['boundary']['left'], 
                 layer_info['boundary']['top'], 
                 layer_info['boundary']['width'], 
-                layer_info['boundary']['height']
+                layer_info['boundary']['height'],
+                layer_info['name']
             )
 
     class GetDocumentNode:
@@ -432,7 +433,7 @@ def define_comfyui_nodes(sdpppServer):
             else:
                 document = layer_or_group[0]['document']
                 
-            if document['instance_id'] not in sdpppServer.backend_instances:
+            if document['instance_id'] not in sdpppServer.ppp_instances:
                 raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             res_text = []
@@ -451,6 +452,22 @@ def define_comfyui_nodes(sdpppServer):
             
             return (res_text,)
 
+    # class SDPPPSettingsNode:
+    #     RETURN_TYPES = ()
+    #     FUNCTION = "action"
+    #     CATEGORY = "SD-PPP"
+
+    #     @classmethod
+    #     def INPUT_TYPES(cls):
+    #         return { 
+    #             "required": {
+    #                 "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
+    #             }
+    #         }
+
+    #     def action(self, key, **kwargs):
+    #         return (None,)
+
     return {
         'SDPPP Get Document': GetDocumentNode,
         'SDPPP Get Layer By ID': GetLayerNode,
@@ -458,6 +475,6 @@ def define_comfyui_nodes(sdpppServer):
         'SDPPP Get Layers In Group': GetLayersInGroupNode,
         'SDPPP Get Text From Layer': GetTextFromLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
-
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
+        # 'SDPPP Settings': SDPPPSettingsNode,
     }

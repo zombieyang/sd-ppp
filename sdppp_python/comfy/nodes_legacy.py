@@ -80,16 +80,18 @@ def define_comfyui_nodes_legacy(sdppp):
             }
 
         def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", **kwargs):
+            sdppp_arg = kwargs['sdppp']
             sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
-            if document['instance_id'] not in sdppp.backend_instances:
+            if document['instance_id'] not in sdppp.ppp_instances:
                 raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             res_image = []
             res_mask = []
             startTime = time.time()
             for i, item_layer in enumerate(layer_or_group):
+                sdppp_arg_item = json.loads(sdppp_get_prompt_item_from_list(sdppp_arg, i))
                 if linked_style:
                     item_layer = item_layer['layer_identify']
                 item_bound = sdppp_get_prompt_item_from_list(bound, i)
@@ -99,7 +101,8 @@ def define_comfyui_nodes_legacy(sdppp):
                         instance_id=document['instance_id'],
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
-                        boundary=convert_mask_to_boundary(item_bound)
+                        boundary=convert_mask_to_boundary(item_bound),
+                        max_wh=sdppp_arg_item['ps_maxGetImageWH']
                     )
                 )
                 (output_image, output_mask) = self._load_image(
@@ -200,7 +203,7 @@ def define_comfyui_nodes_legacy(sdppp):
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
 
-            if document['instance_id'] not in sdppp.backend_instances:
+            if document['instance_id'] not in sdppp.ppp_instances:
                 raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             params = []

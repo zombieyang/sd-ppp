@@ -1,6 +1,6 @@
 import socketio
 import os.path as path
-from .instances import BackendInstance, PageInstance
+from .instances import PPPInstance
 from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
 import re
 import threading
@@ -10,12 +10,15 @@ projectRoot = path.dirname(path.dirname(__file__))
 
 class SDPPP:
     def __init__(self):
-        self.page_instances = dict()
-        self.backend_instances = dict()
+        self.ppp_instances = dict()
 
         self.extra_server_info = {}
 
+        self.PromptServer = None
+
     def attach_to_comfyui(self, PromptServer):
+        self.PromptServer = PromptServer
+
         self.sio = socketio.AsyncServer(
             async_mode='aiohttp', 
             cors_allowed_origins="*",
@@ -76,18 +79,12 @@ class SDPPP:
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
         @sio.event
-        async def init(sid, payload):
+        async def sdppp_init(sid, payload):
             if 'type' not in payload:
                 raise socketio.exceptions.ConnectionRefusedError('instance type not recognized')
 
-            elif payload['type'] == 'photoshop':
-                instance = self.backend_instances[sid] = BackendInstance(self, sid, "photoshop", payload['data'], payload['version'])
-
-            elif payload['type'] == 'comfyui':
-                instance = self.page_instances[sid] = PageInstance(self, sid, "comfy", payload['data'], payload['version'])
-
-            elif payload['type'] == 'a1111':
-                instance = self.page_instances[sid] = PageInstance(self, sid, "a1111", payload['data'], payload['version'])
+            elif payload['type'] == 'photoshop' or payload['type'] == 'comfy' or payload['type'] == 'a1111':
+                instance = self.ppp_instances[sid] = PPPInstance(self, sid, payload['type'], payload['data'], payload['version'])
 
             else:
                 raise socketio.exceptions.ConnectionRefusedError('unknown instance type ' + payload['type'])
@@ -96,27 +93,15 @@ class SDPPP:
                 "server_type": self.server_type,
                 **self.extra_server_info
             }
-
-            return ret
-
+            await sio.emit('sdppp_inited', ret, to=sid)
 
         @sio.event
         async def disconnect(sid):
-            if sid in self.backend_instances:
-                self.backend_instances.pop(sid, None)
-            if sid in self.page_instances:
-                self.page_instances.pop(sid, None)
-            await sio.emit('s_remove_data', {'sid': sid})
+            if sid in self.ppp_instances:
+                self.ppp_instances.pop(sid, None)
+            await sio.emit('store_remove', {'sid': sid})
 
         registerSocketEvents(self, self.sio)
                 
     def has_ps_instance(self, throw_error = False):
         return True
-        # for instance in self.backend_instances.values():
-        #     if instance.type == 'photoshop':
-        #         return True
-        # if throw_error:
-        #     raise ValueError('no Photoshop instance found')
-        # return False
-
-    
