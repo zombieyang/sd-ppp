@@ -74,7 +74,7 @@ class SDPPP:
             qsobj = dict(x.split('=') for x in qs.split('&'))
             api_level = None
             with open(path.join(projectRoot, 'sdppp_python', 'version.txt'), 'r') as f:
-                api_level = f.read()
+                api_level = f.read().strip()
             if api_level is not None and ('api_level' not in qsobj or qsobj['api_level'] != api_level):
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
