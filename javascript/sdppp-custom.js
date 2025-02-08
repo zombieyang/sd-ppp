@@ -117,7 +117,7 @@ export default function(sdppp) {
             title: node.title,
             widgets: node.widgets.map((widget) => ({
                 value: widget.value,
-                name: '',
+                name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',,
                 outputType: widget.type || "toggle",
                 options: widget.options
             }))
