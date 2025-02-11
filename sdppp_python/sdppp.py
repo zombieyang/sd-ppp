@@ -35,12 +35,6 @@ class SDPPP:
         registerComfyHTTPEndpoints(self, PromptServer)
         self.server_type = "comfy"
 
-        # serve static
-        PromptServer.instance.app.router.add_static(
-            '/sd-ppp-static', 
-            path.join(projectRoot, 'plugins'),
-            show_index=True  # Enable directory listing
-        )
 
     def attach_to_SD(self, app):
         self.sio = socketio.AsyncServer(

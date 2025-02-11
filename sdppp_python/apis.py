@@ -6,6 +6,7 @@ except ImportError:
     print("SD-PPP: fastapi not found")
 try:
     from aiohttp import web
+    from aiohttp.web import static
 except ImportError:
     print("SD-PPP: aiohttp not found")
 
@@ -14,8 +15,9 @@ from io import BytesIO
 from PIL import Image
 from .protocols.photoshop import ProtocolPhotoshop
 import json
-import folder_paths
-import os
+
+import os.path as path
+projectRoot = path.dirname(path.dirname(__file__))
 
 # str => PIL.Image
 image_cache = dict()
@@ -33,6 +35,10 @@ def addImageCache(image, name = ''):
 
 def registerComfyHTTPEndpoints(sdppp, PromptServer):
     
+    @PromptServer.instance.routes.get('/sd-ppp-static/{tail:.*}')
+    async def sdppp_static(request):
+        return web.FileResponse(path.join(projectRoot, 'plugins', request.match_info['tail']))
+        
     @PromptServer.instance.routes.get('/sdppp_download')
     async def sdppp_download(request):
         try:
