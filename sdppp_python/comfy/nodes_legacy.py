@@ -84,8 +84,10 @@ def define_comfyui_nodes_legacy(sdppp):
             sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
-            if document['instance_id'] not in sdppp.ppp_instances:
-                raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
+
+            # dont check here, some python cannot read the data in this thread.
+            # if document['instance_id'] not in sdppp.ppp_instances:
+            #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             res_image = []
             res_mask = []
@@ -203,8 +205,9 @@ def define_comfyui_nodes_legacy(sdppp):
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
 
-            if document['instance_id'] not in sdppp.ppp_instances:
-                raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
+            # dont check here, some python cannot read the data in this thread.
+            # if document['instance_id'] not in sdppp.ppp_instances:
+            #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             params = []
             # iterate layer_or_group

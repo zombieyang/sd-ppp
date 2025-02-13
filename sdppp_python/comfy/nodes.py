@@ -433,8 +433,9 @@ def define_comfyui_nodes(sdpppServer):
             else:
                 document = layer_or_group[0]['document']
                 
-            if document['instance_id'] not in sdpppServer.ppp_instances:
-                raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
+            # dont check here, some python cannot read the data in this thread.
+            # if document['instance_id'] not in sdpppServer.ppp_instances:
+            #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
 
             res_text = []
             for i, item_layer in enumerate(layer_or_group):
