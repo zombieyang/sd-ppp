@@ -40,6 +40,7 @@ def run_script(cmd, cwd='.'):
 
 if __file__.find('custom_nodes') == -1:
     print('sd-PPP import failed, it does not being placed in custom_nodes')
+    
 else:
     try:
         import socketio
@@ -50,37 +51,45 @@ else:
     except:
         run_script([sys.executable, "-m", "pip", "install", 'jsonpatch'])
 
-    from server import PromptServer
-
     from .sdppp_python.sdppp import SDPPP
-    sdppp = SDPPP()
-    sdppp.attach_to_comfyui(PromptServer)
-    from comfy.cli_args import args
-    if (args.multi_user):
-        sdppp.extra_server_info['multi_user'] = True
-
-    from .sdppp_python.protocols.photoshop import ProtocolPhotoshop
-    ProtocolPhotoshop.set_sdppp_server(sdppp)
-
-    from .sdppp_python.comfy.nodes import define_comfyui_nodes
-    from .sdppp_python.comfy.nodes_legacy import define_comfyui_nodes_legacy
-    export_nodes_legacy = define_comfyui_nodes_legacy(sdppp)
-    export_nodes = define_comfyui_nodes(sdppp)
-
-    NODE_CLASS_MAPPINGS = { 
-        'Get Image From Photoshop Layer': export_nodes_legacy['GetImageFromPhotoshopLayerNode'],
-        'Send Images To Photoshop': export_nodes_legacy['SendImageToPhotoshopLayerNode'],
-        'CLIP Text Encode PS Regional': export_nodes_legacy['CLIPTextEncodePSRegional'],
-    }
-    NODE_DISPLAY_NAME_MAPPINGS = { 
-        'Get Image From Photoshop Layer': 'SDPPP Get Image From Photoshop',
-        'Send Images To Photoshop': 'SDPPP Send Images To Photoshop',
-        'CLIP Text Encode PS Regional': 'CLIP Text Encode PS Regional',
-    }
-    for (k, v) in export_nodes.items():
-        NODE_CLASS_MAPPINGS[k] = v
-        NODE_DISPLAY_NAME_MAPPINGS[k] = k
+    if SDPPP.is_attached():
+        print('sd-ppp is already attached')
+        NODE_CLASS_MAPPINGS = { }
+        NODE_DISPLAY_NAME_MAPPINGS = { }
         
-    WEB_DIRECTORY = 'javascript'
-    __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
+        __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+
+    else: 
+        from server import PromptServer
+
+        sdppp = SDPPP()
+        sdppp.attach_to_comfyui(PromptServer)
+        from comfy.cli_args import args
+        if (args.multi_user):
+            sdppp.extra_server_info['multi_user'] = True
+
+        from .sdppp_python.protocols.photoshop import ProtocolPhotoshop
+        ProtocolPhotoshop.set_sdppp_server(sdppp)
+
+        from .sdppp_python.comfy.nodes import define_comfyui_nodes
+        from .sdppp_python.comfy.nodes_legacy import define_comfyui_nodes_legacy
+        export_nodes_legacy = define_comfyui_nodes_legacy(sdppp)
+        export_nodes = define_comfyui_nodes(sdppp)
+
+        NODE_CLASS_MAPPINGS = { 
+            'Get Image From Photoshop Layer': export_nodes_legacy['GetImageFromPhotoshopLayerNode'],
+            'Send Images To Photoshop': export_nodes_legacy['SendImageToPhotoshopLayerNode'],
+            'CLIP Text Encode PS Regional': export_nodes_legacy['CLIPTextEncodePSRegional'],
+        }
+        NODE_DISPLAY_NAME_MAPPINGS = { 
+            'Get Image From Photoshop Layer': 'SDPPP Get Image From Photoshop',
+            'Send Images To Photoshop': 'SDPPP Send Images To Photoshop',
+            'CLIP Text Encode PS Regional': 'CLIP Text Encode PS Regional',
+        }
+        for (k, v) in export_nodes.items():
+            NODE_CLASS_MAPPINGS[k] = v
+            NODE_DISPLAY_NAME_MAPPINGS[k] = k
+            
+        WEB_DIRECTORY = 'javascript'
+        __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
     

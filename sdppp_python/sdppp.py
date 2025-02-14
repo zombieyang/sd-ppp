@@ -4,11 +4,16 @@ from .instances import PPPInstance
 from .apis import registerSocketEvents, registerComfyHTTPEndpoints, registerSDHTTPEndpoints
 import re
 import threading
+from nodes import NODE_CLASS_MAPPINGS
 
 # Define projectRoot as parent directory of current file
 projectRoot = path.dirname(path.dirname(__file__))
 
 class SDPPP:
+    @classmethod
+    def is_attached(cls):
+        return 'SDPPP Get Document' in NODE_CLASS_MAPPINGS
+
     def __init__(self):
         self.ppp_instances = dict()
 
