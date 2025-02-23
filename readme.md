@@ -10,7 +10,7 @@
 * ✅ Multi Photoshop supported
 * ✅ Work in specific region of your Document
 
-> attention: only PS 24.4.0+ is supported.
+> attention: only PS 24.4.0+ is supported. Feature `GetSelection` needs 25.0+
 
 ## ComfyUI
 
