@@ -151,6 +151,35 @@ export default function(sdppp) {
             }]
         }
     })
+
+    // 替换为Parameter处理
+    sdppp.widgetable.add('ETN_Parameter', (node) => {
+        const outputTypeMap = {
+            'number (integer)': { type: "number", step: 1 },
+            'prompt (positive)': { type: "text", subType: "positive-prompt" },
+            'toggle': { type: "toggle" },
+            // ...其他类型映射
+        };
+        
+        const paramType = node.widgets[1].value;
+        const mappedType = outputTypeMap[paramType] || { type: paramType } || { type: "string" };
+    
+        return {
+            title: node.title,
+            widgets: [{
+                value: node.widgets[2].value, // 主值widget
+                name: node.widgets[0].value,   // 参数名widget
+                outputType: mappedType.type,
+                options: { 
+                    ...node.widgets[2].options,
+                    min: node.widgets[3].value,
+                    max: node.widgets[4].value,
+                    ...mappedType
+                },
+                uiWeight: 12 // 独占整行
+            }]
+        }
+    });
 }
 
 
@@ -162,5 +191,15 @@ export default function(sdppp) {
  * @returns 
  */
 function nameByConnectedOutputOrTitle(node) {
-    return node.outputs?.[0].widget?.name || node.title;
+    return node.outputs?.[0].widget?.name || getTitle(node);
+}
+/**
+ * get the title of the node, with priority to avoid conflicts with the hidden property sdppp_widgetable_title
+ * 获取节点的标题, 优先用于规避冲突的隐藏属性sdppp_widgetable_title
+ * 
+ * @param {*} node 
+ * @returns 
+ */
+function getTitle(node) {
+    return node.getProperty('sdppp_widgetable_title') || node.title;
 }

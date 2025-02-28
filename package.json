@@ -1,6 +1,6 @@
 {
   "name": "sdppp",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "scripts": {
     "watch": "nodemon -w typescripts/src -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.mjs",
     "build": "NODE_ENV=production node typescripts/src/build/index.build.mjs && bash typescripts/src/build/package.sh"
@@ -21,6 +21,7 @@
   "dependencies": {
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "buffer": "^6.0.3",
     "chai": "^5.1.2",
     "esbuild-plugin-external-global": "^1.0.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
