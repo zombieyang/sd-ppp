@@ -1,15 +1,15 @@
-## [1.7.1] - 2024-03-01
-1. 优化：ps连接时，Comfy侧节点没安装成功的提示，Comfy地址填写错误的提示。
-2. 优化：在Comfy侧sdppp弹窗里显示Comfy地址
-3. 优化：PS浅色主题兼容
-4. 修复：提示版本不匹配的问题
-5. 修复：桌面版comfy重复加载sd-ppp导致连接或者发图的问题
-6. 修复：和LLMParty不兼容的问题
-7. 修复：新的comfy版本无法在网页端选图层的问题
-8. 修复：拿不到图层列表的问题
-9. 修复：获取16位图像报Code -1的问题
-10. 修复：获取背景图层的问题
-11. 修复：获取蒙版图层时Comfy侧依然显示被透明元素的问题
+## [1.7.1] - 2025-03-01
+1. optimize: when PS is connecting, show the tips for Comfy side node not installed or Comfy URL is wrong.
+2. optimize: show Comfy address in sdppp popup
+3. optimize: PS light theme compatibility
+4. fix: unexpected version mismatch prompt
+5. fix: desktop comfy loading sd-ppp multiple times and cause error
+6. fix: compatibility with LLMParty
+7. fix: cannot select layer in comfy side at latest comfy version
+8. fix: cannot get layer list in Comfy side
+9. fix: get 16-bit image and got Code -1
+10. fix: Error in geting background layer
+11. fix: transparent element still visible in comfy side when getting mask layer
 
 ## [1.7.0] - 2024-02-04
 1. feature: support `LoadImage` and `LoadImage as Mask` node in comfy
