@@ -132,7 +132,7 @@ def define_comfyui_nodes(sdpppServer):
         @classmethod
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
-            return sdppp_is_changed(sdppp, sdppp_arg, '')
+            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
         
 
         @classmethod
@@ -140,7 +140,10 @@ def define_comfyui_nodes(sdpppServer):
             return {
                 "required": {
                     "layer_info": ("LAYER_INFO", {"default": None, "sdppp_type": "LAYER_INFO"}),
-                }
+                },
+                "optional": SDPPPOptional({}, {
+                    "sdppp": ("STRING", {"default": ""}),
+                })
             }
 
         def action(self, layer_info):
@@ -162,14 +165,17 @@ def define_comfyui_nodes(sdpppServer):
         @classmethod
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
-            return sdppp_is_changed(sdppp, sdppp_arg, '')
+            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
             
         @classmethod
         def INPUT_TYPES(cls):
             return {
                 "required": {
                     "document_name": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"})
-                }
+                },
+                "optional": SDPPPOptional({}, {
+                    "sdppp": ("STRING", {"default": ""}),
+                })
             }
 
         def action(self, document_name, **kwargs):
