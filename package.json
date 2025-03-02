@@ -19,6 +19,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.66.11",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "buffer": "^6.0.3",
