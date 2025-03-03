@@ -146,7 +146,7 @@ def define_comfyui_nodes(sdpppServer):
                 })
             }
 
-        def action(self, layer_info):
+        def action(self, layer_info, **kwargs):
             return (
                 layer_info['opacity'], 
                 layer_info['boundary']['left'], 
