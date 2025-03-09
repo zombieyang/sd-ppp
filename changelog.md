@@ -1,3 +1,15 @@
+## [1.7.2] - 2025-03-09
+1. fix: Length aaaaa != length bbbbb bug fix
+2. fix: Unexpectly trigger livepainting after using preview sent.
+3. fix: Document selection was not work in Comfy side
+4. fix: unexpected cache of ParseLayerInfo and GetDocument Node
+5. optimize: bigger run button
+6. optimize: progress bar for workflow edit interface
+7. optimize: add use layer inversed for LoadMask
+8. optimize: new UX for LoadMask and LoadImage
+9. optimize: add tips when webview edit is disabled
+10. optimize: add PS version limited tips when using get selection 
+
 ## [1.7.1] - 2025-03-01
 1. optimize: when PS is connecting, show the tips for Comfy side node not installed or Comfy URL is wrong.
 2. optimize: show Comfy address in sdppp popup

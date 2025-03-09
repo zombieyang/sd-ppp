@@ -152,6 +152,17 @@ export default function(sdppp) {
         }
     })
 
+    sdppp.widgetable.add("CheckpointLoaderSimple", node=> {
+        return {
+            title: node.title,
+            widgets: [{
+                value: node.widgets[0].value,
+                outputType: "combo",
+                options: node.widgets[0].options
+            }]
+        }
+    })
+
     // 替换为Parameter处理
     sdppp.widgetable.add('ETN_Parameter', (node) => {
         const outputTypeMap = {
