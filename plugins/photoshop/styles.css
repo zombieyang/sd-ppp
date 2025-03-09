@@ -21,9 +21,16 @@
  * --uxp-host-font-size-smaller
  * --uxp-host-font-size-larger
  */
+a {
+    color: var(--uxp-host-text-color);
+    text-decoration: underline;
+}
 sp-label.error-label {
     color: lightcoral;
     white-space: normal;
+}
+sp-progressbar {
+    width: 100%;
 }
 
 .tabbar {
@@ -74,13 +81,25 @@ sp-label.error-label {
     white-space: normal;
 }
 
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+}
+.header-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
 .connect-box {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
-    margin: 5px 0;
 }
 
 .connect-box #url-bar {
@@ -93,6 +112,20 @@ sp-label.error-label {
     display: flex;
     align-items: center;
     line-height: 30px;
+}
+.identifier-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.identifier-bar-right {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+}
+.identifier-bar-right a {
+    margin-left: 5px;
 }
 
 .container {
@@ -152,7 +185,6 @@ sp-label.error-label {
 }
 
 .workflow-edit-title a {
-    color: white;
     text-decoration: underline;
 }
 
@@ -173,6 +205,9 @@ sp-label.error-label {
 
 .workflow-edit-field-title {
     color: var(--uxp-host-text-color-secondary);
+    border-left: 4px solid rgba(127, 127, 127, .4);
+    padding: 2px 2px 2px 5px;
+    font-size: 12px;
 }
 
 .workflow-edit-field-widgets {
@@ -225,6 +260,7 @@ sp-label.error-label {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: start;
+    justify-content: start;
 }
 
 .workflow-edit-field-widgets .image-widget .image-widget-right .image-widget-lock-block {
@@ -242,6 +278,8 @@ sp-label.error-label {
 .workflow-edit-field-widgets .image-widget .image-widget-right .image-widget-lock-block:hover {
     background: rgba(127, 127, 127, .6);
 }
+
+
 
 .sdppp-dropdown-widget {
     position: relative;
@@ -307,23 +345,45 @@ sp-label.error-label {
     margin-left: 5px;
 }
 
+.image-widget-more-quickset {
+    margin-top: -5px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
 .image-widget-right .sdppp-layer-widget-quick-set {
     align-items: start;
     flex-direction: column;
 }
 
-.workflow-edit-bottom {
-    display: flex;
-    flex-direction: column;
-}
-
-.workflow-edit-button {
+.workflow-edit-controls {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 10px;
 }
-
+.workflow-edit-controls-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.workflow-edit-controls-left .workflow-edit-button-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.workflow-edit-controls-right sp-action-button {
+    width: 72px;
+    height: 72px;
+    margin-left: 2px;
+}
+.workflow-run-status {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
 
 .workflow-edit-button sp-action-button {
     cursor: pointer;
@@ -483,7 +543,6 @@ sp-label.error-label {
 
 .about-card {
     font-size: 12px;
-    background-color: rgba(127, 127, 127, .2);
     width: 100%;
     color: var(--uxp-host-text-color);
     overflow-y: scroll;
@@ -498,7 +557,6 @@ sp-label.error-label {
     display: flex;
     width: 100%;
     margin-bottom: 15px;
-    ;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
@@ -563,4 +621,53 @@ sp-label.error-label {
     display: flex;
     flex-direction: row;
     text-decoration: none;
+}
+
+.sdppp-dialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 540px;
+}
+
+.sdppp-dialog-content {
+    width: 500px;
+    max-height: 420px;
+    padding-top: 20px;
+}
+
+.sdppp-dialog-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.widget-mode-selection {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  background: var(--uxp-host-border-color);
+  padding: 2px;
+}
+
+.widget-mode-selection-button {
+  border: 1px solid var(--uxp-host-border-color);
+  color: var(--uxp-host-text-color-secondary);
+  background-color: var(--uxp-host-background-color);
+  font-weight: normal;
+  cursor: pointer;
+  font-size: 12px;
+  margin: 0 1px;
+}
+
+
+.widget-mode-selection-button.selected {
+  background-color: var(--uxp-host-widget-hover-background-color);
+  color: var(--uxp-host-widget-hover-text-color);
+  font-weight: bold;
 }
