@@ -112,32 +112,28 @@ export default function(sdppp) {
      * FastMute nodes only have one checkbox, so we can omit the widget name
      * FastMute节点只有一个勾选框，所以可以不保留控件名字
      */
-sdppp.widgetable.add('Fast Groups Bypasser (rgthree)', (node) => {
-  return {
-    title: node.title,
-    widgets: node.widgets.map((widget) => ({
-      // ✅ 删除前缀：移除 "enable-", "Enable_", "enable " 等任何变体
-      name: widget.name.replace(/^(enable[-_ ]?)?/gi, ''),
-      value: widget.value,
-      outputType: "toggle",
-      options: widget.options,
-      uiWeight: 3  // 每行4个控件 (3 + 3 + 3 + 3 = 12 权重)
-    }))
-  }
-});
-
-// 其他 rgthree 节点保持泛用处理（隐藏名称+整行显示）
-sdppp.widgetable.add('*rgthree*:not(Fast Groups Bypasser (rgthree))', (node) => {
-  return {
-    title: node.title,
-    widgets: node.widgets.map((widget) => ({
-      value: widget.value,
-      name: "",
-      outputType: "toggle",
-      options: widget.options,
-      uiWeight: 12  // 独占整行
-    }))
-  }
+    sdppp.widgetable.add('*rgthree*', (node) => {
+        if (node.type.indexOf('Group') != -1) {
+            return {
+                title: node.title,
+                widgets: node.widgets.map((widget) => ({
+                    value: widget.value,
+                    name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
+                    outputType: widget.type || "toggle",
+                    options: widget.options,
+                    uiWeight: 3
+                }))
+            }
+        }
+        return {
+            title: node.title,
+            widgets: node.widgets.map((widget) => ({
+                value: widget.value,
+                name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
+                outputType: widget.type || "toggle",
+                options: widget.options
+            }))
+        }
     })
     /**
      * Handle LoadImage
