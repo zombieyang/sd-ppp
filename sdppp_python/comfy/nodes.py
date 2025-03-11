@@ -69,31 +69,55 @@ def convert_boundary_to_mask(boundary):
     width = boundary['width']
     height = boundary['height']
 
-    image = Image.new('L', (width + left + right, height + top + bottom), 0)
-    draw = ImageDraw.Draw(image)
-    draw.rectangle((left, top, left + width, top + height), fill=255)
-
-    mask = np.array(image.getchannel('L')).astype(np.float32) / 255.0
-    mask = torch.from_numpy(mask)
+    # Create higher precision image (using 32-bit float instead of 8-bit integer)
+    # Directly create numpy array instead of PIL image
+    image = np.zeros((height + top + bottom, width + left + right), dtype=np.float32)
+    # Fill rectangular area
+    image[top:top+height, left:left+width] = 1.0
+    
+    # Convert to torch tensor
+    mask = torch.from_numpy(image)
     output_mask = mask.unsqueeze(0)
+
+    # Store original boundary information as metadata
+    output_mask.boundary_info = boundary.copy()
 
     return output_mask
 
 def convert_mask_to_boundary(mask):
     if mask is None or mask == '':
         return None
-    mask = mask.squeeze(0).numpy()
-    mask = (mask * 255).astype(np.uint8)
-    mask = Image.fromarray(mask)
-    bbox = mask.getbbox()
+    
+    # Check if there's stored original boundary information
+    if hasattr(mask, 'boundary_info'):
+        return mask.boundary_info
+    
+    # If no original information, use more precise method to calculate boundary
+    # Use floating point threshold instead of integer conversion
+    mask_np = mask.squeeze(0).numpy()
+    
+    # Use more precise threshold to find non-zero regions
+    # Avoid rounding errors
+    threshold = 0.5 / 255.0  # Use very small threshold
+    y_indices, x_indices = np.where(mask_np > threshold)
+    
+    if len(y_indices) == 0 or len(x_indices) == 0:
+        return None
+    
+    left = np.min(x_indices)
+    top = np.min(y_indices)
+    right = mask_np.shape[1] - np.max(x_indices) - 1
+    bottom = mask_np.shape[0] - np.max(y_indices) - 1
+    width = np.max(x_indices) - left + 1
+    height = np.max(y_indices) - top + 1
     
     return {
-        'left': bbox[0],
-        'top': bbox[1],
-        'width': bbox[2] - bbox[0],
-        'height': bbox[3] - bbox[1],
-        'right': mask.width - bbox[2],
-        'bottom': mask.height - bbox[3],
+        'left': int(left),
+        'top': int(top),
+        'width': int(width),
+        'height': int(height),
+        'right': int(right),
+        'bottom': int(bottom),
     }
 
 def define_comfyui_nodes(sdpppServer):
