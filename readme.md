@@ -131,22 +131,19 @@
 | Author | Link |
 | -- | -- |
 | zombieyang | =>[Youtube](https://youtu.be/hMYVTX0MmBs) |
-| zombieyang | =>[Youtube](https://youtu.be/tQWqvpIuk_s) |
-| zombieyang | =>[Youtube (some are outdated)](https://youtu.be/QUK1X_TbDjM?si=eGn61GsWlC942Doe) |
+
 
 2. 汉语
    
 | Author | Link |
 | -- | -- |
-| zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1kKUkYSEwK) |
-| zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1npy5Y8E9j) |
-| zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1nvWCeGEbK) |
-| zombieyang | =>[BiliBili](https://www.bilibili.com/video/BV1ve6HYhErh) |
+| zombieyang | =>[BiliBili](https://b23.tv/wR6Ppyc) |
 | [BlueBomm](https://space.bilibili.com/17280004) | =>[BiliBili](https://www.bilibili.com/video/BV15bbpeWEf8/) |
 | [猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f) | =>[Xiaohongshu](https://www.xiaohongshu.com/explore/6735c4a5000000001a01de1d?source=webshare&xhsshare=pc_web&xsec_token=AB38DXnYsvST_3h7a_hfNcXbzWw4LYyMmLuiFXFTt75kQ=&xsec_source=pc_share)|
 | [猫咪老师](https://space.bilibili.com/1054925384) | =>[BiliBili](https://www.bilibili.com/video/BV17fs2ejE3s)|
 | [鸡肉爱土豆](https://space.bilibili.com/403361177) | =>[BiliBili](https://www.bilibili.com/video/BV1shakevEbf)|
-| [来真的](https://space.bilibili.com/590784254) | => [BiliBili](https://www.bilibili.com/video/BV1BoCnYqEPX)
+| [来真的](https://space.bilibili.com/590784254) | => [BiliBili](https://www.bilibili.com/video/BV1BoCnYqEPX)|
+| [李心宝爱玩Ai](https://b23.tv/MLgsAxP) | => [BiliBili](https://b23.tv/cKGs17J)|
 
 
 
