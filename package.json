@@ -1,6 +1,6 @@
 {
   "name": "sdppp",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "scripts": {
     "watch": "nodemon -w typescripts/src -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.mjs",
     "tscheck": "cd typescripts/src && tsc --noEmit",
