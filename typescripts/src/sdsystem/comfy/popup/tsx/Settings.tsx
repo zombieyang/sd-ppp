@@ -16,7 +16,6 @@ const Settings: React.FC = () => {
 
             <div className="settings-section">
                 <p>{i18n("Comfy URL: {0}", location.origin)}</p>
-                <p>{i18n("(Page ID: {0})Queue: {1}", pageStore.data.ssid, pageStore.data.queueSize)}</p>
             </div>
 
             <div className="settings-section settings-row">

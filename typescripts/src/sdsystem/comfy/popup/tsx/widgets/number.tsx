@@ -51,6 +51,7 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
                     step={inputStep}
                     value={currentValue}
                     onChange={handleValueChange}
+                    controls={false}
                 />
             </Flex>
         );
@@ -64,6 +65,7 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
             step={inputStep}
             value={currentValue}
             onChange={handleValueChange}
+            controls={false}
         />
     );
 };

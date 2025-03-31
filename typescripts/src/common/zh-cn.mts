@@ -196,6 +196,8 @@ export default {
     'Community': '社区',
 
     // comfy popup
+    "Simplify Workflow": "简化工作流",
+    "Photoshop": "Photoshop",
     "Photoshop plugin settings": "Photoshop 插件设置",
     "Photoshop plugin": "Photoshop 插件",
     "SDPPP Settings/Misc": "SDPPP 设置/杂项",
