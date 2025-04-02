@@ -7,4 +7,4 @@ cd "$(dirname "$0")"
 cd ../../plugins/photoshop && zip -r ../../static/sd-ppp_PS.zip ./*
 
 # 重命名 .zip 为 .ccx
-cd .. && rm sd-ppp_PS.ccx && mv sd-ppp_PS.zip sd-ppp_PS.ccx
+cd ../../static && rm sd-ppp_PS.ccx && mv sd-ppp_PS.zip sd-ppp_PS.ccx

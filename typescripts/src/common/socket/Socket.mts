@@ -4,8 +4,8 @@ import { __GLOBAL_API_LEVEL__ } from '../version.mjs';
 export class Socket {
     protected readonly socket: any;
     constructor(url: string) {
-        url = url.split('?')[0].split('#')[0];
         const path = '/' + [url.split('/').slice(3).filter(p => p).join('/'), 'sd-ppp/'].filter(p => p).join('/');
+        url = url.split('/').slice(0, 3).join('/');
 
         this.socket = io(url, {
             // origin,

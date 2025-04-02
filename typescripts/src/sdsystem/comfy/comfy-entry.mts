@@ -88,6 +88,13 @@ async function _init(app: any, api: any, $el: any) {
 		lastWorkflowPath = currentWorkflowPath
 		const form = findAvailableNodeInGraph(app.graph);
 		pageStore.setCurrentForm(form);
+		const serializedForm = JSON.stringify(form);
+		setInterval(() => {
+			const nowForm = findAvailableNodeInGraph(app.graph);
+			if (JSON.stringify(nowForm) !== serializedForm) {
+				pageStore.setCurrentForm(nowForm);
+			}
+		}, 800)
 	}
 	requestAnimationFrame(checkGraphUpdate)
 
