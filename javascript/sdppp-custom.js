@@ -86,13 +86,17 @@ export default function(sdppp) {
         if (!node.widgets || node.widgets.length == 0) {
             return null;
         }
-        let widgets = node.widgets.slice(0, 2)
+        let sliceNum = 2;
+        if (node.widgets.length == 2 && node.widgets[1].name == "control_after_generate" && node.widgets[1].value == 'fixed') {
+            sliceNum = 1;
+        }
+        let widgets = node.widgets.slice(0, sliceNum)
             .map((widget, index) => {
                 let uiWeight = 12;
-                if (widget.outputType == "number" || widget.outputType == "combo") {
-                    uiWeight = index == 0 ? 8 : 4
+                if (widget.type == "number" || widget.type == "combo") {
+                    uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
                 }
-                if (widget.outputType == 'toggle') {
+                if (widget.type == "toggle") {
                     uiWeight = 4;
                 }
                 return {
@@ -103,6 +107,7 @@ export default function(sdppp) {
                     uiWeight: uiWeight
                 }
             })
+            .filter(Boolean)
         return {
             title,
             widgets
@@ -148,7 +153,8 @@ export default function(sdppp) {
             title: node.title,
             widgets: [{
                 value: node.widgets[0].value,
-                outputType: "IMAGE_PATH"
+                outputType: "IMAGE_PATH",
+                options: node.widgets[0].options
             }]
         }
     })
@@ -162,7 +168,8 @@ export default function(sdppp) {
             title: node.title,
             widgets: [{
                 value: node.widgets[0].value,
-                outputType: "MASK_PATH"
+                outputType: "MASK_PATH",
+                options: node.widgets[0].options
             }]
         }
     })
