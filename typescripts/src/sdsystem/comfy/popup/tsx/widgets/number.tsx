@@ -1,14 +1,14 @@
 import React from 'react';
 import { Flex, InputNumber, Slider, Space } from 'antd';
 import { useUIWeightCSS } from './hooks.mts';
+import { BaseWidgetProps } from './_base';
 
-interface NumberWidgetProps {
+interface NumberWidgetProps extends BaseWidgetProps {
     inputMin: number;
     inputMax: number;
     inputStep: number;
     value?: number;
     onValueChange: (value: number) => void;
-    uiWeight?: number;
 }
 
 export const NumberWidget: React.FC<NumberWidgetProps> = ({

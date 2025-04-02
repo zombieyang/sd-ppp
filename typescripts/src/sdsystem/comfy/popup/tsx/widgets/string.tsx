@@ -2,13 +2,13 @@ import React from 'react';
 import { Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input';
 import { useUIWeightCSS } from './hooks.mts';
+import { BaseWidgetProps } from './_base';
 
 const { TextArea } = Input;
 
-interface StringWidgetProps {
+interface StringWidgetProps extends BaseWidgetProps {
     value?: string;
     onValueChange: (value: string) => void;
-    uiWeight?: number;
 }
 
 export const StringWidget: React.FC<StringWidgetProps> = ({

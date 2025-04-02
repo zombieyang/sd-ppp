@@ -2,12 +2,12 @@ import React from 'react';
 import { Checkbox } from 'antd';
 import type { CheckboxProps } from 'antd';
 import { useUIWeightCSS } from './hooks.mts';
+import { BaseWidgetProps } from './_base';
 
-interface ToggleProps {
+interface ToggleProps extends BaseWidgetProps {
     value?: any;
     name?: string;
     onValueChange: (value: boolean) => void;
-    uiWeight?: number;
 }
 
 export const ToggleWidget: React.FC<ToggleProps> = ({

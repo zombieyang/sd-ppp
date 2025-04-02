@@ -2,13 +2,13 @@ import { AutoComplete } from 'antd';
 import React from 'react';
 import i18n from '../../../../../common/i18n.mts';
 import { useUIWeightCSS } from './hooks.mts';
+import { BaseWidgetProps } from './_base';
 
-export interface DropdownWidgetProps {
+export interface DropdownWidgetProps extends BaseWidgetProps {
     onSelectUpdate: (identify: string, index: number) => void;
     options: string[];
     value: string;
-    uiWeight?: number;
-}
+}   
 
 export const ComboWidget: React.FC<DropdownWidgetProps> = ({
     onSelectUpdate,

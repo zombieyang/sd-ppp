@@ -196,6 +196,7 @@ export default {
     'Community': '社区',
 
     // comfy popup
+    "upload": "上传",
     "Simplify Workflow": "简化工作流",
     "Photoshop": "Photoshop",
     "Photoshop plugin settings": "Photoshop 插件设置",

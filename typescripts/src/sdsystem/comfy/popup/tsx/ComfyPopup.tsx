@@ -2,8 +2,8 @@
 import cssText from "../ComfyPopup.css"
 import { useState } from "react";
 import Settings from "./Settings";
-import { WorkflowEditWrap } from "./WorkflowEditWrap";
-import { Tabs, ConfigProvider, Divider } from 'antd';
+import { WorkflowEditWrap } from "./WorkflowEditWeb";
+import { ConfigProvider } from 'antd';
 import i18n from "../../../../common/i18n.mts";
 var docStyle = document.createElement('style');
 docStyle.innerHTML = cssText;

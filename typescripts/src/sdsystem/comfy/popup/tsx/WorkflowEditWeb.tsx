@@ -10,6 +10,7 @@ import i18n from "../../../../common/i18n.mts";
 import { ConfigProvider, Input } from "antd";
 import { EditableTitle } from "./widgets/EditableTitle";
 import { ComfySocket } from "../../socket/ComfySocket.mts";
+import { ImageWidget } from "./widgets/image_mask_path";
 
 declare const app: any;
 const api = (window as any).comfyAPI.api.api;
@@ -169,16 +170,16 @@ export class WorkflowEditWrap extends React.Component<{
                 node.widgets[widgetIndex].callback(value)
                 const workflowManager = app.workflowManager || app.extensionManager.workflow
                 workflowManager.activeWorkflow?.changeTracker.checkState()
-            // },
-            // onRun: async (size: number = 1) => {
-            //     for (let i = 0; i < size; i++)
-            //         app.queuePrompt();
-            // },
-            // onSave: async () => {
-            //     const workflowManager = app.workflowManager || app.extensionManager.workflow
-            //     const workflow = workflowManager.activeWorkflow
-            //     workflow.changeTracker.checkState()
-            //     await workflowManager.saveWorkflow(workflow);
+                // },
+                // onRun: async (size: number = 1) => {
+                //     for (let i = 0; i < size; i++)
+                //         app.queuePrompt();
+                // },
+                // onSave: async () => {
+                //     const workflowManager = app.workflowManager || app.extensionManager.workflow
+                //     const workflow = workflowManager.activeWorkflow
+                //     workflow.changeTracker.checkState()
+                //     await workflowManager.saveWorkflow(workflow);
             },
             onWidgetRender: (context: {
                 keepRender: boolean;
@@ -244,19 +245,31 @@ export class WorkflowEditWrap extends React.Component<{
                 } else if (widget.outputType === 'PS_LAYER' || widget.outputType === 'PS_DOCUMENT') {
                     context.result.push(<p>{i18n('only supported in Photoshop')}</p>)
                     return true
+                } else if (widget.outputType == 'IMAGE_PATH' || widget.outputType == 'MASK_PATH') {
+                    context.result.push(
+                        <ImageWidget
+                            uiWeight={widget.uiWeight || 12}
+                            value={widget.value}
+                            options={widget.options?.values || []}
+                            key={widgetIndex}
+                            onValueChange={async (v) => {
+                                editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
+                            }}
+                        />
+                    );
+                    return true;
                 }
-                console.log(widget.outputType)
                 return true
             },
             onTitleRender: (title: string, fieldInfo: SDPPPGraphForm) => {
                 return <EditableTitle
-                    title={title} 
+                    title={title}
                     onTitleChange={(newTitle) => {
                         ComfySocket.instance.setNodeTitle({
                             node_id: fieldInfo.id,
                             title: newTitle
                         })
-                    }} 
+                    }}
                 />;
             }
         }
