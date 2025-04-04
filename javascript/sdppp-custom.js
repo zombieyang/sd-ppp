@@ -7,7 +7,7 @@
  * ### outputType -- 控件的类型
  * toggle: 勾选框
  * number: 数字
- * string: 字符串
+ * string/customtext: 字符串
  * combo: 下拉框
  * IMAGE_PATH: 图片路径
  * MASK_PATH: 遮罩路径
@@ -87,19 +87,22 @@ export default function(sdppp) {
             return null;
         }
         let widgets = node.widgets.slice(0, 2)
-            .map((widget, index) => ({
-                value: widget.value,
-                name: widget.label || widget.name,
-                outputType: widget.type || "string",
-                options: widget.options,
-                uiWeight: index == 0 ? 8 : 4
-            }))
-        if (widgets[0].outputType == "number") {
-            let isStepRangeTooBig = ((widgets[0].options.max - widgets[0].options.min) / widgets[0].options.step) > 1000;
-            if (!isStepRangeTooBig) {
-                widgets = widgets.slice(0, 1);
-            }
-        }
+            .map((widget, index) => {
+                let uiWeight = 12;
+                if (widget.outputType == "number" || widget.outputType == "combo") {
+                    uiWeight = index == 0 ? 8 : 4
+                }
+                if (widget.outputType == 'toggle') {
+                    uiWeight = 4;
+                }
+                return {
+                    value: widget.value,
+                    name: widget.label || widget.name,
+                    outputType: widget.type || "string",
+                    options: widget.options,
+                    uiWeight: uiWeight
+                }
+            })
         return {
             title,
             widgets

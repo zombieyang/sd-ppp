@@ -37,7 +37,7 @@ def registerComfyHTTPEndpoints(sdppp, PromptServer):
     
     @PromptServer.instance.routes.get('/sd-ppp-static/{tail:.*}')
     async def sdppp_static(request):
-        return web.FileResponse(path.join(projectRoot, 'plugins', request.match_info['tail']))
+        return web.FileResponse(path.join(projectRoot, 'static', request.match_info['tail']))
         
     @PromptServer.instance.routes.get('/sdppp_download')
     async def sdppp_download(request):

@@ -140,6 +140,7 @@ sp-progressbar {
     display: flex;
     height: 100%;
     width: 100%;
+    padding: 8px;
 }
 
 .panel-body {
@@ -200,12 +201,6 @@ sp-progressbar {
     ;
 }
 
-.workflow-edit-field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-}
-
 .workflow-edit-field.error-field {
     color: coral;
 }
@@ -215,23 +210,27 @@ sp-progressbar {
     border-left: 4px solid rgba(127, 127, 127, .4);
     padding: 2px 2px 2px 5px;
     font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    
 }
 
-.workflow-edit-field-widgets {
+.workflow-edit-field {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-.workflow-edit-field-widgets>*:only-child {
+.workflow-edit-field>*:only-child {
     flex: 1 0 100%;
 }
 
-.workflow-edit-field-widgets sp-slider.sdppp-slider {
+.workflow-edit-field sp-slider.sdppp-slider {
     position: relative;
 }
 
-.workflow-edit-field-widgets sp-slider.sdppp-slider sp-textfield {
+.workflow-edit-field sp-slider.sdppp-slider sp-textfield {
     position: absolute;
     right: 0;
     top: -25px;
@@ -240,28 +239,28 @@ sp-progressbar {
     text-align: right;
 }
 
-.workflow-edit-field-widgets .image-widget {
+.workflow-edit-field .image-widget {
     display: flex;
     flex-direction: row;
 }
 
-.workflow-edit-field-widgets .image-widget .image-widget-left {
+.workflow-edit-field .image-widget .image-widget-left {
     width: 100px;
     height: 100px;
     flex: none;
 }
 
-.workflow-edit-field-widgets .image-widget .image-widget-left .image-widget-image {
+.workflow-edit-field .image-widget .image-widget-left .image-widget-image {
     width: 100%;
     height: 100%;
 }
 
-.workflow-edit-field-widgets .image-widget .image-widget-left .image-widget-image-empty {
+.workflow-edit-field .image-widget .image-widget-left .image-widget-image-empty {
     background: white;
 }
 
 
-.workflow-edit-field-widgets .image-widget .image-widget-right {
+.workflow-edit-field .image-widget .image-widget-right {
     flex: 1 1 0;
     margin-left: 5px;
     display: flex;
@@ -384,13 +383,16 @@ sp-progressbar {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: start;
 }
 
 .workflow-edit-controls-left .workflow-edit-button-line {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+.workflow-edit-button-line-left sp-textfield {
+    width: 54px;
 }
 
 .workflow-edit-controls-right sp-action-button {

@@ -1,0 +1,1 @@
+export const sdpppX = (globalThis as any).sdpppX;

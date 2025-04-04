@@ -1,4 +1,6 @@
 temptest
 node_modules
-typescripts/src
+typescripts/photoshop-internal
 __pycache__
+sd-ppp_all.zip
+plugins/photoshop/dist

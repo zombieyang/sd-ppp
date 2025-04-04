@@ -1,10 +1,11 @@
 {
   "name": "sdppp",
-  "version": "1.7.3",
+  "version": "1.7.4",
+  "type": "module",
   "scripts": {
-    "watch": "nodemon -w typescripts/src -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.mjs",
-    "tscheck": "cd typescripts/src && tsc --noEmit",
-    "build": "NODE_ENV=production node typescripts/src/build/index.build.mjs && bash typescripts/src/build/package.sh"
+    "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
+    "tscheck": "cd typescripts && tsc --noEmit",
+    "build": "NODE_ENV=production node typescripts/src/build/index.build.ts && bash typescripts/build/package-ccx.sh && bash typescripts/build/package-all.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

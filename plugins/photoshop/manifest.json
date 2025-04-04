@@ -1,7 +1,7 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
@@ -28,6 +28,7 @@
     },
     "webview": {
       "allow": "yes",
+      "allowLocalRendering": "yes",
       "domains": "all",
       "enableMessageBridge": "localAndRemote"
     }
@@ -37,7 +38,7 @@
       "type": "panel",
       "id": "sdppp-connect",
       "label": {
-        "default": "SD-PPP 1.7.3"
+        "default": "SD-PPP 1.7.4"
       },
       "minimumSize": {
         "width": 300,
@@ -49,11 +50,11 @@
       },
       "preferredDockedSize": {
         "width": 300,
-        "height": 100
+        "height": 540
       },
       "preferredFloatingSize": {
         "width": 300,
-        "height": 200
+        "height": 540
       },
       "icons": [
         {

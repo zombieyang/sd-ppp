@@ -1,9 +1,13 @@
-# SD-PPP: Use Photoshop as your ComfyUI's workspace
+# SD-PPP: Simplify ComfyUI and Connect with other tools.
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
 ------ 
-## Photoshop Picture Portal for ComfyUI
+## Simplify ComfyUI to form like apps.
+
+## Connect with other tools
+
+### Photoshop
 
 * ✅ Multi layer supported (including text layer/image layer)
 * ✅ Multi document supported
@@ -11,6 +15,8 @@
 * ✅ Work in specific region of your Document
 
 > attention: only PS 24.4.0+ is supported. Feature `GetSelection` needs 25.0+
+
+
 
 ## ComfyUI
 
@@ -58,7 +64,7 @@
 
 5. add get/send node in ComfyUI
 
-    <img width=600 src="doc/image/in-comfy.png" />
+    <img width="600" alt="Image" src="https://github.com/user-attachments/assets/fe5e1310-d53e-4f8a-a9ec-1b7de98af936" />
 
 
 </details>
@@ -145,9 +151,24 @@
 | [来真的](https://space.bilibili.com/590784254) | => [BiliBili](https://www.bilibili.com/video/BV1BoCnYqEPX)|
 | [李心宝爱玩Ai](https://b23.tv/MLgsAxP) | => [BiliBili](https://b23.tv/cKGs17J)|
 
+## Open Source declaration
+
+
+## License  
+
+This project is licensed under the **BSD 3-Clause License**. See the [LICENSE](LICENSE) file for details.  
+
+**Note:** Some code segments of the Photoshop plugin are intentionally obfuscated but still fully compliant with BSD-3 terms. For specific details about the code obfuscation, refer to the [NOTICE](NOTICE) file in the project root directory.  
+
+------
+
+本项目遵循**BSD 3-Clause 许可证**。详见[LICENSE](LICENSE)文件。  
+
+**注：** Photoshop插件的部分代码段虽然经过故意混淆处理，但仍完全符合BSD-3条款要求；关于代码混淆的具体说明，请参见项目根目录的[NOTICE](NOTICE)文件。  
 
 
 ## Thanks
-@AbdullahAlfaraj
-@tianlang0704
-@猫咪老师
+@[AbdullahAlfaraj](https://github.com/AbdullahAlfaraj)
+@[tianlang0704](https://github.com/tianlang0704)
+@[猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f)
+
