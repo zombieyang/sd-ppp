@@ -107,10 +107,9 @@ def define_comfyui_nodes_legacy(sdppp):
                         max_wh=sdppp_arg_item['ps_maxGetImageWH']
                     )
                 )
-                (output_image, output_mask) = self._load_image(
-                    [result['blob']], 
-                    [result['width']], [result['height']], 
-                    [len(result['blob']) / (result['width'] * result['height'])]
+                # change to use result['pngData']. a .png data
+                (output_image, output_mask) = self._load_image_from_png(
+                    result['pngData']
                 )
 
                 res_image.append(output_image)
@@ -118,55 +117,22 @@ def define_comfyui_nodes_legacy(sdppp):
 
             return (res_image, res_mask,)
 
-        # copy from Comfyui/nodes.py LoadImage
-        def _load_image(self, imagebuffers, widths, heights, components):
-            output_images = []
-            output_masks = []
-            w, h = None, None
-
-            excluded_formats = ['MPO']
+        def _load_image_from_png(self, png_data):
+            # Load the PNG data using PIL
+            image = Image.open(BytesIO(png_data))
             
-            # for i in imagebuffers:
-            for i, width, height in zip(imagebuffers, widths, heights):
-                if (components[0] == 1):
-                    image_mode = "L"
-                elif (components[0] == 3):
-                    image_mode = "RGB"
-                elif (components[0] == 4):
-                    image_mode = "RGBA"
-                else:
-                    raise ValueError("Unsupported number of components")
-
-                i = Image.frombytes(image_mode, (width, height), i, "raw")
-                
-                if i.mode == 'I':
-                    i = i.point(lambda i: i * (1 / 255))
-                image = i.convert("RGB")
-
-                if len(output_images) == 0:
-                    w = image.size[0]
-                    h = image.size[1]
-                
-                if image.size[0] != w or image.size[1] != h:
-                    continue
-                
-                image = np.array(image).astype(np.float32) / 255.0
-                image = torch.from_numpy(image)[None,]
-                if 'A' in i.getbands():
-                    mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                    mask = 1. - torch.from_numpy(mask)
-                else:
-                    mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
-                output_images.append(image)
-                output_masks.append(mask.unsqueeze(0))
-
-            if len(output_images) > 1 and img.format not in excluded_formats:
-                output_image = torch.cat(output_images, dim=0)
-                output_mask = torch.cat(output_masks, dim=0)
+            # Convert to RGB for the output image
+            rgb_image = image.convert("RGB")
+            rgb_array = np.array(rgb_image).astype(np.float32) / 255.0
+            output_image = torch.from_numpy(rgb_array)[None,]
+            
+            # Extract alpha channel for the mask if available
+            if 'A' in image.getbands():
+                mask = np.array(image.getchannel('A')).astype(np.float32) / 255.0
+                output_mask = 1. - torch.from_numpy(mask).unsqueeze(0)
             else:
-                output_image = output_images[0]
-                output_mask = output_masks[0]
-
+                output_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+                
             return (output_image, output_mask)
 
 
@@ -226,13 +192,17 @@ def define_comfyui_nodes_legacy(sdppp):
                 img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
                 if img.mode != "RGBA":
                     img = img.convert("RGBA")
+                
+                # 使用BytesIO而不是tobytes来获取PNG数据
+                buffer = BytesIO()
+                img.save(buffer, format="PNG")
+                png_data = buffer.getvalue()
+                
                 params.append({
                     'layer_identify': item_layer, 
                     'boundary': convert_mask_to_boundary(item_bound), 
                     'image_blob': {
-                        'buffer': img.tobytes('raw'),
-                        'width': img.width,
-                        'height': img.height
+                        'pngData': png_data
                     }
                 })
 
@@ -299,3 +269,33 @@ def define_comfyui_nodes_legacy(sdppp):
         'SendImageToPhotoshopLayerNode': SendImageToPhotoshopLayerNode,
         'CLIPTextEncodePSRegional': CLIPTextEncodePSRegional
     }
+
+
+
+# def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+#     filename_prefix += self.prefix_append
+#     full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
+#     results = list()
+#     for (batch_number, image) in enumerate(images):
+#         i = 255. * image.cpu().numpy()
+#         img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+#         metadata = None
+#         if not args.disable_metadata:
+#             metadata = PngInfo()
+#             if prompt is not None:
+#                 metadata.add_text("prompt", json.dumps(prompt))
+#             if extra_pnginfo is not None:
+#                 for x in extra_pnginfo:
+#                     metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+#         filename_with_batch_num = filename.replace("%batch_num%", str(batch_number))
+#         file = f"{filename_with_batch_num}_{counter:05}_.png"
+#         img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
+#         results.append({
+#             "filename": file,
+#             "subfolder": subfolder,
+#             "type": self.type
+#         })
+#         counter += 1
+
+#     return { "ui": { "images": results } }
