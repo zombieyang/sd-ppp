@@ -2,7 +2,6 @@
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
 
------- 
 ## Simplify ComfyUI to form like apps.
 
 ![image](https://github.com/user-attachments/assets/cf0b399c-5827-4e7a-9a06-8f80e42021fd)
