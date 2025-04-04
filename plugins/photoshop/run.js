@@ -30,7 +30,6 @@ class PanelController {
         this[_root].style.height = "100vh";
         this[_root].style.overflowY = "auto";
         this[_root].style.overflowX = "hidden";
-        this[_root].style.padding = "8px";
 
         // render entry
         // 渲染入口
