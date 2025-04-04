@@ -7,14 +7,15 @@
 
 ![image](https://github.com/user-attachments/assets/cf0b399c-5827-4e7a-9a06-8f80e42021fd)
 
-![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
-
 ## Connect with Photoshop
 
 * ✅ Multi layer supported (including text layer/image layer)
 * ✅ Multi document supported
 * ✅ Multi Photoshop supported
 * ✅ Work in specific region of your Document
+
+
+![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
 
 > attention: only PS 24.4.0+ is supported. Feature `GetSelection` needs 25.0+
 
