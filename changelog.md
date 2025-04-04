@@ -1,3 +1,11 @@
+## [1.7.4] - 2025-04-04
+1. optimize: change WebSocket timeout to 10 mins
+2. optimize: live painting will be triggered when widget values changed
+3. optimize: single number Primitives will display as single line
+4. optimize: Photoshop webview is now a pop dialog
+5. feature: There is a workflow form interface in Comfy side now. Node's title could be changed there.
+6. reopen most of the source code and Licence updated.
+
 ## [1.7.2] - 2025-03-09
 1. fix: Length aaaaa != length bbbbb bug fix
 2. fix: Unexpectly trigger livepainting after using preview sent.
