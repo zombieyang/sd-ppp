@@ -1,4 +1,4 @@
-# Open Source Declaration
+# Open Source Declaration ｜ 开源声明
 
 ## License Information
 
@@ -16,9 +16,7 @@ The author commits to freely showing the complete source code to users upon conf
 1. The user has over 20 contributions on Github/Gitee in the past 10 years.
 2. The user can describe the intention of using the code based on good faith and the modification plan.
 
-
-
-# 开源声明
+------
 
 ## 许可证信息
 
@@ -35,3 +33,36 @@ The author commits to freely showing the complete source code to users upon conf
 作者承诺，在使用者符合下列条件时，愿意免费向其展示完整的源代码。
 1. 使用者10年内在Github/Gitee等平台有超过20次contributions。
 2. 可以完整描述其基于善意的使用代码的意图，以及修改计划。
+
+# Dependencies Declaration | 依赖声明
+
+This project uses the following third-party dependencies, each of which is subject to its own license. Users are encouraged to review the license terms of these dependencies.
+
+Development Dependencies:
+- @babel/core
+- @babel/plugin-proposal-object-rest-spread
+- @babel/plugin-syntax-class-properties
+- @babel/plugin-transform-react-jsx
+- @types/chai
+- @types/mocha
+- @types/photoshop
+- esbuild
+- javascript-obfuscator
+- nodemon
+- typescript
+
+Runtime Dependencies:
+- @tanstack/react-query
+- @types/react
+- @types/react-dom
+- antd
+- buffer
+- chai
+- esbuild-plugin-external-global
+- esbuild-plugin-polyfill-node
+- fast-json-patch
+- jimp
+- mocha
+- react
+- react-dom
+- socket.io-client
