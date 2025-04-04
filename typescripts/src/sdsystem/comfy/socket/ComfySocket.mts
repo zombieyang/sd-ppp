@@ -13,7 +13,7 @@ export class ComfySocket extends (SocketMixin(
 ) as SocketConstructor<Socket & PhotoshopCaller & WorkflowCallee>) {
     static instance: ComfySocket;
     constructor() {
-        super(location.href);
+        super(location.href.split('?')[0].split('#')[0]);
         ComfySocket.instance = this;
     }
-}
+} 

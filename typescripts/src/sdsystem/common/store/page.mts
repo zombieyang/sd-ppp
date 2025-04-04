@@ -30,7 +30,7 @@ export class PageStore extends MainStore<PageStoreData> {
             queueSize: 0,
             executingNodeTitle: "",
 
-            webviewFromSid: '',//location.search.match(/webview_fromsid=([^&]+)/)?.[1] || '',
+            webviewFromSid: location.search.match(/webview_fromsid=([^&]+)/)?.[1] || '',
 
             currentForm: [],
             hasPSDNodes: false,
