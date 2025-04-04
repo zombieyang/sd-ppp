@@ -1,6 +1,5 @@
 import Main from "./tsx/Main.js";
 import { createRoot } from "react-dom/client";
-// import 'sdppp-test/photoshop'
 
 declare const globalThis: any;
 globalThis.sdppp = globalThis.sdppp || {};

@@ -26,8 +26,7 @@ const photoshopPluginConfig = {
             'socket.io-client': 'window.socketIO',
             'buffer': 'window.Buffer',
             'SDPPPInternal': 'window.SDPPPInternal'
-        }),
-        SDPPPTestResolvePlugin
+        })
     ],
     sourcemap: false,
     minify: isProduction,

@@ -1,12 +1,11 @@
 import i18n from "../../common/i18n.mts";
+import { sdpppX } from "../../common/sdpppX.mts";
 import { SDPPPGraphForm } from "../../common/types";
 
 const customNodeConvertersByWildcard: [string, NodeConverter][] = [];
 
-declare const sdppp: any;
-const sdpppGlobal = (globalThis as any).sdppp = (globalThis as any).sdppp || {};
-sdpppGlobal.widgetable = sdpppGlobal.widgetable || {};
-sdpppGlobal.widgetable.add = function (name: string, fn: NodeConverter) {
+sdpppX.widgetable = sdpppX.widgetable || {};
+sdpppX.widgetable.add = function (name: string, fn: NodeConverter) {
     customNodeConvertersByWildcard.push([name, fn]);
 }
 

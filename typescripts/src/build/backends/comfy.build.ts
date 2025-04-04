@@ -9,7 +9,7 @@ const sdsystemJSConfig = {
         'sdppp-comfy': join(typescriptSrcRoot, './sdsystem/comfy/comfy-entry.mts'),
     },
     outdir: join(projectRoot, 'javascript'),
-    plugins: [SDPPPTestResolvePlugin],
+    plugins: [SDPPPTestResolvePlugin(join(typescriptSrcRoot, '../test/mocha/comfy/comfy.test.mts'))],
     sourcemap: (isProduction ? false : 'inline') as any,
     minify: isProduction,
     loader: {

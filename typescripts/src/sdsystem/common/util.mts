@@ -1,6 +1,7 @@
 import i18n from "../../common/i18n.mjs";
 import { parseDocumentIdentify } from "../../common/photoshop/identify.mjs";
 import { SpeicialIDManager } from "../../common/photoshop/specialLayer.mjs";
+import { sdpppX } from "../../common/sdpppX.mts";
 import { PhotoshopStoreHelper } from "../../plugins/common/store/helpers.mjs";
 import { Identify } from "../../plugins/common/store/photoshop.mjs";
 import { api, app } from "../comfy/comfy-globals.mts";
@@ -131,7 +132,4 @@ export function findDocumentNodeRecursive(_node: ComfyGraphNode): ComfyGraphNode
     }
 }
 
-// @ts-ignore
-globalThis.sdppp = globalThis.sdppp || {};
-// @ts-ignore
-globalThis.sdppp.findDocumentNodeRecursive = findDocumentNodeRecursive;
+sdpppX.findDocumentNodeRecursive = findDocumentNodeRecursive;

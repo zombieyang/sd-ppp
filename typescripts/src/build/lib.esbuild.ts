@@ -21,31 +21,33 @@ export const commonConfig = {
     },
 }
 
-export const SDPPPTestResolvePlugin = {
-    name: 'sdppp test resolve',
-    setup({ onResolve }: any) {
-        if (isProduction) {
-            onResolve({ filter: /^sdppp-test\// }, (args: any) => {
-                // return empty file
-                return {
-                    path: "/dev/null",
-                    external: false
-                }
-            })
+export function SDPPPTestResolvePlugin(testEntryPath: string) {
+    return {
+        name: 'sdppp test resolve',
+        setup({ onResolve }: any) {
+            if (isProduction) {
+                onResolve({ filter: /^sdppp-test\// }, (args: any) => {
+                    // return empty file
+                    return {
+                        path: "/dev/null",
+                        external: false
+                    }
+                })
 
-        } else {
-            onResolve({ filter: /^mocha$/ }, () => {
-                return {
-                    path: nodeModuleRequire.resolve("mocha/mocha"),
-                    external: false
-                }
-            })
-            onResolve({ filter: /^sdppp-test\// }, (args: any) => {
-                return {
-                    path: path.resolve(typescriptSrcRoot, `test/mocha/${args.path.replace(/^sdppp-test\//, '') + '.test.mts'}`),
-                    external: false
-                }
-            })
+            } else {
+                onResolve({ filter: /^mocha$/ }, () => {
+                    return {
+                        path: nodeModuleRequire.resolve("mocha/mocha"),
+                        external: false
+                    }
+                })
+                onResolve({ filter: /^sdppp-test\// }, (args: any) => {
+                    return {
+                        path: testEntryPath,
+                        external: false
+                    }
+                })
+            }
         }
     }
 }

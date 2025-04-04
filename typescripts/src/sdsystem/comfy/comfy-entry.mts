@@ -6,6 +6,7 @@ import { ComfySocket } from './socket/ComfySocket.mjs';
 import { pageStore, waitModelInited } from '../common/models/photoshopModels.mjs';
 import initPopup from './popup/sdpppPopup.mjs';
 import PreviewSender from './PreviewSender.mjs';
+import { sdpppX } from '../../common/sdpppX.mjs';
 
 declare const graph: any;
 
@@ -136,7 +137,7 @@ let initErrors: string[] = [];
 		// @ts-ignore
 		import('./sdppp-custom.js').then((module) => {
 			// @ts-ignore
-			module.default(sdppp)
+			module.default(sdpppX)
 		})
 
 	} catch (e: any) {

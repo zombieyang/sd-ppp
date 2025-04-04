@@ -6,7 +6,7 @@ import { DropdownWidget } from "./EditWidgets/DropdownWidget.js";
 import { PrimitiveNumberWidget } from "./EditWidgets/PrimitiveNumberWidget.js";
 import { PrimitiveStringWidget } from "./EditWidgets/PrimitiveStringWidget.js";
 import { PrimitiveToggleWidget } from "./EditWidgets/PrimitiveToggleWidget.js";
-import { computeUIWeightCSS } from "../../../common/tsx/util.mjs";
+import { computeUIWeightCSS, useTraceUpdate } from "../../../common/tsx/util.mjs";
 
 interface WorkflowEditProps {
     formDatas: SDPPPGraphForm[];
@@ -117,7 +117,7 @@ export default function WorkflowEdit({
             )
         })
     }, [allFields, onWidgetRender, onWidgetChange, onTitleRender])
-    
+
     return (
         <>
             {
