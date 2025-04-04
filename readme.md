@@ -5,9 +5,11 @@
 ------ 
 ## Simplify ComfyUI to form like apps.
 
-## Connect with other tools
+![image](https://github.com/user-attachments/assets/cf0b399c-5827-4e7a-9a06-8f80e42021fd)
 
-### Photoshop
+![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
+
+## Connect with Photoshop
 
 * ✅ Multi layer supported (including text layer/image layer)
 * ✅ Multi document supported
@@ -16,24 +18,6 @@
 
 > attention: only PS 24.4.0+ is supported. Feature `GetSelection` needs 25.0+
 
-
-
-## ComfyUI
-
-**from v1.5.0**
-
-![image](https://github.com/user-attachments/assets/5129833f-ccf2-46a7-a6fd-62068d1e6a24)
-
-**from v1.2.0**
-
-<img width=600 src="https://github.com/user-attachments/assets/d5d8f673-78d8-4d3f-9a7a-0a385b862951" />
-
-## SDWebUI/Forge (No longer support in 1.6.0)
-
-**from v1.2.0**
-
-<img width=600 src="https://github.com/user-attachments/assets/b788c3f5-4ddc-460e-90de-93ff70c99307" />
-      
 ## How to install
 
 <details>
