@@ -21,7 +21,7 @@
 ## How to install
 
 <details>
-<summary><i>[click to expand]</i> <b>ComfyUI</b></summary>
+<summary><i>[click to expand]</i></summary>
 
 1. Use [ComfyManager](https://github.com/ltdrdata/ComfyUI-Manager) to install `sd-ppp` or clone this repository into `<your-comfy-directory>/custom_nodes`
 
@@ -50,45 +50,6 @@
 
     <img width="600" alt="Image" src="https://github.com/user-attachments/assets/fe5e1310-d53e-4f8a-a9ec-1b7de98af936" />
 
-
-</details>
-<details>
-<summary><i>[click to expand]</i> <b>SD-WebUI or SD-Forge</b></summary>
-
-1. install in A1111's `extension` tab or clone this repository into `<your-sd-directory>/extensions`
-
-    <img width=800 src="https://github.com/zombieyang/sd-ppp/assets/5595819/e19dc61a-0232-4fac-af61-5ba7c436a0eb" />
-
-2. install Photoshop plugin
-    1. by CCX:
-        1. download `.ccx` in any getting/sending dialog or in SDWebUI's setting tab.
-
-            <img width=600 src="https://github.com/user-attachments/assets/785707f6-edc8-4a53-b0f7-52e4780cf4a4" />
-
-            ------
-
-            <img width=600 src="https://github.com/user-attachments/assets/82edecba-23fd-4dab-9027-214fbbdeed1e" />
-        2. [option1] double click the `.ccx` file if you have Adobe Creative Cloud. 
-        3. [option2] rename `.ccx` to `.zip` and extract it into photoshop's `Plug-ins` directory or `Plug-ins/Generator` directory [like this](https://github.com/zombieyang/sd-ppp/assets/5595819/a86862bb-1e4e-45cb-a869-5c08edad47a8).
-
-    2. by UXP develop Tool (you can debug the code this way):
-        1. clone this repository
-        2. [optional] Run `npm install` and `npm build` in `photoshop` directory. (if you want to debug or modify the code)
-        3. click `Add Plugin` in UXP Develop Tool by selecting `photoshop/dist/manifest.json`.
-
-4. connect to Stable diffusion in Photoshop
-
-    <img width=300 src="https://github.com/user-attachments/assets/89c40c4c-d70f-4bcf-b0e1-d8067cd40d9c" />
-
-5. Select a specific layer to get pictures from Photoshop in any image element.
-
-    1. <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/02f559d8-19e0-409e-a4f2-42928abb6548" />
-    2. <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/43c95692-8c73-44ba-a516-78d3cb5e2e03" />
-    3. <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/da05e786-3562-4d43-b2c1-8783162c6fd7" />
-
-6. select a specific layer to send pictures to Photoshop
-
-    1. <img width=400 src="https://github.com/zombieyang/sd-ppp/assets/5595819/60864fea-2ef0-4ada-8aca-4db3cf44598e" />
 
 </details>
 
