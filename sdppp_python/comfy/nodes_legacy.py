@@ -137,7 +137,7 @@ def define_comfyui_nodes_legacy(sdppp):
 
 
     class SendImageToPhotoshopLayerNode:
-        RETURN_TYPES = ()
+        RETURN_TYPES = ("DOCUMENT",)
         INPUT_IS_LIST = True
         FUNCTION = "send_image"
         CATEGORY = "SD-PPP"
@@ -214,7 +214,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params]
             ), True)
 
-            return (None,)
+            return (document,)
     
     class CLIPTextEncodePSRegional:
         @classmethod
