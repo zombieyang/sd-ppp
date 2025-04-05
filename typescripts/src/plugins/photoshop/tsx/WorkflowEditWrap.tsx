@@ -11,6 +11,7 @@ import {
     useSDPPPContext,
     useAgentState,
 } from "./SDPPPInternalBridge"
+import StopIcon from "../../common/tsx/icons/StopIcon"
 
 // 状态显示组件
 const WorkflowStatus = () => {
@@ -113,6 +114,16 @@ const RunButton = () => {
     );
 };
 
+// const TestButtons = () => {
+//     const { interrupt, clearQueue, reboot } = useSDPPPComfyCaller();
+
+//     return (
+//         <sp-action-button onClick={() => { reboot() }}>
+//             <StopIcon />
+//         </sp-action-button>
+//     )
+// }
+
 export function WorkflowEditWrap({
     WorkflowEditPhotoshop
 }: {
@@ -134,6 +145,7 @@ export function WorkflowEditWrap({
                             </div>
                             <div className="workflow-edit-button-line workflow-edit-controls-linetwo">
                                 <WorkflowStatus />
+                                {/* <TestButtons /> */}
                                 <EditButton />
                             </div>
                         </div>

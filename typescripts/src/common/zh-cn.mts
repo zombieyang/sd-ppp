@@ -213,4 +213,8 @@ export default {
     'Photoshop is not connected': 'Photoshop 未连接',
     'select...': '请选择',
     'click to edit': '点击编辑',
+
+    // comfy call error
+    'ComfyManager not found, cannot reboot': 'Comfy Manager未安装，无法重启',
+    'Failed to reboot ComfyUI': '重启ComfyUI失败',
 }

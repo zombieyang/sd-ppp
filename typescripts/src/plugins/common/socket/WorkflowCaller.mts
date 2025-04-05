@@ -5,10 +5,13 @@ import { getStoredWidgetValue } from "../hooks/widgetable.mts";
 
 export interface WorkflowCaller {
     pageInstanceRun(sid: string, from_sid: string, size?: number): void;
-    setWidgetValue(workflowAgent: PageStore | null | undefined, params: WorkflowCalleeActions['setWidgetValue']['params']): Promise<void>;
-    openWorkflow(workflowAgent: PageStore | null | undefined, params: WorkflowCalleeActions['open']['params']): Promise<void>;
-    saveWorkflow(workflowAgent: PageStore | null | undefined, params: WorkflowCalleeActions['save']['params']): Promise<void>;
-    logout(workflowAgent: PageStore | null | undefined): Promise<void>;
+    setWidgetValue(workflowAgent: PageStore | null, params: WorkflowCalleeActions['setWidgetValue']['params']): Promise<void>;
+    openWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['open']['params']): Promise<void>;
+    saveWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['save']['params']): Promise<void>;
+    logout(workflowAgent: PageStore | null): Promise<void>;
+    interrupt(workflowAgentSID: string): Promise<void>;
+    clearQueue(workflowAgentSID: string): Promise<void>;
+    reboot(workflowAgentSID: string): Promise<WorkflowCalleeActions['reboot']['result']>;
 }
 
 export interface WorkflowCallerActions {
@@ -148,6 +151,37 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
                     if (payload?.error) {
                         return reject(new Error(payload.error));
                     }
+                    resolve(payload);
+                });
+            })
+        }
+
+        public async interrupt(workflowAgentSID: string) {
+            await new Promise<any>((resolve, reject) => {
+                this.socket.emit('F_workflow', {
+                    action: 'interrupt',
+                    sid: workflowAgentSID
+                }, (payload: any) => {
+                    resolve(payload);
+                });
+            })
+        }
+        public async clearQueue(workflowAgentSID: string) {
+            await new Promise<any>((resolve, reject) => {
+                this.socket.emit('F_workflow', {
+                    action: 'clearQueue',
+                    sid: workflowAgentSID
+                }, (payload: any) => {
+                    resolve(payload);
+                });
+            })
+        }
+        public async reboot(workflowAgentSID: string) {
+            return await new Promise<WorkflowCalleeActions['reboot']['result']>((resolve, reject) => {
+                this.socket.emit('F_workflow', {
+                    action: 'reboot',
+                    sid: workflowAgentSID
+                }, (payload: WorkflowCalleeActions['reboot']['result']) => {
                     resolve(payload);
                 });
             })

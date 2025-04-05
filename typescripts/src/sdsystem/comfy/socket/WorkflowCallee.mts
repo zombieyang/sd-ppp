@@ -1,3 +1,4 @@
+import i18n from "../../../common/i18n.mts";
 import { Socket, SocketConstructor } from "../../../common/socket/Socket.mjs";
 import { WorkflowCallerActions } from "../../../plugins/common/socket/WorkflowCaller.mjs";
 import { pageStore } from "../../common/models/photoshopModels.mjs";
@@ -52,6 +53,19 @@ export interface WorkflowCalleeActions {
     logout: {
         params: {
         }
+    },
+    interrupt: {
+        params: {}
+    },
+    clearQueue: {
+        params: {}
+    },
+    reboot: {
+        params: {},
+        result: {
+            error?: string,
+            success: boolean
+        }
     }
 }
 
@@ -71,7 +85,10 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     payload.action == 'setWidgetValue' ||
                     payload.action == 'run' ||
                     payload.action == 'setNodeTitle' ||
-                    payload.action == 'logout'
+                    payload.action == 'logout' ||
+                    payload.action == 'interrupt' ||
+                    payload.action == 'clearQueue' ||
+                    payload.action == 'reboot'
                 ) {
                     try {
                         // @ts-expect-error 
@@ -252,6 +269,31 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             if (!node) throw new Error('Node not found');
             node.title = title;
             node.setProperty('sdppp_widgetable_title', title);
+        }
+        public async interrupt(params: WorkflowCalleeActions['interrupt']['params']) {
+            await app.api.interrupt();
+        }
+        public async clearQueue(params: WorkflowCalleeActions['clearQueue']['params']) {
+            await app.api.clearItems('queue')
+
+        }
+        public async reboot(params: WorkflowCalleeActions['reboot']['params']) {
+            const response = await fetch('./api/manager/reboot')
+            if (response.status == 404) {
+                return {
+                    error: i18n('ComfyManager not found, cannot reboot'),
+                    success: false
+                }
+            } else if (response.status == 200) {
+                return {
+                    success: true
+                }
+            } else {
+                return {
+                    error: i18n('Failed to reboot ComfyUI') + response.statusText,
+                    success: false
+                }
+            }
         }
     }
 }

@@ -37,6 +37,9 @@ declare module "SDPPPInternal" {
             type: string;
             subfolder: string;
         } | undefined>;
+        interrupt: () => Promise<void>;
+        clearQueue: () => Promise<void>;
+        reboot: () => Promise<void>;
     }
 
     export interface SDPPPWebpageInstance {
