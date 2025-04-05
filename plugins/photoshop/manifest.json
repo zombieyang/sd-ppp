@@ -58,32 +58,37 @@
       },
       "icons": [
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/sdppp_D.png",
           "scale": [
             1,
+            1.25,
+            1.5,
             2
           ],
           "theme": [
+            "darkest",
             "dark",
-            "darkest"
+            "medium"
           ],
           "species": [
             "generic"
           ]
         },
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/sdppp_L.png",
           "scale": [
             1,
+            1.25,
+            1.5,
             2
           ],
           "theme": [
-            "lightest",
-            "light"
+            "light",
+            "lightest"
           ],
           "species": [
             "generic"
@@ -94,32 +99,37 @@
   ],
   "icons": [
     {
-      "width": 32,
-      "height": 32,
-      "path": "icons/icon_D.png",
+      "width": 23,
+      "height": 23,
+      "path": "icons/sdppp_D.png",
       "scale": [
         1,
+        1.25,
+        1.5,
         2
       ],
       "theme": [
+        "darkest",
         "dark",
-        "darkest"
+        "medium"
       ],
       "species": [
         "generic"
       ]
     },
     {
-      "width": 32,
-      "height": 32,
-      "path": "icons/icon_N.png",
+      "width": 23,
+      "height": 23,
+      "path": "icons/sdppp_L.png",
       "scale": [
         1,
+        1.25,
+        1.5,
         2
       ],
       "theme": [
-        "lightest",
-        "light"
+        "light",
+        "lightest"
       ],
       "species": [
         "generic"
