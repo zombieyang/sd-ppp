@@ -58,6 +58,19 @@ class ProtocolPhotoshop:
         return result['text']
 
     @classmethod
+    async def send_text(cls, instance_id, document_identify, text, layer_identify):
+        ppp_instance = cls.sdpppServer.ppp_instances[instance_id]
+        result = await protocol_call(ppp_instance, 'B_photoshop', data={
+            'action': 'sendText',
+            'params': {
+                'document_identify': document_identify, 
+                'text': text,
+                'layer_identify': layer_identify
+            }
+        })
+        return result
+
+    @classmethod
     async def get_selection(cls, instance_id, document_identify, boundary):
         ppp_instance = cls.sdpppServer.ppp_instances[instance_id]
         result = await protocol_call(ppp_instance, 'B_photoshop', data={

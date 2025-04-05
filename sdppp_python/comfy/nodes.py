@@ -435,6 +435,44 @@ def define_comfyui_nodes(sdpppServer):
 
             return (output_mask, )
 
+    class SendTextToLayerNode:
+        RETURN_TYPES = ("DOCUMENT",)
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+
+        @classmethod
+        def IS_CHANGED(self, **kwargs):
+            return np.random.rand()
+
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "text": ('STRING', {"sdppp_type": "STRING"}),
+                    "layer": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
+                },
+                "optional": SDPPPOptional({}, {
+                    "sdppp": ("STRING", {"default": ""})
+                }),
+                "hidden": {
+                    "unique_id": "UNIQUE_ID",
+                    "prompt": "PROMPT", 
+                }
+            }
+
+        def action(self, text, layer, **kwargs):
+            sdpppServer.has_ps_instance(throw_error=True)
+            
+            document = layer['document']
+
+            call_async_func_in_server_thread(ProtocolPhotoshop.send_text(
+                instance_id=document['instance_id'],
+                document_identify=document['identify'], 
+                text=text,  
+                layer_identify=layer['layer_identify'],
+            ), True)
+
+            return (document, )
         
     class GetTextFromLayerNode:
         RETURN_TYPES = ("STRING",)
@@ -469,15 +507,7 @@ def define_comfyui_nodes(sdpppServer):
         def action(self, layer_or_group, unique_id, prompt, document = None, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
 
-            linked_style = check_linked_in_prompt(prompt, unique_id, 'layer_or_group')
-            if not linked_style:
-                document = json.loads(document)
-            else:
-                document = layer_or_group[0]['document']
-                
-            # dont check here, some python cannot read the data in this thread.
-            # if document['instance_id'] not in sdpppServer.ppp_instances:
-            #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
+            document = json.loads(document)
 
             res_text = []
             for i, item_layer in enumerate(layer_or_group):
@@ -517,6 +547,7 @@ def define_comfyui_nodes(sdpppServer):
         'SDPPP Get Linked Layers': GetLinkedLayersNode,
         'SDPPP Get Layers In Group': GetLayersInGroupNode,
         'SDPPP Get Text From Layer': GetTextFromLayerNode,
+        'SDPPP Send Text To Layer': SendTextToLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
         # 'SDPPP Settings': SDPPPSettingsNode,

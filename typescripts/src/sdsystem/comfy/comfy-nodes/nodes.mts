@@ -51,6 +51,14 @@ export class GetLinkedLayersNode extends SDPPPNodeWithInput implements NodeWithL
         this.node.outputs.forEach((i: any) => i.label = i18n(i.name));
     }
 }
+
+export class SendTextToLayerNode extends SDPPPDownloadableNode {
+    protected async update() {
+        super.update();
+        this.node.inputs[0].label = i18n(this.node.inputs[0].name)
+        this.node.outputs[0].label = i18n(this.node.outputs[0].name)
+    }
+}
 export class GetTextFromLayerNode extends SDPPPDownloadableNode {
     static prehandleNodeType(nodeData: any) {
         if (nodeData.input.optional['document']) {
@@ -90,62 +98,6 @@ export class GetTextFromLayerNode extends SDPPPDownloadableNode {
         }
     }
 }
-
-// export class SDPPPSettingsNode extends SDPPPNodeWithInput {
-//     async update() {
-//         super.update();
-//         this.node.inputs[0].label = i18n(this.node.inputs[0].name)
-//         if (this.node.properties.psd) {
-//             pageStore.setHasPSDNodes(true)
-//             this.psdWidget.label = i18n('extract saved .psd to Photoshop')
-
-//         } else {
-//             pageStore.setHasPSDNodes(false)
-//             this.psdWidget.label = i18n('save .psd to this workflow')
-//         }
-//     }
-
-//     protected onDestroy(): void {
-//         pageStore.setHasPSDNodes(false)
-//     }
-
-//     protected psdWidget: any
-//     constructor(node: any) {
-//         const existed = app.graph.nodes.filter((n: any) => n.comfyClass == 'SDPPP Settings')
-//         if (existed.length > 1) {
-//             alert(i18n('You can only have one SDPPP Settings node in a workflow'))
-//             app.graph.remove(node)
-//             throw new Error(i18n('You can only have one SDPPP Settings node in a workflow'))
-//         }
-//         super(node);
-//         this.psdWidget = node.addWidget('button', '', '', () => {
-//             const backendDatas = pagePhotoshopStoreMap.getAllPhotoshopDocumentData();
-//             const [instanceName, documentIdentify] = this.documentWidget.widget.value.split('/');
-//             if (this.node.properties.psd) {
-//                 this.extractPSD(backendDatas[instanceName].sid, documentIdentify)
-
-//             } else {
-//                 ComfySocket.instance
-//                     .importPSDDataURLFromPhotoshop(backendDatas[instanceName].sid, documentIdentify)
-//                     .then(psdBase64 => {
-//                         this.node.setProperty('psd', psdBase64);
-//                     });
-//             }
-//         }, {})
-//     }
-
-//     public extractPSD(sid: string, documentIdentify: string) {
-//         if (this.node.properties.psd) {
-//             ComfySocket.instance
-//                 .exportPSDDataURLToPhotoshop(sid, documentIdentify, this.node.properties['psd'])
-//                 .then(async () => {
-//                     await new Promise(resolve => setTimeout(resolve, 300));
-//                     (globalThis as any).app.canvas.draw(true, true)
-//                 })
-//                 .catch(console.error);
-//         }
-//     }
-// }
 
 export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocumentOutput {
     get documentWidget() {

@@ -37,6 +37,7 @@ export default {
     'SDPPP Get Selection': 'SDPPP获取选区(GetSelection)', 
     'SDPPP Get Image From Photoshop': 'SDPPP从PS获取图像(GetImageFromPhotoshop)',
     'SDPPP Send Images To Photoshop': 'SDPPP发送图像到PS(SendImagesToPhotoshop)',
+    'SDPPP Send Text To Layer': 'SDPPP发送文本到图层(SendTextToLayer)',
     'SDPPP Settings': 'SDPPP设置/杂项(Settings/Misc)',
 
 // comfy widget/input
@@ -170,6 +171,7 @@ export default {
     'get layer info': '获取图层信息',
     'sdppp extract PSD': 'sdppp 导入 PSD',
     'sdppp get PSD': 'sdppp 获取 PSD', 
+    'set text to layer': '设置图层的文本',
     
     // photoshop dialog/widget
     '{0} wants to extract a PSD file to Photoshop, are you sure?': '{0} 想要释放一个.psd文件到Photoshop，确定吗？',

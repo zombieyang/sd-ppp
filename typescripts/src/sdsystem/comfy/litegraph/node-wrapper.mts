@@ -1,6 +1,6 @@
 import i18n from "../../../common/i18n.mjs";
 import { GetImageFromLayerNode, SendImageToLayerNode } from "../comfy-nodes/legacy-nodes.mjs";
-import { GetDocumentNode, GetLayerNode, GetLayersInGroupNode, GetLinkedLayersNode, GetSelectionNode, GetTextFromLayerNode, ParseLayerInfoNode } from "../comfy-nodes/nodes.mjs";
+import { GetDocumentNode, GetLayerNode, GetLayersInGroupNode, GetLinkedLayersNode, GetSelectionNode, GetTextFromLayerNode, ParseLayerInfoNode, SendTextToLayerNode } from "../comfy-nodes/nodes.mjs";
 import { SDPPPNode } from "../comfy-nodes/SDPPPNode.mjs";
 import { SDPPPNodeWithInput } from "../comfy-nodes/SDPPPNodeWithInput.mjs";
 declare const comfyAPI: any;
@@ -8,6 +8,7 @@ declare const comfyAPI: any;
 const SDPPPNodeList = {
     'Get Image From Photoshop Layer': GetImageFromLayerNode,
     'Send Images To Photoshop': SendImageToLayerNode,
+    'SDPPP Send Text To Layer': SendTextToLayerNode,
     'SDPPP Get Text From Layer': GetTextFromLayerNode,
     'SDPPP Parse Layer Info': ParseLayerInfoNode,
     'SDPPP Get Linked Layers': GetLinkedLayersNode,
