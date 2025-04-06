@@ -8,7 +8,7 @@ import { findAvailableNodeInGraph, setWidgetValue } from "../graph-to-form.mjs";
 import PreviewSender from "../PreviewSender.mjs";
 
 interface WorkflowCalleePayload {
-    action: 'open' | 'setWidgetValue' | 'run' | 'save',
+    action: keyof WorkflowCalleeActions,
     sid: string,
     params: WorkflowCalleeActions[keyof WorkflowCalleeActions]['params']
 }
@@ -50,6 +50,13 @@ export interface WorkflowCalleeActions {
             from_sid: string
         }
     },
+    list: {
+        params: {
+        },
+        result: {
+            workflows: string[]
+        }
+    },
     logout: {
         params: {
         }
@@ -82,6 +89,7 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 if (
                     payload.action == 'open' ||
                     payload.action == 'save' ||
+                    payload.action == 'list' ||
                     payload.action == 'setWidgetValue' ||
                     payload.action == 'run' ||
                     payload.action == 'setNodeTitle' ||
@@ -168,6 +176,36 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 const workflow = this.workflowManager.activeWorkflow
                 workflow.changeTracker.checkState()
             }
+        }
+        public async list() {
+            const workflows = this.workflowManager.workflows
+            let workflowPaths = workflows.map((w: any) => w.path.replace('workflows/', ''));
+
+            try {
+                const headers = new Headers();
+                const usertokens = localStorage.getItem('Comfy.userId')
+                usertokens && headers.set('comfy-user', usertokens);
+                // Attempt to fetch and apply favorites
+                const favoritesResponse = await fetch(
+                    './api/userdata/workflows%2F.index.json', {
+                    headers
+                });
+                if (favoritesResponse.ok) {
+                    const favoritesData = await favoritesResponse.json();
+                    const favorites = favoritesData.favorites.map((fav: string) => fav.replace('workflows/', ''));
+
+                    workflowPaths.sort((a: string, b: string) => {
+                        const aIsFavorite = favorites.includes(a);
+                        const bIsFavorite = favorites.includes(b);
+                        if (aIsFavorite && !bIsFavorite) return -1;
+                        if (!aIsFavorite && bIsFavorite) return 1;
+                        return 0;
+                    });
+                }
+            } catch (error) {
+                console.warn('Error fetching favorites, returning unsorted workflows:', error);
+            }
+            return workflowPaths;
         }
         private setWidgetValue(params: WorkflowCalleeActions['setWidgetValue']['params']) {
             params.values.forEach(({ nodeID, widgetIndex, value }) => {

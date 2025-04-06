@@ -8,6 +8,7 @@ export interface WorkflowCaller {
     setWidgetValue(workflowAgent: PageStore | null, params: WorkflowCalleeActions['setWidgetValue']['params']): Promise<void>;
     openWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['open']['params']): Promise<void>;
     saveWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['save']['params']): Promise<void>;
+    listWorkflows(workflowAgent: PageStore | null): Promise<string[] | { error: string }>;
     logout(workflowAgent: PageStore | null): Promise<void>;
     interrupt(workflowAgentSID: string): Promise<void>;
     clearQueue(workflowAgentSID: string): Promise<void>;
@@ -139,6 +140,19 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
             })
         }
 
+        public async listWorkflows(workflowAgent: PageStore | null) {
+            if (!workflowAgent) {
+                return [];
+            }
+            return await new Promise<string[]>((resolve, reject) => {
+                this.socket.emit('F_workflow', {
+                    action: 'list',
+                    sid: workflowAgent.data.sid
+                }, (payload: any) => {
+                    resolve(payload);
+                });
+            })
+        }
         public async logout(workflowAgent: PageStore | null | undefined) {
             if (!workflowAgent) {
                 return;
