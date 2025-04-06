@@ -121,6 +121,13 @@ export default {
     'search...': '搜索...',
     'disabled when running in browser page': '接管网页时不可用',
     'only supported in Photoshop': '仅在 Photoshop 中支持',
+    'Login': '登录',
+    'Invitation Code': '邀请码',
+    'Username': '用户名',
+    'Password': '密码',
+    'Please input invitation code': '请输入邀请码',
+    'Please input username': '请输入用户名',
+    'Please input password': '请输入密码',
 
     // photoshop connect error
     '502: Maybe the server is not running': '502: 服务器可能未运行',
@@ -130,6 +137,7 @@ export default {
     'version mismatch, please reinstall PS plugin': '版本不匹配，请重新安装 PS 插件',
     'instance type not recognized': '未识别的软件类型',
     'Error: {0}': '错误: {0}',
+    'Verification Error': '验证错误',
 
     // photoshop event error
     'document {0} not found': '找不到文档: {0}',

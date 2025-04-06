@@ -8,8 +8,9 @@ declare module "uxp" {
     };
 }
 declare module "SDPPPInternal" {
-    export function SDPPPProvider({ children }: { children: React.ReactNode });
+    export function SDPPPProvider({ children, loginAppID, loginStyle }: { children: React.ReactNode, loginAppID: string, loginStyle?: 'invitation' | 'password' });
     export function useSDPPPContext(): {
+        logout: () => void,
         connectOrDisconnect: () => void,
         lastConnectErrorMessage: string,
         setAutoRunning: (autoRunning: { type: 'workflow' | 'page', value: string } | null) => void,
@@ -95,5 +96,4 @@ declare module "SDPPPInternal" {
 
     export type AddressBarType = () => JSX.Element;
     export type WorkflowEditPhotoshopType = () => JSX.Element;
-
 }

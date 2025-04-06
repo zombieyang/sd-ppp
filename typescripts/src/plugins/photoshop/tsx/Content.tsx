@@ -80,18 +80,18 @@ export function Content({
 
             {
                 connectState === "connected" &&
-                    <div className="panel-body">
-                        <div className="editor-card" style={editorCardShowingIndex === 0 ? {} : { display: 'none' }}>
-                            <div className="comfy-list-wrap">
-                                {initAfter8s && !webviewAgentSID && <sp-label class="error-label">{i18n('hidden webview load failed: {0}, please select a browser page to continue', i18n('timeout'))}</sp-label>}
-                                <WebPageList />
-                                {workflowAgentSID && <WorkflowList setEditorMode={setEditorMode} />}
-                            </div>
-                        </div>
-                        <div className="editor-card" style={editorMode ? {} : { display: 'none' }}>
-                            {editorMode && workflowAgentSID && <WorkflowEditWrap WorkflowEditPhotoshop={WorkflowEditPhotoshop} />}
+                <div className="panel-body">
+                    <div className="editor-card" style={editorCardShowingIndex === 0 ? {} : { display: 'none' }}>
+                        <div className="comfy-list-wrap">
+                            {initAfter8s && !webviewAgentSID && <sp-label class="error-label">{i18n('hidden webview load failed: {0}, please select a browser page to continue', i18n('timeout'))}</sp-label>}
+                            <WebPageList />
+                            {workflowAgentSID && <WorkflowList setEditorMode={setEditorMode} />}
                         </div>
                     </div>
+                    <div className="editor-card" style={editorMode ? {} : { display: 'none' }}>
+                        {editorMode && workflowAgentSID && <WorkflowEditWrap WorkflowEditPhotoshop={WorkflowEditPhotoshop} />}
+                    </div>
+                </div>
             }
         </>
     );

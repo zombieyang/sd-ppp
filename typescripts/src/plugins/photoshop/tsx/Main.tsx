@@ -3,7 +3,7 @@ import { SDPPP, SDPPPProvider } from "./SDPPPInternalBridge.js";
 
 export default function Main() {
     return (
-        <SDPPPProvider>
+        <SDPPPProvider loginAppID={''}>
             <div className="container">
                 <SDPPP
                     renderContent={(
