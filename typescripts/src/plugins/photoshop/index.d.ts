@@ -8,7 +8,19 @@ declare module "uxp" {
     };
 }
 declare module "SDPPPInternal" {
-    export function SDPPPProvider({ children, loginAppID, loginStyle }: { children: React.ReactNode, loginAppID: string, loginStyle?: 'invitation' | 'password' });
+    export function SDPPPProvider({
+        children,
+        loginAppID,
+        loginStyle,
+        loginBannerTop,
+        loginBannerBottom
+    }: {
+        children: React.ReactNode,
+        loginAppID: string,
+        loginStyle?: 'invitation' | 'password',
+        loginBannerTop?: React.ReactNode,
+        loginBannerBottom?: React.ReactNode
+    });
     export function useSDPPPContext(): {
         logout: () => void,
         connectOrDisconnect: () => void,

@@ -2,22 +2,23 @@ import { useCallback, useMemo } from "react"
 import i18n from "../../../common/i18n.mjs"
 import LivePaintingIcon from "../../common/tsx/icons/LivePaintingIcon"
 import PlayIcon from "../../common/tsx/icons/PlayIcon"
-import PlayMultiIcon from "../../common/tsx/icons/PlayMultiIcon"
-import RefreshIcon from "../../common/tsx/icons/RefreshIcon"
-import SaveIcon from "../../common/tsx/icons/SaveIcon"
-import WebEditIcon from "../../common/tsx/icons/WebEditIcon"
 import {
     useSDPPPComfyCaller,
     useSDPPPContext,
     useAgentState,
 } from "./SDPPPInternalBridge"
+import RefreshIcon from "../../common/tsx/icons/RefreshIcon"
+import SaveIcon from "../../common/tsx/icons/SaveIcon"
+import PlayMultiIcon from "../../common/tsx/icons/PlayMultiIcon"
+import WebEditIcon from "../../common/tsx/icons/WebEditIcon"
+import CrossIcon from "../../common/tsx/icons/CrossIcon"
 import StopIcon from "../../common/tsx/icons/StopIcon"
 
 // 状态显示组件
 const WorkflowStatus = () => {
     const { workflowAgentSID, autoRunning } = useSDPPPContext();
     const { lastError, progress, executingNodeTitle } = useAgentState(workflowAgentSID);
-    
+
     return (
         <div className="workflow-run-status">
             {autoRunning ? <sp-label>{i18n('auto run workflow after change..')}</sp-label> : ''}
@@ -31,7 +32,7 @@ const WorkflowStatus = () => {
 };
 
 // 保存和刷新按钮组
-const SaveButtons = () => {
+const SaveButton = () => {
     const { workflowAgentSID } = useSDPPPContext();
     const { saveWorkflow, reopenWorkflow } = useSDPPPComfyCaller();
 
@@ -39,21 +40,71 @@ const SaveButtons = () => {
         await saveWorkflow(workflowAgentSID);
     }, [saveWorkflow, workflowAgentSID]);
 
+    return (
+        <sp-action-button onClick={onSave}>
+            <SaveIcon />
+        </sp-action-button>
+    );
+};
+const ClearButton = () => {
+    const { workflowAgentSID } = useSDPPPContext();
+    const { clearQueue } = useSDPPPComfyCaller();
+    const onClear = useCallback(() => {
+        clearQueue();
+    }, [clearQueue]);
+
+    return <sp-action-button onClick={onClear}>
+        <CrossIcon />
+    </sp-action-button>
+}
+
+const RebootButton = () => {
+    const { workflowAgentSID } = useSDPPPContext();
+    const { reboot } = useSDPPPComfyCaller();
+    const onReboot = useCallback(() => {
+        reboot();
+    }, [reboot]);
+
+    return <sp-action-button onClick={onReboot}>重启</sp-action-button>
+}
+
+const StopButton = () => {
+    const { workflowAgentSID } = useSDPPPContext();
+    const { interrupt } = useSDPPPComfyCaller();
+    const onInterrupt = useCallback(() => {
+        interrupt();
+    }, [interrupt]);
+
+    return <sp-action-button onClick={onInterrupt}>
+        <StopIcon />
+    </sp-action-button>
+}
+
+const RefreshButton = () => {
+    const { workflowAgentSID } = useSDPPPContext();
+    const { reopenWorkflow } = useSDPPPComfyCaller();
     const onReopen = useCallback(() => {
         reopenWorkflow(workflowAgentSID);
     }, [reopenWorkflow, workflowAgentSID]);
 
-    return (
-        <div className="workflow-edit-button-line-left">
-            <sp-action-button onClick={onSave}>
-                <SaveIcon />
-            </sp-action-button>
-            <sp-action-button onClick={onReopen}>
-                <RefreshIcon />
-            </sp-action-button>
-        </div>
-    );
-};
+    return <sp-action-button onClick={onReopen}>
+        <RefreshIcon />
+    </sp-action-button>
+}
+
+const PlayMultiButtons = () => {
+    const { workflowAgentSID, autoRunning } = useSDPPPContext();
+    const { runPage } = useSDPPPComfyCaller();
+
+    return <>
+        {!autoRunning ? <sp-action-button onClick={() => { runPage(workflowAgentSID, 10) }}>
+            <PlayMultiIcon count={10} />
+        </sp-action-button> : ''}
+        {!autoRunning ? <sp-action-button onClick={() => { runPage(workflowAgentSID, 3) }}>
+            <PlayMultiIcon count={3} />
+        </sp-action-button> : ''}
+    </>
+}
 
 // 自动运行和多次运行按钮组
 const AutoRunButtons = () => {
@@ -61,26 +112,18 @@ const AutoRunButtons = () => {
     const { runPage } = useSDPPPComfyCaller();
 
     return (
-        <div className="workflow-edit-button-line-right">
-            <sp-action-button className={autoRunning?.value == workflowAgentSID ? 'highlight' : ''} onClick={() => {
-                if (autoRunning?.value == workflowAgentSID) {
-                    setAutoRunning(null);
-                } else {
-                    setAutoRunning({
-                        type: 'page',
-                        value: workflowAgentSID
-                    });
-                }
-            }}>
-                <LivePaintingIcon />
-            </sp-action-button>
-            {!autoRunning ? <sp-action-button onClick={() => { runPage(workflowAgentSID, 10) }}>
-                <PlayMultiIcon count={10} />
-            </sp-action-button> : ''}
-            {!autoRunning ? <sp-action-button onClick={() => { runPage(workflowAgentSID, 3) }}>
-                <PlayMultiIcon count={3} />
-            </sp-action-button> : ''}
-        </div>
+        <sp-action-button className={autoRunning?.value == workflowAgentSID ? 'highlight' : ''} onClick={() => {
+            if (autoRunning?.value == workflowAgentSID) {
+                setAutoRunning(null);
+            } else {
+                setAutoRunning({
+                    type: 'page',
+                    value: workflowAgentSID
+                });
+            }
+        }}>
+            <LivePaintingIcon />
+        </sp-action-button>
     );
 };
 
@@ -104,7 +147,7 @@ const EditButton = () => {
 const RunButton = () => {
     const { workflowAgentSID } = useSDPPPContext();
     const { runPage } = useSDPPPComfyCaller();
-    
+
     return (
         <div className="workflow-edit-controls-right">
             <sp-action-button onClick={() => { runPage(workflowAgentSID) }}>
@@ -140,8 +183,15 @@ export function WorkflowEditWrap({
                     <div className="workflow-edit-controls">
                         <div className="workflow-edit-controls-left">
                             <div className="workflow-edit-button-line workflow-edit-button-lineone">
-                                <SaveButtons />
-                                <AutoRunButtons />
+                                <div className="workflow-edit-button-line-left">
+                                    <SaveButton />
+                                    <ClearButton />
+                                </div>
+                                <div className="workflow-edit-button-line-right">
+                                    <StopButton />
+                                    <AutoRunButtons />
+                                    <PlayMultiButtons />
+                                </div>
                             </div>
                             <div className="workflow-edit-button-line workflow-edit-controls-linetwo">
                                 <WorkflowStatus />
