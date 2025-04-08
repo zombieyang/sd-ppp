@@ -1,4 +1,4 @@
-// import 'sdppp-test/comfy';
+import 'sdppp-test/comfy';
 import { SpeicialIDManager } from '../../common/photoshop/specialLayer.mjs';
 import { wrapNode } from './litegraph/node-wrapper.mjs';
 import { findAvailableNodeInGraph } from './graph-to-form.mjs';
