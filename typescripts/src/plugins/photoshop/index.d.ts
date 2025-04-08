@@ -20,7 +20,7 @@ declare module "SDPPPInternal" {
         workflowAgentSID: string,
         setWorkflowAgentSID: (workflowAgentSID: string) => void,
 
-        showWebviewDialog: () => void;
+        toggleWebviewDialog: () => void;
     }
 
     export function useSDPPPComfyCaller(): {

@@ -85,13 +85,13 @@ const AutoRunButtons = () => {
 
 // 编辑按钮
 const EditButton = () => {
-    const { workflowAgentSID, webviewAgentSID, showWebviewDialog } = useSDPPPContext();
+    const { workflowAgentSID, webviewAgentSID, toggleWebviewDialog } = useSDPPPContext();
     const usingWebview = workflowAgentSID == webviewAgentSID;
 
     return (
         <sp-action-button
             {...(!usingWebview ? { disabled: true } : {})}
-            onClick={() => { showWebviewDialog() }}
+            onClick={() => { toggleWebviewDialog() }}
             title={!usingWebview ? i18n('disabled when running in browser page') : i18n('Edit in ComfyUI')}
         >
             <WebEditIcon />

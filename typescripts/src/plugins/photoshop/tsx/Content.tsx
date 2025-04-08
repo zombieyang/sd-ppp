@@ -1,5 +1,3 @@
-// @ts-ignore
-import { ComfyLogin } from "./SDPPPInternalBridge.js";
 import { useSDPPPContext } from "./SDPPPInternalBridge.js";
 import i18n, { isValidI18nKey } from "../../../common/i18n.mjs";
 import WebPageList from "./WebPageList.js";
@@ -31,7 +29,7 @@ export function Content({
         webviewAgentSID,
         lastConnectErrorMessage,
 
-        showWebviewDialog,
+        toggleWebviewDialog,
 
     } = useSDPPPContext();
 
@@ -68,9 +66,6 @@ export function Content({
                     </div>
                 ) : ''
             }
-            {!editorMode && (initAfter4s || webviewAgentSID) && <ComfyLogin
-                onRequestLogin={() => { showWebviewDialog() }}
-            />}
 
             <sp-divider size="small"></sp-divider>
 
