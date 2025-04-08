@@ -1,94 +1,54 @@
 import i18n from "../../common/i18n.mts";
 import { sdpppX } from "../../common/sdpppX.mts";
 import { SDPPPGraphForm } from "../../common/types";
-
-const customNodeConvertersByWildcard: [string, NodeConverter][] = [];
-
-sdpppX.widgetable = sdpppX.widgetable || {};
-sdpppX.widgetable.add = function (name: string, fn: NodeConverter) {
-    customNodeConvertersByWildcard.push([name, fn]);
-}
+import { app } from "./comfy-globals.mts";
 
 // Define a type for the converter function
 type NodeConverter = (node: any) => SDPPPGraphForm | null;
+type WidgetValueSetter = (node: any, widgetIndex: any, value: any) => boolean;
 
-// // Create an array of tuples with [RegExp, converter function]
-// const customNodeConverters: [RegExp, NodeConverter][] = [
-//     [/^LoadImage$/, (node: any) => ({
-//         id: node.id,
-//         title: node.title,
-//         widgets: [{
-//             value: node.widgets[0].value, 
-//             outputType: "IMAGE"
-//         }]
-//     })],
-//     [/^LoadImageMask$/, (node: any) => ({
-//         id: node.id,
-//         title: node.title,
-//         widgets: [{
-//             value: node.widgets[0].value,
-//             outputType: "MASK"
-//         }]
-//     })],
-//     [/^SDPPP Get Layer By ID$/, (node: any) => ({
-//         id: node.id,
-//         title: node.title,
-//         widgets: [{
-//             value: node.widgets[0].value,
-//             outputType: "LAYER"
-//         }]
-//     })],
-//     [/^SDPPP Get Document$/, (node: any) => ({
-//         id: node.id,
-//         title: node.title,
-//         widgets: [{
-//             value: node.widgets[0].value,
-//             outputType: "DOCUMENT"
-//         }]
-//     })],
-//     [/\(rgthree\)/, (node: any) => ({
-//         id: node.id,
-//         title: node.title,
-//         widgets: node.widgets.map((widget: any) => ({
-//             value: widget.value,
-//             name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
-//             outputType: widget.type || "toggle",
-//             options: widget.options
-//         }))
-//     })],
-//     [/^PrimitiveNode$/, (node: any) => {
-//         let title = node.title.startsWith("Primitive") ? nameByTitleOrConnectedOutput(node) : node.title;
-//         if (!node.widgets || node.widgets.length == 0) {
-//             return null;
-//         }
-//         let widgets = node.widgets.slice(0, 2)
-//             .map((widget: any, index: number) => ({
-//                 value: widget.value,
-//                 name: widget.label || widget.name,
-//                 outputType: widget.type || "string",
-//                 options: (widget.options),
-//                 uiWeight: index == 0 ? 8 : 4
-//             }))
-//         if (widgets[0].outputType == "number") {
-//             let isStepRangeTooBig = ((widgets[0].options.max - widgets[0].options.min) / widgets[0].options.step) > 1000;
-//             if (!isStepRangeTooBig) {
-//                 widgets = widgets.slice(0, 1);
-//             }
-//         }
-//         return {
-//             id: node.id,
-//             title: title,
-//             widgets
-//         }
-//     }]
-// ];
+const customNodeConvertersByWildcard: [string, {
+    formatter: NodeConverter,
+    setter: WidgetValueSetter | null
+}][] = [];
 
-function nameByTitleOrConnectedOutput(node: any) {
-    return node.outputs?.[0].widget?.name || node.title;
+sdpppX.widgetable = sdpppX.widgetable || {};
+sdpppX.widgetable.add = function (name: string, fn: NodeConverter | {
+    formatter: NodeConverter,
+    setter: WidgetValueSetter
+}) {
+    if (typeof fn === 'function') {
+        customNodeConvertersByWildcard.push([name, {
+            formatter: fn,
+            setter: null
+        }]);
+    } else {
+        customNodeConvertersByWildcard.push([name, fn]);
+    }
+}
+
+
+export function setWidgetValue(node: any, widgetIndex: any, value: any) {
+    const converter = customNodeConvertersByWildcard.find(([wildcard]) => {
+        return wildcardMatch(wildcard, node.type);
+    });
+    let setted = false;
+    if (converter) {
+        const setter = converter[1].setter;
+        if (setter) {
+            setted = !!setter(node, widgetIndex, value);
+        }
+    }
+    if (!setted) {
+        node.widgets[widgetIndex].value = value;
+        node.widgets[widgetIndex].callback?.(value)
+    }
+    const workflowManager = app.workflowManager || app.extensionManager.workflow
+    workflowManager.activeWorkflow?.changeTracker.checkState()
 }
 
 export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
-    return graph.nodes
+    return graph?.nodes
         .map((node: any) => {
             if (node.mode != 0) return; // muted or by passed
             if (!node.title || node.title.startsWith(".")) return; // hidden
@@ -99,7 +59,7 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
             });
             if (converter) {
                 try {
-                    const converted = converter[1](node);
+                    const converted = converter[1].formatter(node);
                     if (converted) {
                         converted.id = node.id;
                         converted.uiWeightSum = converted.widgets.reduce((sum: number, widget: any) => sum + (widget.uiWeight || 12), 0);

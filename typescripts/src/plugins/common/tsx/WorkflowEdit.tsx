@@ -86,7 +86,7 @@ export default function WorkflowEdit({
                         <PrimitiveStringWidget
                             uiWeight={widget.uiWeight || 12}
                             key={widgetIndex}
-                            value={widget.value}
+                            value={typeof widget.value === 'string' ? widget.value : JSON.stringify(widget.value)}
                             onValueChange={(v) => {
                                 onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}

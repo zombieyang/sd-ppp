@@ -1,7 +1,7 @@
 import React from "react"
 import WorkflowEdit from "../../../../plugins/common/tsx/WorkflowEdit"
 import { SDPPPGraphForm } from "../../../../common/types";
-import { findAvailableNodeInGraph } from "../../graph-to-form.mjs";
+import { findAvailableNodeInGraph, setWidgetValue } from "../../graph-to-form.mjs";
 import { NumberWidget } from "./widgets/number";
 import { ComboWidget } from "./widgets/combo";
 import { ToggleWidget } from "./widgets/toggle";
@@ -166,10 +166,7 @@ export class WorkflowEditWrap extends React.Component<{
             onWidgetChange: async (nodeid: number, widgetIndex: number, value: any, fieldInfo: SDPPPGraphForm) => {
                 const node = app.graph.nodes.find((n: any) => n.id == nodeid);
                 if (!node) return;
-                node.widgets[widgetIndex].value = value;
-                node.widgets[widgetIndex].callback(value)
-                const workflowManager = app.workflowManager || app.extensionManager.workflow
-                workflowManager.activeWorkflow?.changeTracker.checkState()
+                setWidgetValue(node, widgetIndex, value);
                 // },
                 // onRun: async (size: number = 1) => {
                 //     for (let i = 0; i < size; i++)

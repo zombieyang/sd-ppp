@@ -3,7 +3,7 @@ import { WorkflowCallerActions } from "../../../plugins/common/socket/WorkflowCa
 import { pageStore } from "../../common/models/photoshopModels.mjs";
 import { api, app } from "../comfy-globals.mjs";
 import { blankGraph } from "../defaultGraph.mjs";
-import { findAvailableNodeInGraph } from "../graph-to-form.mjs";
+import { findAvailableNodeInGraph, setWidgetValue } from "../graph-to-form.mjs";
 import PreviewSender from "../PreviewSender.mjs";
 
 interface WorkflowCalleePayload {
@@ -156,9 +156,7 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             params.values.forEach(({ nodeID, widgetIndex, value }) => {
                 const node = app.graph.nodes.find((n: any) => n.id == nodeID);
                 if (!node || value == node.widgets[widgetIndex].value) return;
-                node.widgets[widgetIndex].value = value;
-                node.widgets[widgetIndex].callback(value)
-                this.workflowManager.activeWorkflow?.changeTracker.checkState()
+                setWidgetValue(node, widgetIndex, value)
             });
         }
         private async open(params: WorkflowCalleeActions['open']['params']) {

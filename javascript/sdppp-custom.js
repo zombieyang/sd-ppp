@@ -28,7 +28,7 @@
  */
 
 
-export default function(sdppp) {
+export default function (sdppp) {
     /**
      * Handle SDPPP Get Document
      * 处理 SDPPP Get Document
@@ -36,16 +36,18 @@ export default function(sdppp) {
      * only keep the first widget, set the output type to PS_DOCUMENT
      * 只保留第一个控件, 将输出类型设置为 PS_DOCUMENT
      */
-    sdppp.widgetable.add('SDPPP Get Document', (node) => {
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[0].value,
-                outputType: "PS_DOCUMENT",
-                options: {
-                    values: node.widgets[0].options.values()
-                }
-            }]
+    sdppp.widgetable.add('SDPPP Get Document', {
+        formatter: (node) => {
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "PS_DOCUMENT",
+                    options: {
+                        values: node.widgets[0].options.values()
+                    }
+                }]
+            }
         }
     })
     /**
@@ -55,17 +57,19 @@ export default function(sdppp) {
      * only keep the first widget, set the output type to PS_LAYER
      * 只保留第一个控件, 将输出类型设置为 PS_LAYER
      */
-    sdppp.widgetable.add('SDPPP Get Layer By ID', (node) => {
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[0].value,
-                outputType: "PS_LAYER",
-                options: {
-                    values: node.widgets[0].options.values,
-                    documentNodeID: sdppp.findDocumentNodeRecursive(node)?.id || 0
-                }
-            }]
+    sdppp.widgetable.add('SDPPP Get Layer By ID', {
+        formatter: (node) => {
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "PS_LAYER",
+                    options: {
+                        values: node.widgets[0].options.values,
+                        documentNodeID: sdppp.findDocumentNodeRecursive(node)?.id || 0
+                    }
+                }]
+            }
         }
     })
     /**
@@ -81,36 +85,38 @@ export default function(sdppp) {
      * If the first widget is a number type and suitable for dragging, only keep the first widget
      * 如果第一个控件是数字类型且其精度适用拖动控件，则只保留第一个控件
      */
-    sdppp.widgetable.add('PrimitiveNode', (node) => {
-        let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : node.title;
-        if (!node.widgets || node.widgets.length == 0) {
-            return null;
-        }
-        let sliceNum = 2;
-        if (node.widgets.length == 2 && node.widgets[1].name == "control_after_generate" && node.widgets[1].value == 'fixed') {
-            sliceNum = 1;
-        }
-        let widgets = node.widgets.slice(0, sliceNum)
-            .map((widget, index) => {
-                let uiWeight = 12;
-                if (widget.type == "number" || widget.type == "combo") {
-                    uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
-                }
-                if (widget.type == "toggle") {
-                    uiWeight = 4;
-                }
-                return {
-                    value: widget.value,
-                    name: widget.label || widget.name,
-                    outputType: widget.type || "string",
-                    options: widget.options,
-                    uiWeight: uiWeight
-                }
-            })
-            .filter(Boolean)
-        return {
-            title,
-            widgets
+    sdppp.widgetable.add('PrimitiveNode', {
+        formatter: (node) => {
+            let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : node.title;
+            if (!node.widgets || node.widgets.length == 0) {
+                return null;
+            }
+            let sliceNum = 2;
+            if (node.widgets.length == 2 && node.widgets[1].name == "control_after_generate" && node.widgets[1].value == 'fixed') {
+                sliceNum = 1;
+            }
+            let widgets = node.widgets.slice(0, sliceNum)
+                .map((widget, index) => {
+                    let uiWeight = 12;
+                    if (widget.type == "number" || widget.type == "combo") {
+                        uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
+                    }
+                    if (widget.type == "toggle") {
+                        uiWeight = 4;
+                    }
+                    return {
+                        value: widget.value,
+                        name: widget.label || widget.name,
+                        outputType: widget.type || "string",
+                        options: widget.options,
+                        uiWeight: uiWeight
+                    }
+                })
+                .filter(Boolean)
+            return {
+                title,
+                widgets
+            }
         }
     })
     /**
@@ -120,27 +126,49 @@ export default function(sdppp) {
      * FastMute nodes only have one checkbox, so we can omit the widget name
      * FastMute节点只有一个勾选框，所以可以不保留控件名字
      */
-    sdppp.widgetable.add('*rgthree*', (node) => {
-        if (node.type.indexOf('Group') != -1) {
+    sdppp.widgetable.add('*rgthree*', {
+        formatter: (node) => {
+            if (node.type.indexOf('Group') != -1) {
+                return {
+                    title: node.title,
+                    widgets: node.widgets.map((widget) => ({
+                        value: fixRGthreeWidgetValue(widget.type, widget.value),
+                        name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
+                        outputType: fixRGthreeWidgetType(widget.type),
+                        options: widget.options,
+                        uiWeight: 3
+                    }))
+                }
+            }
             return {
                 title: node.title,
                 widgets: node.widgets.map((widget) => ({
-                    value: widget.value,
-                    name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
-                    outputType: widget.type || "toggle",
-                    options: widget.options,
-                    uiWeight: 3
+                    value: fixRGthreeWidgetValue(widget.type, widget.value),
+                    name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
+                    outputType: fixRGthreeWidgetType(widget.type),
+                    options: widget.options
                 }))
             }
-        }
-        return {
-            title: node.title,
-            widgets: node.widgets.map((widget) => ({
-                value: widget.value,
-                name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
-                outputType: widget.type || "toggle",
-                options: widget.options
-            }))
+            function fixRGthreeWidgetValue(type, value) {
+                if (type == 'custom') {
+                    return value.toggled
+                }
+                return value
+            }
+            function fixRGthreeWidgetType(type) {
+                if (type == 'custom') {
+                    return 'toggle'
+                }
+                return type || 'toggle'
+            }
+        },
+        setter: (node, widgetIndex, value) => {
+            if (node.widgets[widgetIndex].type == 'custom') {
+                if (node.widgets[widgetIndex].value.toggled != value) {
+                    node.widgets[widgetIndex].doModeChange();
+                }
+                return true
+            }
         }
     })
     /**
@@ -148,14 +176,16 @@ export default function(sdppp) {
      * 处理 LoadImage 节点
      * 
      */
-    sdppp.widgetable.add('LoadImage', (node) => {
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[0].value,
-                outputType: "IMAGE_PATH",
-                options: node.widgets[0].options
-            }]
+    sdppp.widgetable.add('LoadImage', {
+        formatter: (node) => {
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "IMAGE_PATH",
+                    options: node.widgets[0].options
+                }]
+            }
         }
     })
     /**
@@ -163,54 +193,60 @@ export default function(sdppp) {
      * 处理 LoadImageMask
      * 
      */
-    sdppp.widgetable.add('LoadImageMask', (node) => {
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[0].value,
-                outputType: "MASK_PATH",
-                options: node.widgets[0].options
-            }]
+    sdppp.widgetable.add('LoadImageMask', {
+        formatter: (node) => {
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "MASK_PATH",
+                    options: node.widgets[0].options
+                }]
+            }
         }
     })
 
-    sdppp.widgetable.add("CheckpointLoaderSimple", node=> {
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[0].value,
-                outputType: "combo",
-                options: node.widgets[0].options
-            }]
+    sdppp.widgetable.add("CheckpointLoaderSimple", {
+        formatter: (node) => {
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "combo",
+                    options: node.widgets[0].options
+                }]
+            }
         }
     })
 
     // 替换为Parameter处理
-    sdppp.widgetable.add('ETN_Parameter', (node) => {
-        const outputTypeMap = {
-            'number (integer)': { type: "number", step: 1 },
-            'prompt (positive)': { type: "text", subType: "positive-prompt" },
-            'toggle': { type: "toggle" },
-            // ...其他类型映射
-        };
-        
-        const paramType = node.widgets[1].value;
-        const mappedType = outputTypeMap[paramType] || { type: paramType } || { type: "string" };
-    
-        return {
-            title: node.title,
-            widgets: [{
-                value: node.widgets[2].value, // 主值widget
-                name: node.widgets[0].value,   // 参数名widget
-                outputType: mappedType.type,
-                options: { 
-                    ...node.widgets[2].options,
-                    min: node.widgets[3].value,
-                    max: node.widgets[4].value,
-                    ...mappedType
-                },
-                uiWeight: 12 // 独占整行
-            }]
+    sdppp.widgetable.add('ETN_Parameter', {
+        formatter: (node) => {
+            const outputTypeMap = {
+                'number (integer)': { type: "number", step: 1 },
+                'prompt (positive)': { type: "text", subType: "positive-prompt" },
+                'toggle': { type: "toggle" },
+                // ...其他类型映射
+            };
+
+            const paramType = node.widgets[1].value;
+            const mappedType = outputTypeMap[paramType] || { type: paramType } || { type: "string" };
+
+            return {
+                title: node.title,
+                widgets: [{
+                    value: node.widgets[2].value, // 主值widget
+                    name: node.widgets[0].value,   // 参数名widget
+                    outputType: mappedType.type,
+                    options: {
+                        ...node.widgets[2].options,
+                        min: node.widgets[3].value,
+                        max: node.widgets[4].value,
+                        ...mappedType
+                    },
+                    uiWeight: 12 // 独占整行
+                }]
+            }
         }
     });
 }
