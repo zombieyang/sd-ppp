@@ -437,6 +437,7 @@ def define_comfyui_nodes(sdpppServer):
 
     class SendTextToLayerNode:
         RETURN_TYPES = ("DOCUMENT",)
+        OUTPUT_NODE = True
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
 

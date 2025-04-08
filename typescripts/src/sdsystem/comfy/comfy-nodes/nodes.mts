@@ -56,7 +56,8 @@ export class SendTextToLayerNode extends SDPPPDownloadableNode {
     protected async update() {
         super.update();
         this.node.inputs[0].label = i18n(this.node.inputs[0].name)
-        this.node.outputs[0].label = i18n(this.node.outputs[0].name)
+        this.node.inputs[1].label = i18n(this.node.inputs[1].name)
+        this.node.outputs[0] && (this.node.outputs[0].label = i18n(this.node.outputs[0].name))
     }
 }
 export class GetTextFromLayerNode extends SDPPPDownloadableNode {

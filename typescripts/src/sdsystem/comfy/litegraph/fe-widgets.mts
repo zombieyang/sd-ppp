@@ -58,7 +58,6 @@ export class DocumentWidget extends SDPPPComboWidget {
         const documentWidget = node.addWidget('combo', name, options[0] || '', () => { }, { forceInput: true, values: makeDocumentDataOptions })
         documentWidget.serializeValue = async () => {
             const data = parseDocumentOption(documentWidget.value);
-            console.log('documentWidgetData: ', data);
             if (!data) return '';
             return JSON.stringify({
                 instance_id: data.instance_id,

@@ -138,10 +138,10 @@ def define_comfyui_nodes_legacy(sdppp):
 
     class SendImageToPhotoshopLayerNode:
         RETURN_TYPES = ("DOCUMENT",)
+        OUTPUT_NODE = True
         INPUT_IS_LIST = True
         FUNCTION = "send_image"
         CATEGORY = "SD-PPP"
-        OUTPUT_NODE = True
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
