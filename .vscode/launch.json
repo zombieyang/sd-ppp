@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Photoshop UXP Plugin",
+            "address": "127.0.0.1",
+            "port": 14001,
+            "websocketAddress": "ws://127.0.0.1:14001/socket/cdt/",
+            "request": "attach",
+            "localRoot": "${workspaceFolder}/plugins/photoshop/",
+            "skipFiles": [],
+            "type": "node",
+            "sourceMaps": true,
+            "mapNodeInternals": true,
+            "preLaunchTask": "Update Session ID"
+        },
+    ]
+}

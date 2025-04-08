@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Update Session ID",
+            "type": "shell",
+            "command": "node ${workspaceFolder}/scripts/update-vslaunchconfig-session-id.cjs",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
