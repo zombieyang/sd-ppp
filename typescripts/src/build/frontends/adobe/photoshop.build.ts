@@ -28,7 +28,7 @@ const photoshopPluginConfig = {
             'SDPPPInternal': 'window.SDPPPInternal'
         })
     ],
-    sourcemap: false,
+    sourcemap: (isProduction ? false : 'linked') as any,
     minify: isProduction,
     loader: {
         '.psd': 'binary' as Loader,
