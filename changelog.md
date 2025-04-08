@@ -5,7 +5,8 @@
 4. optimize: Photoshop webview is now a pop dialog
 5. optimize: icon
 6. feature: There is a workflow form interface in Comfy side now. Node's title could be changed there.
-7. reopen most of the source code and Licence updated.
+7. fix: compat with latest rgthree nodes
+8. reopen-source most of the code and Licence updated.
 
 ## [1.7.2] - 2025-03-09
 1. fix: Length aaaaa != length bbbbb bug fix
