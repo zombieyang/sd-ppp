@@ -5,7 +5,8 @@
   "scripts": {
     "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
     "tscheck": "cd typescripts && tsc --noEmit",
-    "build": "NODE_ENV=production node typescripts/src/build/index.build.ts && bash typescripts/build/package-ccx.sh && bash typescripts/build/package-all.sh"
+    "build": "NODE_ENV=production node typescripts/src/build/index.build.ts && bash typescripts/build/package-ccx.sh && bash typescripts/build/package-all.sh",
+    "dev": "NODE_ENV=development node typescripts/src/build/index.build.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
@@ -17,13 +18,16 @@
     "@types/photoshop": "^25.0.4",
     "esbuild": "^0.24.0",
     "javascript-obfuscator": "^4.1.1",
+    "jsonc-parser": "^3.3.1",
     "nodemon": "^2.0.7",
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@tanstack/react-query": "^5.66.11",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "antd": "^5.24.6",
     "buffer": "^6.0.3",
     "chai": "^5.1.2",
     "esbuild-plugin-external-global": "^1.0.1",

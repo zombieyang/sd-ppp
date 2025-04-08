@@ -3,4 +3,5 @@ node_modules
 typescripts/photoshop-internal
 __pycache__
 sd-ppp_all.zip
-.vscode
+.uxprc
+.DS_Store
