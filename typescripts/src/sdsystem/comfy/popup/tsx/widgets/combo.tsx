@@ -1,4 +1,4 @@
-import { AutoComplete } from 'antd';
+import { Select } from 'antd';
 import React from 'react';
 import i18n from '../../../../../common/i18n.mts';
 import { useUIWeightCSS } from './hooks.mts';
@@ -22,16 +22,18 @@ export const ComboWidget: React.FC<DropdownWidgetProps> = ({
         onSelectUpdate(selectedValue, selectedIndex);
     };
     const uiWeightCSS = useUIWeightCSS(uiWeight || 12);
+    console.log(options);
 
     return (
-        <AutoComplete
+        <Select
             value={value}
-            options={options.map(option => ({ value: option }))}
+            options={options.map(option => ({ value: option, label: option }))}
             style={{ ...uiWeightCSS }}
             onSelect={handleSelect}
             placeholder={i18n("select...")}
-            filterOption={(inputValue, option) =>
-                option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+            showSearch
+            filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
         />
     );

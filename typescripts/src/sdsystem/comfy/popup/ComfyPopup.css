@@ -160,7 +160,7 @@
         overflow-x: scroll;
     }
     .workflow-edit-field {
-        width: 320px;
+        max-width: 320px;
     }
 }
 
@@ -180,3 +180,39 @@
     flex-wrap: wrap;
     gap: 5px;
 }
+
+.sdppp-side-icon {
+    width: 64px;
+    height: 64px;
+    mask-image: url("./sd-ppp-static/sdppp-icon.svg");
+    mask-size: 24px;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url("./sd-ppp-static/sdppp-icon.svg");
+    -webkit-mask-size: 24px;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: currentColor;
+}
+.sdppp-side-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    position: relative;
+}
+.sdppp-side-container .sdppp-side-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+.sdppp-side-container .sdppp-side-header button {
+    width: 32px;
+    height: 32px;
+}
+

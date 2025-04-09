@@ -275,27 +275,41 @@ export class WorkflowEditWrap extends React.Component<{
         return <ConfigProvider theme={{
             components: {
                 Input: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
+                    colorBgContainer: 'var(--p-form-field-background)',
+                    colorText: 'var(--p-form-field-color)',
+                    colorBorder: 'var(--p-form-field-border-color)'
                 },
                 Select: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
+                    colorBgContainer: 'var(--p-form-field-background)',
+                    colorText: 'var(--p-form-field-color)',
+                    colorBorder: 'var(--p-form-field-border-color)',
+                    colorBgElevated: 'var(--p-form-field-background)',
+                    colorTextDescription: 'var(--p-form-field-color)',
+                    controlItemBgActive: 'var(--p-form-field-background)',
+                    controlItemBgHover: 'var(--p-form-field-border-color)'
                 },
                 Checkbox: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
                 },
                 Radio: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
                 },
                 Slider: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
                 },
                 Switch: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
+                    colorBgContainer: 'var(--p-form-field-background)',
+                    colorText: 'var(--p-form-field-color)'
                 },
                 InputNumber: {
-                    fontSize: fontSize
+                    fontSize: fontSize,
+                    colorBgContainer: 'var(--p-form-field-background)',
+                    colorText: 'var(--p-form-field-color)',
+                    colorBorder: 'var(--p-form-field-border-color)'
                 }
-
             }
         }}>
             <WorkflowEdit {...editProps} />

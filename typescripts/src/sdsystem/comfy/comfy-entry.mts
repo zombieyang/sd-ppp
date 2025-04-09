@@ -90,7 +90,7 @@ async function _init(app: any, api: any, $el: any) {
 		const form = findAvailableNodeInGraph(app.graph);
 		pageStore.setCurrentForm(form);
 		const serializedForm = JSON.stringify(form);
-		setInterval(() => {
+		setTimeout(() => {
 			const nowForm = findAvailableNodeInGraph(app.graph);
 			if (JSON.stringify(nowForm) !== serializedForm) {
 				pageStore.setCurrentForm(nowForm);
