@@ -185,13 +185,9 @@
     width: 64px;
     height: 64px;
     mask-image: url("./sd-ppp-static/sdppp-icon.svg");
-    mask-size: 24px;
+    mask-size: 36px;
     mask-position: center;
     mask-repeat: no-repeat;
-    -webkit-mask-image: url("./sd-ppp-static/sdppp-icon.svg");
-    -webkit-mask-size: 24px;
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
     background-color: currentColor;
 }
 .sdppp-side-container {
