@@ -22,7 +22,6 @@ export const ComboWidget: React.FC<DropdownWidgetProps> = ({
         onSelectUpdate(selectedValue, selectedIndex);
     };
     const uiWeightCSS = useUIWeightCSS(uiWeight || 12);
-    console.log(options);
 
     return (
         <Select

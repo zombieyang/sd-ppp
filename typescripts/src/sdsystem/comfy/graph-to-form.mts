@@ -51,7 +51,8 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
     return graph?.nodes
         .map((node: any) => {
             if (node.mode != 0) return; // muted or by passed
-            if (!node.title || node.title.startsWith(".")) return; // hidden
+            const title = getTitle(node);
+            if (!title || title.startsWith(".")) return; // hidden
             if (!node.widgets || node.widgets.length == 0) return; // no widgets
 
             const converter = customNodeConvertersByWildcard.find(([wildcard]) => {
@@ -68,7 +69,7 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
                 } catch (e: any) {
                     return {
                         id: node.id,
-                        title: node.title,
+                        title: title,
                         uiWeightSum: 12,
                         widgets: [{
                             outputType: 'error',
@@ -80,11 +81,10 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
 
             // generic node 
             //only use the nodes starts with #
-            if (!node.title.startsWith("#")) {
+            if (!title.startsWith("#")) {
                 return null;
             }
 
-            let title = node.title;
             let widgets = node.widgets;
             return {
                 id: node.id,
@@ -100,7 +100,11 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
         })
         .filter(Boolean)
         .sort((a: SDPPPGraphForm, b: SDPPPGraphForm) => {
-            return a.title.localeCompare(b.title);
+            let titleA = getTitle(a);
+            let titleB = getTitle(b);
+            titleA = titleA.startsWith("#") ? titleA.slice(1).trim() : titleA.trim();
+            titleB = titleB.startsWith("#") ? titleB.slice(1).trim() : titleB.trim();
+            return titleA.localeCompare(titleB);
         });
 }
 
@@ -115,3 +119,21 @@ function wildcardMatch(pattern: string, text: string): boolean {
     const regex = new RegExp(`^${regexPattern}$`);
     return regex.test(text);
 }
+
+/**
+ * get the title of the node, with priority to avoid conflicts with the hidden property sdppp_widgetable_title
+ * 获取节点的标题, 优先用于规避冲突的隐藏属性sdppp_widgetable_title
+ * 
+ * @param {*} node 
+ * @returns 
+ */
+function getTitle(node: any, defaultTitle: string = '') {
+    let retTitle = defaultTitle || node.title;
+    if (node.setProperty && (retTitle.startsWith("#") || retTitle.startsWith("."))) {
+        node.setProperty('sdppp_widgetable_title', retTitle);
+    } else {
+        retTitle = node.properties?.['sdppp_widgetable_title'] || retTitle;
+    }
+    return retTitle;
+}
+sdpppX.getNodeTitle = getTitle;

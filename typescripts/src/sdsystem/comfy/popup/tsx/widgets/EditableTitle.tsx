@@ -11,6 +11,10 @@ export function EditableTitle({ title, onTitleChange }: EditableTitleProps) {
     const [editing, setEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title);
 
+    useEffect(() => {
+        setEditedTitle(title);
+    }, [title]);
+
     const handleClick = () => {
         setEditing(true);
     };

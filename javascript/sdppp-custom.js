@@ -39,7 +39,7 @@ export default function (sdppp) {
     sdppp.widgetable.add('SDPPP Get Document', {
         formatter: (node) => {
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[0].value,
                     outputType: "PS_DOCUMENT",
@@ -60,13 +60,13 @@ export default function (sdppp) {
     sdppp.widgetable.add('SDPPP Get Layer By ID', {
         formatter: (node) => {
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[0].value,
                     outputType: "PS_LAYER",
                     options: {
                         values: node.widgets[0].options.values,
-                        documentNodeID: sdppp.findDocumentNodeRecursive(node)?.id || 0
+                        documentNodeID: sdpppX.findDocumentNodeRecursive(node)?.id || 0
                     }
                 }]
             }
@@ -87,7 +87,7 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('PrimitiveNode', {
         formatter: (node) => {
-            let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : node.title;
+            let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : getTitle(node);
             if (!node.widgets || node.widgets.length == 0) {
                 return null;
             }
@@ -130,7 +130,7 @@ export default function (sdppp) {
         formatter: (node) => {
             if (node.type.indexOf('Group') != -1) {
                 return {
-                    title: node.title,
+                    title: getTitle(node),
                     widgets: node.widgets.map((widget) => ({
                         value: fixRGthreeWidgetValue(widget.type, widget.value),
                         name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
@@ -141,7 +141,7 @@ export default function (sdppp) {
                 }
             }
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: node.widgets.map((widget) => ({
                     value: fixRGthreeWidgetValue(widget.type, widget.value),
                     name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
@@ -179,7 +179,7 @@ export default function (sdppp) {
     sdppp.widgetable.add('LoadImage', {
         formatter: (node) => {
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[0].value,
                     outputType: "IMAGE_PATH",
@@ -196,7 +196,7 @@ export default function (sdppp) {
     sdppp.widgetable.add('LoadImageMask', {
         formatter: (node) => {
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[0].value,
                     outputType: "MASK_PATH",
@@ -209,7 +209,7 @@ export default function (sdppp) {
     sdppp.widgetable.add("CheckpointLoaderSimple", {
         formatter: (node) => {
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[0].value,
                     outputType: "combo",
@@ -233,7 +233,7 @@ export default function (sdppp) {
             const mappedType = outputTypeMap[paramType] || { type: paramType } || { type: "string" };
 
             return {
-                title: node.title,
+                title: getTitle(node),
                 widgets: [{
                     value: node.widgets[2].value, // 主值widget
                     name: node.widgets[0].value,   // 参数名widget
@@ -260,7 +260,7 @@ export default function (sdppp) {
  * @returns 
  */
 function nameByConnectedOutputOrTitle(node) {
-    return node.outputs?.[0].widget?.name || getTitle(node);
+    return sdpppX.getNodeTitle(node, node.outputs?.[0].widget?.name);
 }
 /**
  * get the title of the node, with priority to avoid conflicts with the hidden property sdppp_widgetable_title
@@ -270,5 +270,5 @@ function nameByConnectedOutputOrTitle(node) {
  * @returns 
  */
 function getTitle(node) {
-    return node.getProperty('sdppp_widgetable_title') || node.title;
+    return sdpppX.getNodeTitle(node);
 }
