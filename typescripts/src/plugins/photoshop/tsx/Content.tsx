@@ -19,11 +19,14 @@ export function Content({
     const [editorMode, setEditorMode] = useState(false);
     const [initAfter8s, setInitAfter8s] = useState(false);
     useEffect(() => {
-        if (connectState !== 'connected') return;
-        const timeout = setTimeout(() => {
-            setInitAfter8s(true);
-        }, 8000);
-        return () => clearTimeout(timeout);
+        if (connectState === 'connected') {
+            const timeout = setTimeout(() => {
+                setInitAfter8s(true);
+            }, 8000);
+            return () => clearTimeout(timeout);
+        } else {
+            setInitAfter8s(false);
+        }
     }, [connectState]);
 
     const {
