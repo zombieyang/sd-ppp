@@ -34,6 +34,8 @@ export class PrimitiveStringWidget extends BaseFormWidget<PrimitiveStringWidgetP
         }
     }, 16);
 
+    private debounceTimeout: NodeJS.Timeout | null = null;
+    
     state = {
         hiddenDivHeight: 0,
         editing: false,
@@ -41,12 +43,22 @@ export class PrimitiveStringWidget extends BaseFormWidget<PrimitiveStringWidgetP
     };
 
     componentWillUnmount(): void {
-        clearInterval(this.heightChecker)
+        clearInterval(this.heightChecker);
+        if (this.debounceTimeout) {
+            clearTimeout(this.debounceTimeout);
+        }
     }
 
     onInput = (event: Event) => {
         const newValue = (event.target as any).value;
-        this.props.onValueChange(newValue);
+        
+        if (this.debounceTimeout) {
+            clearTimeout(this.debounceTimeout);
+        }
+        
+        this.debounceTimeout = setTimeout(() => {
+            this.props.onValueChange(newValue);
+        }, 300);
     }
 
     onFocus = () => {

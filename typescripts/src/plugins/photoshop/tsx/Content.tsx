@@ -5,7 +5,6 @@ import WorkflowList from "./WorkflowList.js";
 import { useEffect, useState } from "react";
 import { WorkflowEditWrap } from "./WorkflowEditWrap.js";
 import type { AddressBarType, WorkflowEditPhotoshopType } from "./SDPPPInternalBridge.js";
-import { connect } from "socket.io-client";
 
 export function Content({
     connectState,
@@ -33,8 +32,6 @@ export function Content({
         workflowAgentSID,
         webviewAgentSID,
         lastConnectErrorMessage,
-
-        toggleWebviewDialog,
 
     } = useSDPPPContext();
 
