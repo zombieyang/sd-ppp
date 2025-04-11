@@ -42,6 +42,11 @@ export function Content({
             setEditorMode(false);
         }
     }, [workflowAgentSID, webviewAgentSID]);
+    useEffect(() => {
+        if (connectState === 'disconnected') {
+            setEditorMode(false);
+        }
+    }, [connectState]);
     return (
         <>
             <div className="connect-box">
