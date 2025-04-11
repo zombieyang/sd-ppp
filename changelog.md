@@ -4,9 +4,10 @@
 3. optimize: single number Primitives will display as single line
 4. optimize: Photoshop webview is now a pop dialog
 5. optimize: icon
-6. feature: There is a workflow form interface in Comfy side now. Node's title could be changed there.
-7. fix: compat with latest rgthree nodes
-8. reopen-source most of the code and Licence updated.
+6. optimize: node title starts with `#` or `.` will have a stronger storage against AIGODLIKE's title recovery.
+7. feature: There is a workflow form interface in Comfy side now. Node's title could be changed there.
+8. fix: compat with latest rgthree nodes
+9. reopen-source most of the code and Licence updated.
 
 ## [1.7.2] - 2025-03-09
 1. fix: Length aaaaa != length bbbbb bug fix
