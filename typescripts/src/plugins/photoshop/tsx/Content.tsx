@@ -5,6 +5,7 @@ import WorkflowList from "./WorkflowList.js";
 import { useEffect, useState } from "react";
 import { WorkflowEditWrap } from "./WorkflowEditWrap.js";
 import type { AddressBarType, WorkflowEditPhotoshopType } from "./SDPPPInternalBridge.js";
+import { connect } from "socket.io-client";
 
 export function Content({
     connectState,
@@ -16,13 +17,14 @@ export function Content({
     WorkflowEditPhotoshop: WorkflowEditPhotoshopType,
 }) {
     const [editorMode, setEditorMode] = useState(false);
-    const [initAfter4s, setInitAfter4s] = useState(false);
+    const [initAfter8s, setInitAfter8s] = useState(false);
     useEffect(() => {
+        if (connectState !== 'connected') return;
         const timeout = setTimeout(() => {
-            setInitAfter4s(true);
-        }, 4000);
+            setInitAfter8s(true);
+        }, 8000);
         return () => clearTimeout(timeout);
-    }, []);
+    }, [connectState]);
 
     const {
         workflowAgentSID,
@@ -74,7 +76,7 @@ export function Content({
                     <div className="panel-body">
                         <div className="editor-card" style={editorCardShowingIndex === 0 ? {} : { display: 'none' }}>
                             <div className="comfy-list-wrap">
-                                {initAfter4s && !webviewAgentSID && <sp-label class="error-label">{i18n('hidden webview load failed: {0}, please select a browser page to continue', i18n('timeout'))}</sp-label>}
+                                {initAfter8s && !webviewAgentSID && <sp-label class="error-label">{i18n('hidden webview load failed: {0}, please select a browser page to continue', i18n('timeout'))}</sp-label>}
                                 <WebPageList />
                                 {workflowAgentSID && <WorkflowList setEditorMode={setEditorMode} />}
                             </div>
