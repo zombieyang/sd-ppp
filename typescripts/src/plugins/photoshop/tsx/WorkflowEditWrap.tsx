@@ -13,6 +13,7 @@ import PlayMultiIcon from "../../common/tsx/icons/PlayMultiIcon"
 import WebEditIcon from "../../common/tsx/icons/WebEditIcon"
 import CrossIcon from "../../common/tsx/icons/CrossIcon"
 import StopIcon from "../../common/tsx/icons/StopIcon"
+import CancelIcon from "../../common/tsx/icons/CancelIcon"
 
 // 状态显示组件
 const WorkflowStatus = () => {
@@ -77,6 +78,18 @@ const StopButton = () => {
 
     return <sp-action-button onClick={onInterrupt}>
         <StopIcon />
+    </sp-action-button>
+}
+const StopAndCancelButton = () => {
+    const { interrupt } = useSDPPPComfyCaller();
+    const { clearQueue } = useSDPPPComfyCaller();
+    const onClearAndInterrupt = useCallback(async () => {
+        await clearQueue();
+        await interrupt();
+    }, [clearQueue, interrupt]);
+
+    return <sp-action-button onClick={onClearAndInterrupt}>
+        <CancelIcon />
     </sp-action-button>
 }
 
@@ -188,7 +201,7 @@ export function WorkflowEditWrap({
                                     <ClearButton />
                                 </div>
                                 <div className="workflow-edit-button-line-right">
-                                    <StopButton />
+                                    <StopAndCancelButton />
                                     <AutoRunButtons />
                                     <PlayMultiButtons />
                                 </div>
