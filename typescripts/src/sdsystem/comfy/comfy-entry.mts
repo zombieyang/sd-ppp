@@ -72,7 +72,7 @@ async function _init(app: any, api: any, $el: any) {
 					layer_identifies: ev.detail.output.images.map(() => SpeicialIDManager.getSpecialLayerForSend()[0]),
 					boundaries: ev.detail.output.images.map(() => ''),
 					image_urls: ev.detail.output.images.map((image: any) => {
-						return location.origin + '/api/view?type=temp&filename=' + image.filename
+						return location.origin + '/api/view?type=' + image.type + '&filename=' + image.filename
 					}),
 				})
 			}
