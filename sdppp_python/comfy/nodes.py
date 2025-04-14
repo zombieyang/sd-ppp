@@ -508,12 +508,11 @@ def define_comfyui_nodes(sdpppServer):
         def action(self, layer_or_group, unique_id, prompt, document = None, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
 
-            document = json.loads(document)
+            document = layer_or_group[0]['document']
 
             res_text = []
             for i, item_layer in enumerate(layer_or_group):
-                if linked_style:
-                    item_layer = item_layer['layer_identify']
+                item_layer = item_layer['layer_identify']
 
                 text = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_text(

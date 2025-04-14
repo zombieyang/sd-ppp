@@ -216,10 +216,16 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
         }
         private async open(params: WorkflowCalleeActions['open']['params']) {
             const { workflow_path } = params;
-            if (workflow_path.startsWith('sdppp://')) {
-                this.openSDPPPWorkflow(params)
-            } else {
-                this.openComfyWorkflow(params)
+            try {
+                if (workflow_path.startsWith('sdppp://')) {
+                    this.openSDPPPWorkflow(params)
+                } else {
+                    this.openComfyWorkflow(params)
+                }
+                pageStore.setLastOpenedWorkflow(workflow_path)
+            } catch (error) {
+                pageStore.setLastOpenedWorkflow('')
+                throw error
             }
         }
         private async openSDPPPWorkflow(params: WorkflowCalleeActions['open']['params']) {

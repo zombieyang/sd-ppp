@@ -170,6 +170,8 @@ def define_comfyui_nodes_legacy(sdppp):
             sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
+            sdppp_arg = kwargs['sdppp']
+            sdppp_arg_item = json.loads(sdppp_get_prompt_item_from_list(sdppp_arg, 0))
 
             # dont check here, some python cannot read the data in this thread.
             # if document['instance_id'] not in sdppp.ppp_instances:
@@ -211,7 +213,8 @@ def define_comfyui_nodes_legacy(sdppp):
                 document_identify=document['identify'], 
                 image_blobs=[p['image_blob'] for p in params],  
                 layer_identifies=[p['layer_identify'] for p in params], 
-                boundaries=[p['boundary'] for p in params]
+                boundaries=[p['boundary'] for p in params],
+                new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ), True)
 
             return (document,)

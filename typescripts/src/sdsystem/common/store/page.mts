@@ -12,6 +12,7 @@ export interface PageStoreData {
     executingNodeTitle: string
 
     currentForm: SDPPPGraphForm[]
+    lastOpenedWorkflow: string
 
     hasPSDNodes: boolean
     maxImageWH: number
@@ -23,6 +24,7 @@ export class PageStore extends MainStore<PageStoreData> {
     constructor(data?: PageStoreData, version?: number) {
         super(data || {
             title: '',
+            webviewFromSid: location.search.match(/webview_fromsid=([^&]+)/)?.[1] || '',
 
             progress: 0,
             lastError: '',
@@ -30,9 +32,9 @@ export class PageStore extends MainStore<PageStoreData> {
             queueSize: 0,
             executingNodeTitle: "",
 
-            webviewFromSid: location.search.match(/webview_fromsid=([^&]+)/)?.[1] || '',
-
             currentForm: [],
+            lastOpenedWorkflow: '',
+
             hasPSDNodes: false,
             maxImageWH: 60606,
             comfyUserToken: ''
@@ -82,5 +84,10 @@ export class PageStore extends MainStore<PageStoreData> {
     @StoreMutation
     setComfyUserToken(comfyUserToken: string) {
         this._data.comfyUserToken = comfyUserToken;
+    }
+    
+    @StoreMutation
+    setLastOpenedWorkflow(lastOpenedWorkflow: string) {
+        this._data.lastOpenedWorkflow = lastOpenedWorkflow;
     }
 }

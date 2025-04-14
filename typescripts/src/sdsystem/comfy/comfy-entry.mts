@@ -77,6 +77,7 @@ async function _init(app: any, api: any, $el: any) {
 					image_urls: ev.detail.output.images.map((image: any) => {
 						return location.origin + '/api/view?type=' + image.type + '&filename=' + image.filename
 					}),
+					new_layer_name: pageStore.data.lastOpenedWorkflow
 				})
 			}
 		}

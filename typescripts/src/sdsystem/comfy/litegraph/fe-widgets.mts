@@ -58,7 +58,10 @@ export class DocumentWidget extends SDPPPComboWidget {
         const documentWidget = node.addWidget('combo', name, options[0] || '', () => { }, { forceInput: true, values: makeDocumentDataOptions })
         documentWidget.serializeValue = async () => {
             const data = parseDocumentOption(documentWidget.value);
-            if (!data) return '';
+            if (!data) return JSON.stringify({
+                instance_id: i18n('document {0} not found', documentWidget.value),
+                identify: ''
+            });
             return JSON.stringify({
                 instance_id: data.instance_id,
                 identify: data.identify
@@ -226,7 +229,8 @@ export class DownloadWidget extends SDPPPWidget {
             ];
             widget.serializeValue = async () => {
                 const ret: any = {
-                    ps_maxGetImageWH: pageStore.data.maxImageWH
+                    ps_maxGetImageWH: pageStore.data.maxImageWH,
+                    lastOpenedWorkflow: pageStore.data.lastOpenedWorkflow
                 }
                 const documentNode = findDocumentNodeRecursive(node);
                 if (documentNode?.widgets[0]) {

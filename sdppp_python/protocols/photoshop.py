@@ -31,7 +31,7 @@ class ProtocolPhotoshop:
         return result
     
     @classmethod
-    async def send_images(cls, instance_id, document_identify, layer_identifies, boundaries, image_urls=[], image_blobs=[]):
+    async def send_images(cls, instance_id, document_identify, layer_identifies, boundaries, image_urls=[], image_blobs=[], new_layer_name=""):
         ppp_instance = cls.sdpppServer.ppp_instances[instance_id]
         result = await protocol_call(ppp_instance, 'B_photoshop', data={
             'action': 'sendImages',
@@ -40,7 +40,8 @@ class ProtocolPhotoshop:
                 'layer_identifies': layer_identifies,
                 'boundaries': boundaries,
                 'image_urls': image_urls,
-                'image_blobs': image_blobs
+                'image_blobs': image_blobs,
+                'new_layer_name': new_layer_name
             }
         })
         return result
