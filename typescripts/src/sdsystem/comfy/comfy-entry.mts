@@ -40,9 +40,13 @@ async function _init(app: any, api: any, $el: any) {
 		if (node)
 			pageStore.setExecutingNodeTitle(node.title);
 	})
-	api.addEventListener("execution_success", () => {
+	api.addEventListener("execution_success", (ev: any) => {
 		pageStore.setProgress(0);
 		pageStore.setExecutingNodeTitle('');
+		if (PreviewSender.get(ev.detail.prompt_id)) {
+			PreviewSender.delete(ev.detail.prompt_id);
+
+		}
 	});
 	api.addEventListener("execution_interrupted", () => {
 		pageStore.setProgress(0);
@@ -53,11 +57,10 @@ async function _init(app: any, api: any, $el: any) {
 	})
 	const promptsFromSDPPPBackend = new Map<string, string>();
 	api.addEventListener("executed", (ev: any) => {
-		if (ev.detail.output) {
+		if (ev.detail.output && Array.isArray(ev.detail.output.images) && ev.detail.output.images.length > 0) {
 			let fromSID = null;
 			if (PreviewSender.get(ev.detail.prompt_id)) {
 				fromSID = PreviewSender.get(ev.detail.prompt_id);
-				PreviewSender.delete(ev.detail.prompt_id);
 
 			} else {
 				// consider if it neccesary
