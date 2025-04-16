@@ -5,7 +5,7 @@
 
 ![Image](https://github.com/user-attachments/assets/ab2168d9-ce7c-40d0-9f5a-8173937455ac)
 
-## Simplify ComfyUI to form like apps.
+## Simplify ComfyUI to WebUI liked interface.
 
 ![image](https://github.com/user-attachments/assets/cf0b399c-5827-4e7a-9a06-8f80e42021fd)
 [SDPPP rules to make nodes become WebUI like interface.](https://github.com/zombieyang/sd-ppp/wiki/SDPPP-rules-to-make-nodes-become-APP-like-UI.)
