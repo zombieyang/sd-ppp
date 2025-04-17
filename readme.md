@@ -1,6 +1,8 @@
 # SD-PPP: Simplify ComfyUI and Connect with photoshop.
 
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) | ![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) 
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) 
+
+![GitHub Repo stars](https://img.shields.io/github/stars/zombieyang/sd-ppp) | [![Kofi](https://img.shields.io/badge/Kofi-F16061.svg?logo=ko-fi&logoColor=white)](https://ko-fi.com/zombieyang)
 
 
 ![Image](https://github.com/user-attachments/assets/ab2168d9-ce7c-40d0-9f5a-8173937455ac)
