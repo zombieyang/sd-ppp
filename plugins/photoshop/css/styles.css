@@ -135,6 +135,43 @@ sp-progressbar {
     margin-left: 5px;
 }
 
+.cloud-promote-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.cloud-promote-bar-left {
+    color: var(--uxp-host-text-color-secondary);
+}
+
+.cloud-promote-bar-right {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.cloud-promote-bar-right span {
+    color: var(--uxp-host-text-color-secondary);
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--uxp-host-border-color);
+    border-radius: 4px;
+    position: relative;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.cloud-promote-bar-right span img {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
 .container {
     flex-direction: column;
     display: flex;

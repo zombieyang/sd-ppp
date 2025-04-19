@@ -88,6 +88,7 @@ declare module "SDPPPInternal" {
             workflowEditor: WorkflowEditPhotoshopType
         ) => React.ReactNode
     })
+    export function Promote(): JSX.Element;
 
     export type AddressBarType = () => JSX.Element;
     export type WorkflowEditPhotoshopType = () => JSX.Element;

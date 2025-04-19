@@ -1,4 +1,4 @@
-import { useSDPPPContext } from "./SDPPPInternalBridge.js";
+import { useSDPPPContext, Promote } from "./SDPPPInternalBridge.js";
 import i18n, { isValidI18nKey } from "../../../common/i18n.mjs";
 import WebPageList from "./WebPageList.js";
 import WorkflowList from "./WorkflowList.js";
@@ -73,6 +73,8 @@ export function Content({
                     </div>
                 ) : ''
             }
+
+            <Promote />
 
             <sp-divider size="small"></sp-divider>
 
