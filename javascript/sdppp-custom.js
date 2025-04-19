@@ -136,7 +136,7 @@ export default function (sdppp) {
                         name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
                         outputType: fixRGthreeWidgetType(widget.type),
                         options: widget.options,
-                        uiWeight: 3
+                        uiWeight: 4
                     }))
                 }
             }
