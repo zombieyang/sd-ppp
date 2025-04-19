@@ -196,6 +196,7 @@
     height: 100%;
     flex-direction: column;
     position: relative;
+    padding-top: 32px;
 }
 .sdppp-side-container .sdppp-side-header {
     position: absolute;
