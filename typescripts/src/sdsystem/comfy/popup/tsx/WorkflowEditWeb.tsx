@@ -292,6 +292,7 @@ export class WorkflowEditWrap extends React.Component<{
                 },
                 Checkbox: {
                     fontSize: fontSize,
+                    colorText: 'var(--p-form-field-color)',
                 },
                 Radio: {
                     fontSize: fontSize,
