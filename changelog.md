@@ -1,8 +1,10 @@
 ## [1.7.5] - 2025-04-19
-1. fix: rgthree group node was not available in webview mode.
-2. fix: checkbox color in comfy side.
-3. optimize: style optimizes in comfy side.
-4. optimize: add some cloud service recommendations.
+* fix: SendImage Node result cannot send back to PS plugin by @fichas in https://github.com/zombieyang/sd-ppp/pull/143
+* Fix: The image results of some workflows cannot be transmitted to Photoshop by @fichas in https://github.com/zombieyang/sd-ppp/pull/144
+* fix: rgthree group node was not available in webview mode.
+* fix: checkbox color in comfy side.
+* optimize: style optimizes in comfy side.
+* optimize: add some cloud service recommendations.
 
 ## [1.7.4] - 2025-04-04
 1. optimize: change WebSocket timeout to 10 mins
