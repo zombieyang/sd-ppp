@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "./**/*.ts",
+    "./**/*.mts",
+    "./**/*.tsx",
+  ],
+  "exclude": [
+    "esbuild.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "*"
+      ]
+    },
+    "typeRoots": [
+      "../../node_modules/@types"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { Identify } from "../../plugins/common/store/photoshop.mjs";
+import { Identify } from "../../store/photoshop.mts";
 
 
 export function makeLayerIdentify(id: number, name: string, level = 0): Identify {

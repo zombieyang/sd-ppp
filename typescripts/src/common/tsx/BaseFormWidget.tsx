@@ -1,7 +1,7 @@
-import React from "react";
-import { computeUIWeightCSS } from "./util.mts";
+import { Component } from "react";
+import { computeUIWeightCSS } from "./util";
 
-export class BaseFormWidget<T, S> extends React.Component<{
+export class BaseFormWidget<T, S> extends Component<{
     uiWeight: number
 } & T, S> {
     protected computeUIWeightCSS(uiWeight: number) {

@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { findAvailableNodeInGraph } from "../../../src/sdsystem/comfy/graph-to-form.mjs";
+import { findAvailableNodeInGraph } from "../../../modules/comfy/src/graph-to-form.mjs";
 
 declare const app: any;
 describe("ComfyUI", () => {

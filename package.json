@@ -5,30 +5,33 @@
   "scripts": {
     "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
     "tscheck": "cd typescripts && tsc --noEmit",
-    "build": "NODE_ENV=production node typescripts/src/build/index.build.ts && bash typescripts/build/package-ccx.sh && bash typescripts/build/package-all.sh",
-    "dev": "NODE_ENV=development node typescripts/src/build/index.build.ts"
+    "build": "NODE_ENV=production node typescripts/_build/esbuild.ts && bash typescripts/_build/package-ccx.sh && bash typescripts/_build/package-all.sh",
+    "dev": "NODE_ENV=development node typescripts/_build/esbuild.ts --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/plugin-syntax-class-properties": "^7.10.4",
     "@babel/plugin-transform-react-jsx": "^7.8.3",
+    "@tanstack/react-query": "^5.66.11",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
     "@types/photoshop": "^25.0.4",
-    "esbuild": "^0.24.0",
-    "javascript-obfuscator": "^4.1.1",
-    "nodemon": "^2.0.7",
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "@tanstack/react-query": "^5.66.11",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@types/ws": "^8.18.1",
     "buffer": "^6.0.3",
-    "chai": "^5.1.2",
+    "esbuild": "^0.25.2",
     "esbuild-plugin-external-global": "^1.0.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
+    "glob": "^11.0.1",
+    "javascript-obfuscator": "^4.1.1",
+    "typescript": "^5.5.4",
+    "ws": "^8.18.1"
+  },
+  "dependencies": {
+    "antd": "^5.24.7",
+    "chai": "^5.1.2",
     "fast-json-patch": "^3.1.1",
     "jimp": "^1.6.0",
     "mocha": "^11.0.1",
