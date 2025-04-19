@@ -1,12 +1,22 @@
+#sdppp-popup-root {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 16px;
+    background: var(--bg-color);
+    align-items: stretch;
+    justify-content: stretch;
+} 
 .sdppp-menu-container {
-    width: 70vw;
-    height: 65vh;
     box-sizing: content-box;
     overflow-y: hidden;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     min-width: 0;
+    flex: 1;
 }
 .sdppp-menu-header {
     display: flex;
@@ -16,15 +26,14 @@
     padding-bottom: 5px;
     border-bottom: 2px solid rgba(127, 127, 127, .4);
     align-items: center;
+    justify-content: space-between;
 }   
-.sdppp-menu-header span {
-    flex: 1;
-    text-align: right;
-}
 
 .sdppp-menu-header button {
     text-align: center;
     background: var(--comfy-input-bg);
+    border: none;
+    box-shadow: none;
 }
 .sdppp-menu-header button:hover {
     background-color: var(--border-color);

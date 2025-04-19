@@ -31,31 +31,31 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
     const currentValue = +value.toFixed(3);
     
     // 检查步长范围是否过大
-    const isStepRangeTooBig = ((inputMax - inputMin) / inputStep) > 1000;
+    // const isStepRangeTooBig = ((inputMax - inputMin) / inputStep) > 1000;
 
-    if (!isStepRangeTooBig && uiWeight >= 1) {
-        return (
-            <Flex style={{ width: '100%', ...uiWeightCSS }}>
-                <Slider
-                    style={{ flex: 1 }}
-                    min={inputMin}
-                    max={inputMax}
-                    step={inputStep}
-                    value={currentValue}
-                    onChange={handleValueChange}
-                />
-                <InputNumber
-                    style={{ width: 80 }}
-                    min={inputMin}
-                    max={inputMax}
-                    step={inputStep}
-                    value={currentValue}
-                    onChange={handleValueChange}
-                    controls={false}
-                />
-            </Flex>
-        );
-    }
+    // if (!isStepRangeTooBig && uiWeight >= 1) {
+    //     return (
+    //         <Flex style={{ width: '100%', ...uiWeightCSS }}>
+    //             <Slider
+    //                 style={{ flex: 1 }}
+    //                 min={inputMin}
+    //                 max={inputMax}
+    //                 step={inputStep}
+    //                 value={currentValue}
+    //                 onChange={handleValueChange}
+    //             />
+    //             <InputNumber
+    //                 style={{ width: 80 }}
+    //                 min={inputMin}
+    //                 max={inputMax}
+    //                 step={inputStep}
+    //                 value={currentValue}
+    //                 onChange={handleValueChange}
+    //                 controls={false}
+    //             />
+    //         </Flex>
+    //     );
+    // }
 
     return (
         <InputNumber

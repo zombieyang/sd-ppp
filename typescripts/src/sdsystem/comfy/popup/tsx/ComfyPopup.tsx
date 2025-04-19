@@ -1,16 +1,44 @@
 // @ts-ignore
 import cssText from "../ComfyPopup.css"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Settings from "./Settings";
 import { WorkflowEditWrap } from "./WorkflowEditWeb";
 import { ConfigProvider } from 'antd';
 import i18n from "../../../../common/i18n.mts";
+import { CloseOutlined } from "@ant-design/icons";
 var docStyle = document.createElement('style');
 docStyle.innerHTML = cssText;
 document.head.appendChild(docStyle);
 
-export default function ComfyPopup() {
+export default function ComfyPopup({ onClose }: { onClose: () => void }) {
     const [tab, setTab] = useState('1');
+    const [sidebarWidth, setSidebarWidth] = useState(0);
+    
+    useEffect(() => {
+        const $canvas = document.getElementById('graph-canvas');
+        let frameCount = 0;
+        let animationFrameId: number;
+        
+        const updateDimensions = () => {
+            frameCount++;
+            if (frameCount % 3 === 0 && $canvas) {
+                const sideBar = document.querySelector('.side-bar-panel') as HTMLElement;
+                if (sideBar && sideBar.style.display !== 'none') {
+                    setSidebarWidth(sideBar.clientWidth);
+                } else {
+                    setSidebarWidth(0);
+                }
+            }
+            animationFrameId = requestAnimationFrame(updateDimensions);
+        };
+        
+        animationFrameId = requestAnimationFrame(updateDimensions);
+        
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, []);
+
     return (
         <ConfigProvider
             theme={{
@@ -25,11 +53,16 @@ export default function ComfyPopup() {
                 }
             }}
         >
-            <div className="sdppp-menu-container">
+            <div className="sdppp-menu-container" style={{ 
+                paddingLeft: sidebarWidth
+            }}>
                 <div className="sdppp-menu-header">
-                    <button onClick={() => setTab('1')} className={tab === '1' ? 'active' : ''}>{i18n("Simplify Workflow")}</button>
-                    <button onClick={() => setTab('2')} className={tab === '2' ? 'active' : ''}>{i18n("Photoshop")}</button>
+                    <div className="sdppp-menu-header-left">
+                        <button onClick={() => setTab('1')} className={tab === '1' ? 'active' : ''}>{i18n("Simplify Workflow")}</button>
+                        <button onClick={() => setTab('2')} className={tab === '2' ? 'active' : ''}>{i18n("Photoshop")}</button>
+                    </div>
                     <span>Powered by SDPPP</span>
+                    <button className="sdppp-menu-close-button" onClick={onClose}><CloseOutlined /></button>
                 </div>
                 <div className="sdppp-menu-content">
                     <div className="sdppp-menu-workflow-edit-wrap" style={{ display: tab === '1' ? 'block' : 'none' }}>
