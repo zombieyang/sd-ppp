@@ -1,3 +1,9 @@
+## [1.7.5] - 2025-04-19
+1. fix: rgthree group node was not available in webview mode.
+2. fix: checkbox color in comfy side.
+3. optimize: style optimizes in comfy side.
+4. optimize: add some cloud service recommendations.
+
 ## [1.7.4] - 2025-04-04
 1. optimize: change WebSocket timeout to 10 mins
 2. optimize: live painting will be triggered when widget values changed
