@@ -38,10 +38,10 @@ export function Content({
     const editorCardShowingIndex = editorMode ? 1 : 0;
 
     useEffect(() => {
-        if (!workflowAgentSID && !webviewAgentSID) {
+        if (!workflowAgentSID) {
             setEditorMode(false);
         }
-    }, [workflowAgentSID, webviewAgentSID]);
+    }, [workflowAgentSID]);
     useEffect(() => {
         if (connectState === 'disconnected') {
             setEditorMode(false);

@@ -4,7 +4,7 @@ import { WorkflowCallerActions } from "../../../../src/socket/WorkflowCallerInte
 import { pageStore } from "../../photoshopModels.mts";
 import { api, app } from "../comfy-globals.mts";
 import { blankGraph } from "../defaultGraph.mts";
-import { findAvailableNodeInGraph, setWidgetValue } from "../graph-to-form.mts";
+import { makeWidgetTableStructure, setWidgetValue } from "../graph-to-form.mts";
 import PreviewSender from "../PreviewSender.mts";
 import i18n from "../../../../src/common/i18n.mts";
 
@@ -60,43 +60,46 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
 
         private async run(params: WorkflowCalleeActions['run']['params']) {
             const batchCount = params.size;
+            console.log("run", batchCount)
             const fromSID = params.from_sid
             for (let i = 0; i < batchCount; i++) {
                 const p = await app.graphToPrompt()
-                let firstNodeError: { nodeID: number, error: string } | null = null
+                let hasAnyError = false
+                let generalError = ''
+                let nodeErrors: Record<string, string> = {}
                 let promptId = ''
 
                 try {
                     const res = await api.queuePrompt(0, p)
-                    if (res.node_errors) {
-                        console.log('node_errors', res.node_errors)
-                        firstNodeError = findFirstNodeError(res.node_errors)
+                    if (res.node_errors && Object.keys(res.node_errors).length > 0) {
+                        hasAnyError = true
+                        nodeErrors = formatNodeErrors(res.node_errors)
                     }
                     promptId = res.prompt_id
 
                 } catch (error: any) {
                     if (error.response) {
-                        firstNodeError = findFirstNodeError(error.response.node_errors)
+                        hasAnyError = true
+                        nodeErrors = formatNodeErrors(error.response.node_errors)
                     } else {
-                        firstNodeError = {
-                            nodeID: 0,
-                            error: error.stack
-                        }
+                        hasAnyError = true
+                        generalError = error.stack
                     }
                 }
-                function findFirstNodeError(errors: any) {
-                    if (Object.keys(errors).length > 0) {
-                        const nodeID = Object.keys(errors)[0]
-                        return {
-                            nodeID: parseInt(nodeID),
-                            error: errors[nodeID].errors.map(JSON.stringify).join('\n')
-                        }
-                    }
-                    return null
+                function formatNodeErrors(errors: any) {
+                    const ret: Record<string, string> = {};
+                    Object.keys(errors).forEach((nodeID) => {
+                        ret[nodeID.split(":")[0]] = errors[nodeID].errors.map(JSON.stringify).join('\n')
+                    })
+                    return ret
                 }
 
-                if (firstNodeError) {
-                    pageStore.setLastError(firstNodeError.error, firstNodeError.nodeID)
+                if (hasAnyError) {
+                    if (generalError) {
+                        pageStore.setLastError(generalError)
+                    } else {
+                        pageStore.setWidgetTableErrors(nodeErrors)
+                    }
                     break
                 }
                 PreviewSender.set(promptId, fromSID)
@@ -160,36 +163,18 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 } else {
                     this.openComfyWorkflow(params)
                 }
-                pageStore.setLastOpenedWorkflow(workflow_path)
             } catch (error) {
-                pageStore.setLastOpenedWorkflow('')
                 throw error
             }
         }
         private async openSDPPPWorkflow(params: WorkflowCalleeActions['open']['params']) {
-            const from_sid = params.from_sid;
             const workflow_path = params.workflow_path.replace('sdppp://', '')
 
             const workflowContent = await fetch("/sd-ppp-static/sdppp-workflows/" + workflow_path).then(res => res.json())
 
             await app.loadGraphData(workflowContent)
 
-            const form = findAvailableNodeInGraph(app.graph);
-            pageStore.setCurrentForm(form);
-            await this.socket.emit('B_workflow', {
-                action: 'getStoredWidgetValue',
-                sid: from_sid,
-                params: {
-                    nodeIndexes: form.reduce((acc: any, node: any) => {
-                        node.widgets.forEach((widget: any, index: number) => {
-                            acc.push({ nodeTitle: node.title, widgetIndex: index });
-                        });
-                        return acc;
-                    }, [] as { nodeTitle: string, widgetIndex: number }[])
-                }
-            }, (result: WorkflowCallerActions['getStoredWidgetValue']['result']) => {
-                this.setWidgetValue(result)
-            })
+            // temp workflow may not have any store
         }
         private async openComfyWorkflow(params: WorkflowCalleeActions['open']['params']) {
             const { workflow_path, from_sid, reset } = params;
@@ -212,20 +197,17 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             await openWorkflow(this.workflowManager, workflow);
 
             // wait for some third party nodes to update
-            await new Promise(resolve => setTimeout(resolve, 300));
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const form = findAvailableNodeInGraph(app.graph);
-            pageStore.setCurrentForm(form);
+            if (!pageStore.data.widgetTableStructure) { return; }
+
             await this.socket.emit('B_workflow', {
                 action: 'getStoredWidgetValue',
                 sid: from_sid,
                 params: {
-                    nodeIndexes: form.reduce((acc: any, node: any) => {
-                        node.widgets.forEach((widget: any, index: number) => {
-                            acc.push({ nodeTitle: node.title, widgetIndex: index });
-                        });
-                        return acc;
-                    }, [] as { nodeTitle: string, widgetIndex: number }[])
+                    widgetTableID: pageStore.data.widgetTableStructure.widgetTableID,
+                    widgetTablePath: pageStore.data.widgetTableStructure.widgetTablePath,
+                    widgetTablePersisted: pageStore.data.widgetTableStructure.widgetTablePersisted,
                 }
             }, (result: WorkflowCallerActions['getStoredWidgetValue']['result']) => {
                 this.setWidgetValue(result)

@@ -119,13 +119,12 @@ const PlayMultiButtons = () => {
     </>
 }
 
-// 自动运行和多次运行按钮组
+// 自动运行按钮
 const AutoRunButtons = () => {
     const { workflowAgentSID, autoRunning, setAutoRunning } = useSDPPPContext();
-    const { runPage } = useSDPPPComfyCaller();
 
     return (
-        <sp-action-button className={autoRunning?.value == workflowAgentSID ? 'highlight' : ''} onClick={() => {
+        <sp-action-button class={autoRunning?.value == workflowAgentSID ? 'highlight' : ''} onClick={() => {
             if (autoRunning?.value == workflowAgentSID) {
                 setAutoRunning(null);
             } else {
@@ -162,13 +161,23 @@ const RunButton = () => {
     const { runPage } = useSDPPPComfyCaller();
 
     return (
-        <div className="workflow-edit-controls-right">
-            <sp-action-button onClick={() => { runPage(workflowAgentSID) }}>
-                <PlayIcon />
-            </sp-action-button>
-        </div>
+        <sp-action-button onClick={() => { runPage(workflowAgentSID) }}>
+            <PlayIcon />
+        </sp-action-button>
     );
 };
+const RunMultiButtons = () => {
+    const { workflowAgentSID } = useSDPPPContext();
+    const { runPage } = useSDPPPComfyCaller();
+
+    return (
+        <>
+            <div className="action-button" onClick={() => { runPage(workflowAgentSID, 2) }}>x2</div>
+            <div className="action-button" onClick={() => { runPage(workflowAgentSID, 5) }}>x5</div>
+            <div className="action-button" onClick={() => { runPage(workflowAgentSID, 9) }}>x9</div>
+        </>
+    )
+}
 
 // const TestButtons = () => {
 //     const { interrupt, clearQueue, reboot } = useSDPPPComfyCaller();
@@ -198,12 +207,12 @@ export function WorkflowEditWrap({
                             <div className="workflow-edit-button-line workflow-edit-button-lineone">
                                 <div className="workflow-edit-button-line-left">
                                     <SaveButton />
-                                    <ClearButton />
+                                    <RefreshButton />
                                 </div>
                                 <div className="workflow-edit-button-line-right">
                                     <StopAndCancelButton />
                                     <AutoRunButtons />
-                                    <PlayMultiButtons />
+                                    {/* <PlayMultiButtons /> */}
                                 </div>
                             </div>
                             <div className="workflow-edit-button-line workflow-edit-controls-linetwo">
@@ -212,7 +221,12 @@ export function WorkflowEditWrap({
                                 <EditButton />
                             </div>
                         </div>
-                        <RunButton />
+                        <div className="workflow-edit-controls-center">
+                            <RunButton />
+                        </div>
+                        <div className="workflow-edit-controls-right">
+                            <RunMultiButtons />
+                        </div>
                     </div>
                 </div>
                 <sp-divider></sp-divider>

@@ -1,5 +1,5 @@
-import { SDPPPGraphForm } from "../types/sdppp";
 import { MainStore, StoreMutation } from "../common/store/store.mts";
+import { WidgetTableStructure, WidgetTableValue } from "../types/sdppp";
 
 export interface PageStoreData {
     title: string
@@ -8,11 +8,12 @@ export interface PageStoreData {
     progress: number
     queueSize: number
     lastError: string
-    lastErrorNodeID: number
     executingNodeTitle: string
 
-    currentForm: SDPPPGraphForm[]
-    lastOpenedWorkflow: string
+    widgetTableStructure: WidgetTableStructure
+    widgetTableValue: WidgetTableValue
+    widgetTableErrors: Record<string, string>,
+    // lastOpenedWorkflow: string
 
     hasPSDNodes: boolean
     maxImageWH: number
@@ -28,12 +29,20 @@ export class PageStore extends MainStore<PageStoreData> {
 
             progress: 0,
             lastError: '',
-            lastErrorNodeID: 0,
             queueSize: 0,
             executingNodeTitle: "",
 
-            currentForm: [],
-            lastOpenedWorkflow: '',
+            widgetTableStructure: {
+                widgetTablePath: '',
+                widgetTablePersisted: false,
+                widgetTableID: '',
+                nodes: {},
+                groups: {},
+                nodeIndexes: []
+            },
+            widgetTableValue: {},
+            widgetTableErrors: {},
+            // lastOpenedWorkflow: '',
 
             hasPSDNodes: false,
             maxImageWH: 60606,
@@ -54,9 +63,8 @@ export class PageStore extends MainStore<PageStoreData> {
         this._data.progress = progress;
     }
     @StoreMutation
-    setLastError(lastError: string, nodeID: number) {
+    setLastError(lastError: string) {
         this._data.lastError = lastError;
-        this._data.lastErrorNodeID = nodeID;
     }
     @StoreMutation
     setQueueSize(queueSize: number) {
@@ -67,9 +75,16 @@ export class PageStore extends MainStore<PageStoreData> {
         this._data.executingNodeTitle = executingNodeTitle;
     }
     @StoreMutation
-    setCurrentForm(currentForm: PageStoreData['currentForm']) {
-        currentForm = JSON.parse(JSON.stringify(currentForm));
-        this._data.currentForm = currentForm;
+    setWidgetTableStructure(widgetTableStructure: PageStoreData['widgetTableStructure']) {
+        this._data.widgetTableStructure = JSON.parse(JSON.stringify(widgetTableStructure));
+    }
+    @StoreMutation
+    setWidgetTableValue(widgetTableValue: PageStoreData['widgetTableValue']) {
+        this._data.widgetTableValue = JSON.parse(JSON.stringify(widgetTableValue));
+    }
+    @StoreMutation
+    setWidgetTableErrors(widgetTableErrors: PageStoreData['widgetTableErrors']) {
+        this._data.widgetTableErrors = JSON.parse(JSON.stringify(widgetTableErrors));
     }
     @StoreMutation
     setHasPSDNodes(hasPSDNodes: boolean) {
@@ -84,10 +99,5 @@ export class PageStore extends MainStore<PageStoreData> {
     @StoreMutation
     setComfyUserToken(comfyUserToken: string) {
         this._data.comfyUserToken = comfyUserToken;
-    }
-    
-    @StoreMutation
-    setLastOpenedWorkflow(lastOpenedWorkflow: string) {
-        this._data.lastOpenedWorkflow = lastOpenedWorkflow;
     }
 }

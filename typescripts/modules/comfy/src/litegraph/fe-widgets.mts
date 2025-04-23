@@ -4,6 +4,7 @@ import { LayerData } from "../../../../src/store/photoshop.mts";
 import { pagePhotoshopStoreMap, pageStore } from "../../photoshopModels.mts";
 import { findDocumentNodeRecursive, getLayerOptionsByDocumentValue, isPhotoshopConnected, makeDocumentDataOptions, makeDocumentOption, parseDocumentOption } from "../util.mts";
 import { ComfySocket } from "../socket/ComfySocket.mts";
+import { simplifyWorkflowPath } from "../../../../src/common/string-util.mts";
 
 export abstract class SDPPPWidget {
     widget: any
@@ -230,7 +231,7 @@ export class DownloadWidget extends SDPPPWidget {
             widget.serializeValue = async () => {
                 const ret: any = {
                     ps_maxGetImageWH: pageStore.data.maxImageWH,
-                    lastOpenedWorkflow: pageStore.data.lastOpenedWorkflow
+                    lastOpenedWorkflow: simplifyWorkflowPath(pageStore.data.widgetTableStructure.widgetTablePath)
                 }
                 const documentNode = findDocumentNodeRecursive(node);
                 if (documentNode?.widgets[0]) {

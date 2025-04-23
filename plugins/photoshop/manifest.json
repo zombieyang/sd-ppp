@@ -63,17 +63,12 @@
           "path": "icons/sdppp_D.png",
           "scale": [
             1,
-            1.25,
-            1.5,
             2
           ],
           "theme": [
             "darkest",
             "dark",
             "medium"
-          ],
-          "species": [
-            "generic"
           ]
         },
         {
@@ -82,16 +77,11 @@
           "path": "icons/sdppp_L.png",
           "scale": [
             1,
-            1.25,
-            1.5,
             2
           ],
           "theme": [
-            "light",
-            "lightest"
-          ],
-          "species": [
-            "generic"
+            "lightest",
+            "light"
           ]
         }
       ]
@@ -104,8 +94,6 @@
       "path": "icons/sdppp_D.png",
       "scale": [
         1,
-        1.25,
-        1.5,
         2
       ],
       "theme": [
@@ -114,25 +102,23 @@
         "medium"
       ],
       "species": [
-        "generic"
+        "pluginList"
       ]
     },
     {
-      "width": 23,
-      "height": 23,
+      "width": 48,
+      "height": 48,
       "path": "icons/sdppp_L.png",
       "scale": [
         1,
-        1.25,
-        1.5,
         2
       ],
       "theme": [
-        "light",
-        "lightest"
+        "lightest",
+        "light"
       ],
       "species": [
-        "generic"
+        "pluginList"
       ]
     }
   ]

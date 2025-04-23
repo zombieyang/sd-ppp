@@ -1,10 +1,10 @@
 import i18n from "../../../src/common/i18n.mts";
 import { sdpppX } from "../../../src/common/sdpppX.mts";
-import { SDPPPGraphForm } from "../../../src/types/sdppp";
+import { WidgetTableStructure, WidgetTableStructureNode, WidgetTableValue } from "../../../src/types/sdppp";
 import { app } from "./comfy-globals.mts";
 
 // Define a type for the converter function
-type NodeConverter = (node: any) => SDPPPGraphForm | null;
+type NodeConverter = (node: any) => WidgetTableStructureNode | null;
 type WidgetValueSetter = (node: any, widgetIndex: any, value: any) => boolean;
 
 const customNodeConvertersByWildcard: [string, {
@@ -47,8 +47,51 @@ export function setWidgetValue(node: any, widgetIndex: any, value: any) {
     workflowManager.activeWorkflow?.changeTracker.checkState()
 }
 
-export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
-    return graph?.nodes
+export function getWidgetTableValue(graph: any): WidgetTableValue {
+    const ret: WidgetTableValue = {};
+
+    graph
+        .nodes
+        .forEach((node: any) => {
+            if (!node.widgets || node.widgets.length == 0) return; // no widgets
+
+            const converter = customNodeConvertersByWildcard.find(([wildcard]) => {
+                return wildcardMatch(wildcard, node.type);
+            });
+            if (converter) {
+                const converted = converter[1].formatter(node);
+                if (converted) {
+                    ret[node.id] = converted.widgets.map((widget: any) => widget.value);
+                }
+            }
+        });
+    return ret;
+}
+
+export function makeWidgetTableStructure(graph: any, activeWorkflow: any): WidgetTableStructure {
+    if (!graph) return {
+        widgetTableID: '',
+        widgetTablePath: '',
+        widgetTablePersisted: false,
+        groups: {},
+        nodes: {},
+        nodeIndexes: []
+    };
+    const groups: WidgetTableStructure['groups'] = graph
+        .groups
+        .map((group: any) => {
+            group.recomputeInsideNodes();
+            return {
+                id: group.id,
+                name: group.title,
+                color: group.color,
+                nodeIDs: group.nodes.map((node: any) => {
+                    return node.id;
+                })
+            }
+        });
+    const nodes: WidgetTableStructureNode[] = graph
+        .nodes
         .map((node: any) => {
             if (node.mode != 0) return; // muted or by passed
             const title = getTitle(node);
@@ -91,7 +134,6 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
                 title: title,
                 uiWeightSum: widgets.reduce((sum: number, widget: any) => sum + (widget.uiWeight || 12), 0),
                 widgets: widgets.map((widget: any) => ({
-                    value: widget.value,
                     name: widget.label || widget.name,
                     outputType: widget.type || "string",
                     options: widget.options
@@ -99,13 +141,25 @@ export function findAvailableNodeInGraph(graph: any): SDPPPGraphForm[] {
             };
         })
         .filter(Boolean)
-        .sort((a: SDPPPGraphForm, b: SDPPPGraphForm) => {
+        .sort((a: WidgetTableStructureNode, b: WidgetTableStructureNode) => {
             let titleA = getTitle(a);
             let titleB = getTitle(b);
             titleA = titleA.startsWith("#") ? titleA.slice(1).trim() : titleA.trim();
             titleB = titleB.startsWith("#") ? titleB.slice(1).trim() : titleB.trim();
             return titleA.localeCompare(titleB);
-        });
+        })
+
+    return {
+        widgetTablePath: activeWorkflow.path,
+        widgetTablePersisted: activeWorkflow.isPersisted,
+        widgetTableID: activeWorkflow.activeState.id,
+        groups,
+        nodes: nodes.reduce((acc: Record<number, WidgetTableStructureNode>, node: WidgetTableStructureNode) => {
+            acc[node.id] = node;
+            return acc;
+        }, {}),
+        nodeIndexes: nodes.map((node: WidgetTableStructureNode) => node.id)
+    }
 }
 
 
@@ -128,7 +182,7 @@ function wildcardMatch(pattern: string, text: string): boolean {
  * @returns 
  */
 function getTitle(node: any, defaultTitle: string = '') {
-    let retTitle = defaultTitle || node.title;
+    let retTitle = defaultTitle || node.title || '';
     if (node.setProperty && (retTitle.startsWith("#") || retTitle.startsWith("."))) {
         node.setProperty('sdppp_widgetable_title', retTitle);
     } else {

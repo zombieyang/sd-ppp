@@ -10,7 +10,7 @@ export const config = {
     },
     tsconfig: join(__dirname, './tsconfig.json'),
     outdir: join(projectRoot, 'javascript'),
-    plugins: [SDPPPTestResolvePlugin(join(typescriptSrcRoot, '../test/mocha/comfy/comfy.test.mts'))],
+    plugins: [SDPPPTestResolvePlugin(join(typescriptSrcRoot, 'test/mocha/comfy/comfy.test.mts'))],
     sourcemap: isProduction ? false : 'inline',
     minify: isProduction,
     loader: {

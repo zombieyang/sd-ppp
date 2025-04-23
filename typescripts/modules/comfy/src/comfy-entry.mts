@@ -1,13 +1,13 @@
-// import 'sdppp-test/comfy';
+import 'sdppp-test/comfy';
 import { SpeicialIDManager } from '../../../src/common/photoshop/specialLayer.mjs';
 import { wrapNode } from './litegraph/node-wrapper.mjs';
-import { findAvailableNodeInGraph } from './graph-to-form.mjs';
 import { ComfySocket } from './socket/ComfySocket.mjs';
 import { pageStore, waitModelInited } from '../photoshopModels.mts';
 import initPopup from './popup/sdpppPopup.mjs';
 import PreviewSender from './PreviewSender.mjs';
 import { sdpppX } from '../../../src/common/sdpppX.mjs';
-
+import './widgettable-entry.mjs'
+import { simplifyWorkflowPath } from '../../../src/common/string-util.mts';
 declare const graph: any;
 
 async function _init(app: any, api: any, $el: any) {
@@ -21,13 +21,19 @@ async function _init(app: any, api: any, $el: any) {
 		pageStore.setQueueSize(e.detail.exec_info.queue_remaining);
 	});
 	api.addEventListener("execution_error", ({ detail }: { detail: { node_id: number, exception_message: string } }) => {
-		pageStore.setLastError(detail.exception_message, detail.node_id);
 		pageStore.setExecutingNodeTitle('');
+		pageStore.setLastError(detail.exception_message);
+		if (detail.node_id) {
+			pageStore.setWidgetTableErrors({
+				[detail.node_id]: detail.exception_message
+			});
+		}
 	});
 	let captureNextPromptBySID: string[] = []
 	api.addEventListener("execution_start", ({ detail }: { detail: { prompt_id: string } }) => {
-		pageStore.setLastError('', 0);
+		pageStore.setLastError('');
 		pageStore.setProgress(0);
+		pageStore.setWidgetTableErrors({});
 		pageStore.setExecutingNodeTitle('');
 		if (captureNextPromptBySID.length) {
 			const bySID = captureNextPromptBySID.shift();
@@ -52,9 +58,6 @@ async function _init(app: any, api: any, $el: any) {
 		pageStore.setProgress(0);
 		pageStore.setExecutingNodeTitle('');
 	});
-	api.addEventListener("graphChanged", () => {
-		pageStore.setCurrentForm(findAvailableNodeInGraph(app.graph));
-	})
 	const promptsFromSDPPPBackend = new Map<string, string>();
 	api.addEventListener("executed", (ev: any) => {
 		if (ev.detail.output && Array.isArray(ev.detail.output.images) && ev.detail.output.images.length > 0) {
@@ -77,31 +80,11 @@ async function _init(app: any, api: any, $el: any) {
 					image_urls: ev.detail.output.images.map((image: any) => {
 						return location.origin + '/api/view?type=' + image.type + '&filename=' + image.filename
 					}),
-					new_layer_name: pageStore.data.lastOpenedWorkflow
+					new_layer_name: simplifyWorkflowPath(pageStore.data.widgetTableStructure.widgetTablePath)
 				})
 			}
 		}
 	})
-
-	let lastWorkflowPath = ''
-	function checkGraphUpdate() {
-		requestAnimationFrame(checkGraphUpdate)
-		const workflowManager = app.workflowManager || app.extensionManager.workflow
-		const currentWorkflowPath = workflowManager.activeWorkflow?.path
-		if (currentWorkflowPath === lastWorkflowPath) return;
-
-		lastWorkflowPath = currentWorkflowPath
-		const form = findAvailableNodeInGraph(app.graph);
-		pageStore.setCurrentForm(form);
-		const serializedForm = JSON.stringify(form);
-		setTimeout(() => {
-			const nowForm = findAvailableNodeInGraph(app.graph);
-			if (JSON.stringify(nowForm) !== serializedForm) {
-				pageStore.setCurrentForm(nowForm);
-			}
-		}, 800)
-	}
-	requestAnimationFrame(checkGraphUpdate)
 
 	initPopup(app);
 
@@ -113,7 +96,6 @@ async function _init(app: any, api: any, $el: any) {
 	app.registerExtension({
 		name: id,
 		async setup() {
-			pageStore.setCurrentForm(findAvailableNodeInGraph(app.graph));
 		},
 		async beforeRegisterNodeDef(nodeType: any, nodeData: any, app: any) {
 			try {

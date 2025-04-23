@@ -1,26 +1,44 @@
-/* from https://developer.adobe.com/photoshop/uxp/2022/guides/theme-awareness/
- * The easiest way to make your plugin theme-aware is to make use of a CSS feature called CSS variables. CSS variables are just what they sound like: a way to have dynamic property definitions in CSS.
- * 
- * Luckily, Photoshop exposes a number of theme-specific CSS variables that are perfect for making your plugin respond to the user's theme color choice. These variables are:
- * 
- * --uxp-host-background-color
- * --uxp-host-text-color
- * --uxp-host-border-color
- * --uxp-host-widget-hover-text-color
- * --uxp-host-widget-hover-background-color
- * --uxp-host-widget-hover-text-color
- * --uxp-host-widget-hover-border-color
- * And a few more:
- * 
- * --uxp-host-text-color-secondary
- * --uxp-host-link-hover-text-color
- * --uxp-host-label-text-color
- * Finally, there are three dealing with font size:
- * 
- * --uxp-host-font-size
- * --uxp-host-font-size-smaller
- * --uxp-host-font-size-larger
- */
+@media (prefers-color-scheme: darkest) {
+    :root {
+        --sdppp-widget-background-color: #1a1a1a;
+        --sdppp-widget-hover-background-color: #080808;
+        --sdppp-widget-text-color: #a2a2a2;
+        --sdppp-widget-hover-text-color: #efefef;
+
+        --sdppp-widget-hover-border-color: #5c5c5c;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --sdppp-widget-background-color: #2f2f2f;
+        --sdppp-widget-hover-background-color: #252525;
+        --sdppp-widget-text-color: #b9b9b9;
+        --sdppp-widget-hover-text-color: #fff;
+
+        --sdppp-widget-hover-border-color: #6e6e6e;
+    }
+}
+@media (prefers-color-scheme: light) {
+    :root {
+        --sdppp-widget-background-color: #fafafa;
+        --sdppp-widget-hover-background-color: #fff;
+        --sdppp-widget-text-color: #6e6e6e;
+        --sdppp-widget-hover-text-color: #2c2c2c;
+
+        --sdppp-widget-hover-border-color: #b3b3b3;
+    }
+}
+@media (prefers-color-scheme: lightest) {
+    :root {
+        --sdppp-widget-background-color: #fff;
+        --sdppp-widget-hover-background-color: #fff;
+        --sdppp-widget-text-color: #747474;
+        --sdppp-widget-hover-text-color: #323232;
+
+        --sdppp-widget-hover-border-color: #bcbcbc;
+    }
+}
+
 a {
     color: var(--uxp-host-text-color);
     text-decoration: underline;
@@ -166,6 +184,7 @@ sp-progressbar {
     margin-right: 5px;
     cursor: pointer;
 }
+
 .cloud-promote-bar-right span img {
     width: 16px;
     height: 16px;
@@ -239,7 +258,7 @@ sp-progressbar {
 }
 
 .workflow-edit-field.error-field {
-    color: coral;
+    color: lightcoral;
 }
 
 .workflow-edit-field-title {
@@ -249,7 +268,7 @@ sp-progressbar {
     font-size: 12px;
     display: inline-flex;
     align-items: center;
-    
+
 }
 
 .workflow-edit-field {
@@ -414,6 +433,7 @@ sp-progressbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: stretch;
 }
 
 .workflow-edit-controls-left {
@@ -428,14 +448,26 @@ sp-progressbar {
     flex-direction: row;
     justify-content: space-between;
 }
+
 .workflow-edit-button-line-left sp-textfield {
     width: 54px;
 }
 
-.workflow-edit-controls-right sp-action-button {
+.workflow-edit-controls-center sp-action-button {
     width: 72px;
     height: 72px;
-    margin-left: 2px;
+    margin-left: 3px;
+}
+.workflow-edit-controls-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    width: 20px;
+}
+
+.workflow-edit-controls-right .action-button {
+    flex: 1;
+    padding: 0 1px;
 }
 
 .workflow-run-status {
@@ -573,7 +605,7 @@ sp-progressbar {
 }
 
 .list-error-label {
-    color: var(--uxp-host-text-color-secondary);
+    color: lightcoral;
     text-align: center;
     word-break: break-all;
     white-space: normal;
@@ -585,9 +617,8 @@ sp-progressbar {
 }
 
 .action-button {
-    cursor: pointer;
-    background-color: var(--uxp-host-background-color);
-    color: var(--uxp-host-text-color-secondary);
+    background-color: var(--sdppp-widget-background-color);
+    color: var(--sdppp-widget-text-color);
     border: 1px solid var(--uxp-host-border-color);
     padding: 2px 4px;
     border-radius: 4px;
@@ -598,8 +629,9 @@ sp-progressbar {
 
 .action-button:hover,
 .action-button.highlight {
-    background-color: var(--uxp-host-text-color-secondary);
-    color: var(--uxp-host-background-color);
+    background-color: var(--sdppp-widget-hover-background-color);
+    border-color: var(--sdppp-widget-hover-border-color);
+    color: var(--sdppp-widget-hover-text-color);
 }
 
 .about-card {

@@ -1,47 +1,55 @@
 import React, { ReactNode, useMemo } from "react";
 import i18n from "./i18n.mjs";
 
-import type { SDPPPGraphForm } from "../types/sdppp/index.js";
+import type { WidgetTableStructure, WidgetTableStructureNode, WidgetTableValue } from "../types/sdppp/index.js";
 import { computeUIWeightCSS, useTraceUpdate } from "./tsx/util.js";
 
 interface WorkflowEditProps {
-    formDatas: SDPPPGraphForm[];
+    widgetTableStructure: WidgetTableStructure;
+    widgetTableValue: WidgetTableValue;
+    widgetTableErrors: Record<number, string>;
 
     onWidgetRender?: (context: {
         keepRender: boolean;
         result: any[];
-    }, fieldInfo: SDPPPGraphForm, widget: SDPPPGraphForm['widgets'][0], widgetIndex: number) => boolean;
-    onTitleRender?: (title: string, fieldInfo: SDPPPGraphForm) => ReactNode;
+    }, fieldInfo: WidgetTableStructureNode, widget: WidgetTableStructureNode['widgets'][0], widgetIndex: number) => boolean;
+    onTitleRender?: (title: string, fieldInfo: WidgetTableStructureNode) => ReactNode;
 
-    onWidgetChange: (nodeID: number, widgetIndex: number, value: any, originNodeData: SDPPPGraphForm) => void;
+    onWidgetChange: (nodeID: number, widgetIndex: number, value: any, originNodeData: WidgetTableStructureNode) => void;
 }
 
 export default function WorkflowEdit({
-    formDatas: allFields,
+    widgetTableStructure,
+    widgetTableValue,
+    widgetTableErrors,
     onWidgetRender,
     onWidgetChange,
     onTitleRender
 }: WorkflowEditProps) {
     const allRenderedFields = useMemo(() => {
-        return allFields.map(fieldInfo => {
+        return widgetTableStructure.nodeIndexes.map(nodeID => {
+            const fieldInfo = widgetTableStructure.nodes[nodeID]
             const reduceWidgetRender = (context: {
                 keepRender: boolean;
                 result: any[];
-            }, widget: SDPPPGraphForm['widgets'][0], widgetIndex: number) => {
+            }, widget: WidgetTableStructureNode['widgets'][0], widgetIndex: number) => {
                 if (!context.keepRender) return context;
 
                 if (widget.outputType === 'error') {
-                    context.result.push(<span className="list-error-label">{widget.value}</span>)
+                    context.result.push(<span className="list-error-label">{widgetTableValue[fieldInfo.id][widgetIndex]}</span>)
                     return context;
 
                 } else if (onWidgetRender?.(context, fieldInfo, widget, widgetIndex)) {
                 }
                 return context;
             }
+            const group = Object.values(widgetTableStructure.groups).find(group => group.nodeIDs.includes(fieldInfo.id))
+            const groupColor = group?.color || 'rgba(127, 127, 127, .4)'
             return (
                 <div className="workflow-edit-field" key={fieldInfo.id}>
                     <div className="workflow-edit-field-title" title={fieldInfo.title} style={{
-                        ...computeUIWeightCSS(fieldInfo.uiWeightSum <= 8 && fieldInfo.widgets.length == 1 ? 4 : 12)
+                        ...computeUIWeightCSS(fieldInfo.uiWeightSum <= 8 && fieldInfo.widgets.length == 1 ? 4 : 12),
+                        borderColor: groupColor
                     }}>
                         {onTitleRender ?
                             onTitleRender(fieldInfo.title, fieldInfo) :
@@ -56,15 +64,29 @@ export default function WorkflowEdit({
                             return <WidgetRenderErrorBoundary key={index}>{item}</WidgetRenderErrorBoundary>
                         })
                     }
+                    {
+                        widgetTableErrors[fieldInfo.id] ?
+                            <span className="list-error-label">{widgetTableErrors[fieldInfo.id]}</span> : ''
+                    }
                 </div>
             )
         })
-    }, [allFields, onWidgetRender, onWidgetChange, onTitleRender])
+    }, [widgetTableStructure, widgetTableValue, widgetTableErrors, onWidgetRender, onWidgetChange, onTitleRender])
+
+    const nodeErrorsNotInWidgetTable = useMemo(() => {
+        return Object.keys(widgetTableErrors).filter((key: any) => !widgetTableStructure.nodes[parseInt(key)]);
+    }, [widgetTableErrors, widgetTableStructure]);
 
     return (
         <>
             {
-                !allFields?.length ?
+                nodeErrorsNotInWidgetTable.length > 0 &&
+                nodeErrorsNotInWidgetTable.map((key: any) => (
+                    <span key={key} className="list-error-label">{widgetTableErrors[key]}</span>
+                ))
+            }
+            {
+                !Object.keys(widgetTableStructure.nodes).length ?
                     (<span className="list-error-label">{i18n('no suitable node to control in this workflow')}</span>) : ''
             }
             <div className="workflow-edit-content">

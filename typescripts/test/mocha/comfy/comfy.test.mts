@@ -1,5 +1,5 @@
 import "mocha";
-import { pagePhotoshopStoreMap, pageStore } from "../../../src/sdsystem/common/models/photoshopModels.mjs";
+import { pagePhotoshopStoreMap, pageStore } from "../../../modules/comfy/photoshopModels.mjs";
 
 (globalThis as any).sdppp_debugPageStore = pageStore;
 (globalThis as any).sdppp_debugPagePhotoshopStoreMap = pagePhotoshopStoreMap;

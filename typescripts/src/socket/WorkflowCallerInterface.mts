@@ -16,10 +16,9 @@ export interface WorkflowCaller {
 export interface WorkflowCallerActions {
     getStoredWidgetValue: {
         params: {
-            nodeIndexes: {
-                nodeTitle: string,
-                widgetIndex: number
-            }[]
+            widgetTableID: string,
+            widgetTablePath: string,
+            widgetTablePersisted: boolean,
         },
         result: {
             values: {

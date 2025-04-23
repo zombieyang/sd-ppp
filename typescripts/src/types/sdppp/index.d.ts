@@ -1,8 +1,10 @@
-export interface SDPPPGraphForm {
+
+export type WidgetTableValue = Record<number, any[]>
+export interface WidgetTableStructureNode {
     id: number;
     title: string;
     widgets: {
-        value: string;
+        // value: string;
         name?: string;
         outputType: string;
         options?: any;
@@ -10,6 +12,20 @@ export interface SDPPPGraphForm {
         uiWeight?: number;
     }[];
     uiWeightSum: number
+}
+export interface WidgetTableStructureGroup {
+    id: number;
+    name: string,
+    color: string,
+    nodeIDs: number[]
+}
+export interface WidgetTableStructure {
+    widgetTableID: string,
+    widgetTablePath: string,
+    widgetTablePersisted: boolean,
+    nodes: Record<number, WidgetTableStructureNode>
+    groups: Record<number, WidgetTableStructureGroup>
+    nodeIndexes: number[]
 }
 
 export interface ComfyStatus {

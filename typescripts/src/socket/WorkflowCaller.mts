@@ -12,17 +12,30 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
             this.socket.on('B_workflow', (payload: {
                 action: string,
                 params: WorkflowCallerActions['getStoredWidgetValue']['params']
-            }, callback: (payload: any) => void) => {
+            }, callback: (payload: WorkflowCallerActions['getStoredWidgetValue']['result']) => void) => {
                 if (payload.action == 'getStoredWidgetValue') {
-                    const { nodeIndexes } = payload.params;
-                    const values = nodeIndexes.map(({ nodeTitle, widgetIndex }) => {
-                        return {
-                            title: nodeTitle,
-                            // @ts-ignore
-                            ...getStoredWidgetValue(nodeTitle, widgetIndex)
-                        };
-                    });
-                    callback({ values });
+                    const { widgetTableID, widgetTablePath, widgetTablePersisted } = payload.params;
+                    const widgetTableKey = `${widgetTableID}_${widgetTablePath}_${widgetTablePersisted}`;
+                    const data = getStoredWidgetValue(widgetTableKey);
+                    const values: {
+                        nodeID: number,
+                        widgetIndex: number,
+                        value: any,
+                        outputType: string
+                    }[] = []
+                    if (data) {
+                        Object.keys(data || {}).forEach((nodeID: any) => {
+                            Object.keys(data[nodeID] || {}).forEach((widgetIndex: any) => {
+                                values.push({
+                                    nodeID: nodeID,
+                                    widgetIndex: widgetIndex,
+                                    value: data[nodeID][widgetIndex].value,
+                                    outputType: data[nodeID][widgetIndex].outputType
+                                })
+                            })
+                        })
+                    }
+                    callback({ values })
                 }
             });
         }
@@ -177,18 +190,14 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
 
 
 
-function getStoredWidgetValue(title: string, widgetIndex: number): {
-    value: any,
-    outputType: string
+function getStoredWidgetValue(widgetTableKey: string): {
+    [nodeID: number]: {
+        value: any,
+        outputType: string
+    }[]
 } | null {
-    const storedValue = localStorage.getItem(`widgetValue_${title}_${widgetIndex}`)
+    const storedValue = localStorage.getItem(`widgetValue_${widgetTableKey}`)
     if (!storedValue) return null;
-    const { value, outputType } = JSON.parse(storedValue);
-    // if (outputType == "IMAGE" || outputType == "MASK") {
-    //     console.log("getStoredWidgetValue", value, outputType)
-    // }
-    return {
-        value,
-        outputType
-    }
+    const dataObj = JSON.parse(storedValue);
+    return dataObj
 }

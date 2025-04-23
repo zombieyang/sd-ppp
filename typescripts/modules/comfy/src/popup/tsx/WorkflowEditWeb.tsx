@@ -1,7 +1,6 @@
 import React from "react"
 import WorkflowEdit from "../../../../../src/common/WorkflowEdit"
-import { SDPPPGraphForm } from "../../../../../src/types/sdppp";
-import { findAvailableNodeInGraph, setWidgetValue } from "../../graph-to-form.mjs";
+import { setWidgetValue } from "../../graph-to-form.mjs";
 import { NumberWidget } from "./widgets/number";
 import { ComboWidget } from "./widgets/combo";
 import { ToggleWidget } from "./widgets/toggle";
@@ -11,11 +10,15 @@ import { ConfigProvider, Input } from "antd";
 import { EditableTitle } from "./widgets/EditableTitle";
 import { ComfySocket } from "../../socket/ComfySocket.mts";
 import { ImageWidget } from "./widgets/image_mask_path";
-
+import { WidgetTableStructure, WidgetTableStructureNode, WidgetTableValue } from "../../../../../src/types/sdppp";
+import { pageStore } from "photoshopModels.mjs";
 declare const app: any;
 const api = (window as any).comfyAPI.api.api;
 export class WorkflowEditWrap extends React.Component<{
 }, {
+    widgetTableStructure: WidgetTableStructure,
+    widgetTableValue: WidgetTableValue,
+    widgetTableErrors: Record<string, string>,
     comfyStatus: {
         sid: string,
         ssid: string,
@@ -24,7 +27,6 @@ export class WorkflowEditWrap extends React.Component<{
         lastError: string,
         executingNodeTitle: string,
     },
-    formDatas: SDPPPGraphForm[]
 }> {
     state = {
         comfyStatus: {
@@ -35,7 +37,17 @@ export class WorkflowEditWrap extends React.Component<{
             lastError: '',
             executingNodeTitle: '',
         },
-        formDatas: []
+        widgetTableStructure: {
+            nodes: {},
+            groups: {},
+            nodeIndexes: [],
+            widgetTableID: '',
+            widgetTableName: '',
+            widgetTablePath: '',
+            widgetTablePersisted: false,
+        } as WidgetTableStructure,
+        widgetTableValue: {} as WidgetTableValue,
+        widgetTableErrors: {} as Record<string, string>,
     }
 
     private eventListeners: { event: string; handler: (e: any) => void }[] = [];
@@ -122,28 +134,16 @@ export class WorkflowEditWrap extends React.Component<{
             });
         });
 
-        addListener("graphChanged", () => {
+        pageStore.subscribe('widgetTableStructure', (wtStructure: WidgetTableStructure) => {
             this.setState({
-                formDatas: findAvailableNodeInGraph(app.graph)
-            });
+                widgetTableStructure: wtStructure
+            })
         })
-        let lastWorkflowPath = ''
-        const checkCurrentWorkflowName = () => {
-            requestAnimationFrame(checkCurrentWorkflowName)
-            const workflowManager = app.workflowManager || app.extensionManager.workflow
-            const currentWorkflowPath = workflowManager.activeWorkflow?.path
-            if (currentWorkflowPath != lastWorkflowPath) {
-                lastWorkflowPath = currentWorkflowPath
-                app.graph && this.setState({
-                    formDatas: findAvailableNodeInGraph(app.graph)
-                });
-            }
-        }
-        requestAnimationFrame(checkCurrentWorkflowName)
-
-        const formDatas = findAvailableNodeInGraph(app.graph)
-        //@ts-ignore
-        this.state.formDatas = formDatas
+        pageStore.subscribe('widgetTableValue', (wtValue: WidgetTableValue) => {
+            this.setState({
+                widgetTableValue: wtValue
+            })
+        })
     }
 
     componentWillUnmount(): void {
@@ -154,7 +154,9 @@ export class WorkflowEditWrap extends React.Component<{
 
     render() {
         const editProps = {
-            formDatas: this.state.formDatas,
+            widgetTableStructure: this.state.widgetTableStructure,
+            widgetTableValue: this.state.widgetTableValue,
+            widgetTableErrors: this.state.widgetTableErrors,
             // comfyStatus: {
             //     sid: this.state.comfyStatus.sid,
             //     ssid: this.state.comfyStatus.ssid,
@@ -163,7 +165,7 @@ export class WorkflowEditWrap extends React.Component<{
             //     lastError: this.state.comfyStatus.lastError,
             //     executingNodeTitle: this.state.comfyStatus.executingNodeTitle,
             // },
-            onWidgetChange: async (nodeid: number, widgetIndex: number, value: any, fieldInfo: SDPPPGraphForm) => {
+            onWidgetChange: async (nodeid: number, widgetIndex: number, value: any, fieldInfo: WidgetTableStructureNode) => {
                 const node = app.graph.nodes.find((n: any) => n.id == nodeid);
                 if (!node) return;
                 setWidgetValue(node, widgetIndex, value);
@@ -181,7 +183,7 @@ export class WorkflowEditWrap extends React.Component<{
             onWidgetRender: (context: {
                 keepRender: boolean;
                 result: any[];
-            }, fieldInfo: SDPPPGraphForm, widget: SDPPPGraphForm['widgets'][0], widgetIndex: number) => {
+            }, fieldInfo: WidgetTableStructureNode, widget: WidgetTableStructureNode['widgets'][0], widgetIndex: number) => {
                 if (widget.outputType === 'number') {
                     const min = widget.options?.min ?? 0;
                     const max = widget.options?.max ?? 100;
@@ -194,7 +196,7 @@ export class WorkflowEditWrap extends React.Component<{
                             inputMin={min}
                             inputMax={max}
                             inputStep={step}
-                            value={parseFloat(widget.value)}
+                            value={parseFloat(this.state.widgetTableValue[fieldInfo.id][widgetIndex])}
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
@@ -209,7 +211,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onSelectUpdate={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
-                            value={widget.value}
+                            value={this.state.widgetTableValue[fieldInfo.id][widgetIndex]}
                         />
                     )
                     return true
@@ -219,7 +221,7 @@ export class WorkflowEditWrap extends React.Component<{
                             uiWeight={widget.uiWeight || 12}
                             key={widgetIndex}
                             name={widget.name}
-                            value={widget.value}
+                            value={this.state.widgetTableValue[fieldInfo.id][widgetIndex]}
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
@@ -232,7 +234,7 @@ export class WorkflowEditWrap extends React.Component<{
                         <StringWidget
                             uiWeight={widget.uiWeight || 12}
                             key={widgetIndex}
-                            value={widget.value}
+                            value={this.state.widgetTableValue[fieldInfo.id][widgetIndex]}
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
@@ -246,7 +248,7 @@ export class WorkflowEditWrap extends React.Component<{
                     context.result.push(
                         <ImageWidget
                             uiWeight={widget.uiWeight || 12}
-                            value={widget.value}
+                            value={this.state.widgetTableValue[fieldInfo.id][widgetIndex]}
                             options={widget.options?.values || []}
                             key={widgetIndex}
                             onValueChange={async (v) => {
@@ -258,7 +260,7 @@ export class WorkflowEditWrap extends React.Component<{
                 }
                 return true
             },
-            onTitleRender: (title: string, fieldInfo: SDPPPGraphForm) => {
+            onTitleRender: (title: string, fieldInfo: WidgetTableStructureNode) => {
                 return <EditableTitle
                     title={title}
                     onTitleChange={(newTitle) => {
