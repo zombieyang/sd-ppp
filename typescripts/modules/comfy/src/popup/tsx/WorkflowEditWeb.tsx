@@ -37,20 +37,13 @@ export class WorkflowEditWrap extends React.Component<{
             lastError: '',
             executingNodeTitle: '',
         },
-        widgetTableStructure: {
-            nodes: {},
-            groups: {},
-            nodeIndexes: [],
-            widgetTableID: '',
-            widgetTableName: '',
-            widgetTablePath: '',
-            widgetTablePersisted: false,
-        } as WidgetTableStructure,
-        widgetTableValue: {} as WidgetTableValue,
-        widgetTableErrors: {} as Record<string, string>,
+        widgetTableStructure: pageStore.data.widgetTableStructure,
+        widgetTableValue: pageStore.data.widgetTableValue,
+        widgetTableErrors: pageStore.data.widgetTableErrors,
     }
 
     private eventListeners: { event: string; handler: (e: any) => void }[] = [];
+    private unsubscribes: (() => void)[] = [];
 
     constructor(props: any) {
         super(props)
@@ -134,15 +127,28 @@ export class WorkflowEditWrap extends React.Component<{
             });
         });
 
-        pageStore.subscribe('widgetTableStructure', (wtStructure: WidgetTableStructure) => {
+        const structureCallback = (wtStructure: WidgetTableStructure) => {
             this.setState({
                 widgetTableStructure: wtStructure
             })
-        })
-        pageStore.subscribe('widgetTableValue', (wtValue: WidgetTableValue) => {
+        }
+        pageStore.subscribe('/widgetTableStructure', structureCallback)
+        const valueCallback = (wtValue: WidgetTableValue) => {
             this.setState({
                 widgetTableValue: wtValue
             })
+        }
+        pageStore.subscribe('/widgetTableValue', valueCallback)
+        const errorsCallback = (wtErrors: Record<string, string>) => {
+            this.setState({
+                widgetTableErrors: wtErrors
+            })
+        }
+        pageStore.subscribe('/widgetTableErrors', errorsCallback)
+        this.unsubscribes.push(() => {
+            pageStore.unsubscribe(structureCallback)
+            pageStore.unsubscribe(valueCallback)
+            pageStore.unsubscribe(errorsCallback)
         })
     }
 
@@ -150,6 +156,7 @@ export class WorkflowEditWrap extends React.Component<{
         this.eventListeners.forEach(({ event, handler }) => {
             api.removeEventListener(event, handler);
         });
+        this.unsubscribes.forEach((unsubscribe) => unsubscribe())
     }
 
     render() {
@@ -196,6 +203,7 @@ export class WorkflowEditWrap extends React.Component<{
                             inputMin={min}
                             inputMax={max}
                             inputStep={step}
+                            name={widget.name}
                             value={parseFloat(this.state.widgetTableValue[fieldInfo.id][widgetIndex])}
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
@@ -208,6 +216,7 @@ export class WorkflowEditWrap extends React.Component<{
                             uiWeight={widget.uiWeight || 12}
                             key={widgetIndex}
                             options={widget.options?.values || []}
+                            name={widget.name}
                             onSelectUpdate={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}

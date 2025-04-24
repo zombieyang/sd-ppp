@@ -29,9 +29,12 @@ sdpppX.widgetable.add = function (name: string, fn: NodeConverter | {
 
 
 export function setWidgetValue(node: any, widgetIndex: any, value: any) {
+    const defaultConverter = customNodeConvertersByWildcard.find(([wildcard]) => {
+        return wildcard == '__DEFAULT__'
+    })
     const converter = customNodeConvertersByWildcard.find(([wildcard]) => {
         return wildcardMatch(wildcard, node.type);
-    });
+    }) || defaultConverter;
     let setted = false;
     if (converter) {
         const setter = converter[1].setter;
@@ -49,15 +52,17 @@ export function setWidgetValue(node: any, widgetIndex: any, value: any) {
 
 export function getWidgetTableValue(graph: any): WidgetTableValue {
     const ret: WidgetTableValue = {};
+    const defaultConverter = customNodeConvertersByWildcard.find(([wildcard]) => {
+        return wildcard == '__DEFAULT__'
+    })
 
     graph
         .nodes
         .forEach((node: any) => {
             if (!node.widgets || node.widgets.length == 0) return; // no widgets
-
             const converter = customNodeConvertersByWildcard.find(([wildcard]) => {
                 return wildcardMatch(wildcard, node.type);
-            });
+            }) || defaultConverter;
             if (converter) {
                 const converted = converter[1].formatter(node);
                 if (converted) {
@@ -129,16 +134,30 @@ export function makeWidgetTableStructure(graph: any, activeWorkflow: any): Widge
             }
 
             let widgets = node.widgets;
-            return {
+            const defaultConverter = customNodeConvertersByWildcard.find(([wildcard]) => {
+                return wildcard == '__DEFAULT__'
+            })
+            if (defaultConverter) {
+                const converted = defaultConverter[1].formatter(node);
+                if (converted) {
+                    return Object.assign(converted, {
+                        uiWeightSum: converted.widgets.reduce((sum: number, widget: any) => sum + (widget.uiWeight || 12), 0),
+                    });
+                }
+            }
+            const converted = {
                 id: node.id,
                 title: title,
-                uiWeightSum: widgets.reduce((sum: number, widget: any) => sum + (widget.uiWeight || 12), 0),
                 widgets: widgets.map((widget: any) => ({
                     name: widget.label || widget.name,
                     outputType: widget.type || "string",
+                    value: widget.value,
                     options: widget.options
                 }))
             };
+            return Object.assign(converted, {
+                uiWeightSum: converted.widgets.reduce((sum: number, widget: any) => sum + (widget.uiWeight || 12), 0),
+            });
         })
         .filter(Boolean)
         .sort((a: WidgetTableStructureNode, b: WidgetTableStructureNode) => {

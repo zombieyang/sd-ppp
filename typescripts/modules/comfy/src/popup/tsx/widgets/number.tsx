@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, InputNumber, Slider, Space } from 'antd';
+import { Flex, InputNumber, Slider, Space, Typography } from 'antd';
 import { useUIWeightCSS } from './hooks.mts';
 import { BaseWidgetProps } from './_base';
 
@@ -8,6 +8,7 @@ interface NumberWidgetProps extends BaseWidgetProps {
     inputMax: number;
     inputStep: number;
     value?: number;
+    name?: string;
     onValueChange: (value: number) => void;
 }
 
@@ -15,6 +16,7 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
     inputMin,
     inputMax,
     inputStep,
+    name,
     value = 0,
     uiWeight = 1,
     onValueChange
@@ -58,14 +60,20 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
     // }
 
     return (
-        <InputNumber
+        <Flex
             style={{ width: '100%', ...uiWeightCSS }}
-            min={inputMin}
-            max={inputMax}
-            step={inputStep}
-            value={currentValue}
-            onChange={handleValueChange}
-            controls={false}
-        />
+            align='center'
+        >
+            {name && <span style={{ flex: 1 }}>{name}</span>}
+            <InputNumber
+                style={{ width: '100%', flex: 2 }}
+                min={inputMin}
+                max={inputMax}
+                step={inputStep}
+                value={currentValue}
+                onChange={handleValueChange}
+                controls={false}
+            />
+        </Flex>
     );
 };

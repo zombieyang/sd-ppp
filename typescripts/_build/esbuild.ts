@@ -13,19 +13,22 @@ import WebSocket, { WebSocketServer } from 'ws';
 import { join } from 'path';
 import { typescriptSrcRoot } from './lib.ts';
 import { globSync } from 'glob';
-// 创建WebSocket服务器
-const wss = new WebSocketServer({ port: 8787 });
-const clients = new Set<WebSocket>();
+let wss: WebSocketServer | null = null;
+let clients = new Set<WebSocket>();
+if (process.env.NODE_ENV === 'development') {
+  // 创建WebSocket服务器
+  wss = new WebSocketServer({ port: 8787 });
 
-wss.on('connection', (ws) => {
-  clients.add(ws);
-  console.log('Client connected, total clients:', clients.size);
+  wss.on('connection', (ws) => {
+    clients.add(ws);
+    console.log('Client connected, total clients:', clients.size);
 
-  ws.on('close', () => {
-    clients.delete(ws);
-    console.log('Client disconnected, total clients:', clients.size);
+    ws.on('close', () => {
+      clients.delete(ws);
+      console.log('Client disconnected, total clients:', clients.size);
+    });
   });
-});
+}
 
 // 向所有客户端发送编译完成通知
 function notifyClients(result: {
@@ -39,9 +42,11 @@ function notifyClients(result: {
     warnings: result.warnings.length
   });
 
-  for (const client of clients) {
-    if (client.readyState === 1) { // OPEN
-      client.send(message);
+  if (process.env.NODE_ENV === 'development') {
+    for (const client of clients) {
+      if (client.readyState === 1) { // OPEN
+        client.send(message);
+      }
     }
   }
 }
@@ -50,7 +55,7 @@ async function createBuildContexts() {
   const contexts = [];
   const startTime = Date.now();
   const isWatchMode = process.argv.includes('--watch');
-  
+
   const buildConfigs = await Promise.all(
     globSync(join(typescriptSrcRoot, 'modules/*'))
       .map(async (path: string) => {
@@ -110,7 +115,9 @@ async function main() {
       for (const { context } of contexts) {
         await context.dispose();
       }
-      wss.close();
+      if (process.env.NODE_ENV === 'development') {
+        wss?.close();
+      }
       console.log('Build completed successfully.');
     }
   } catch (error) {

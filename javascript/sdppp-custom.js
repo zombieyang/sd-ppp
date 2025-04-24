@@ -97,20 +97,20 @@ export default function (sdppp) {
             }
             let widgets = node.widgets.slice(0, sliceNum)
                 .map((widget, index) => {
-                    let uiWeight = 12;
-                    if (widget.type == "number" || widget.type == "combo") {
-                        uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
-                    }
-                    if (widget.type == "toggle") {
-                        uiWeight = 4;
-                    }
-                    return {
+                    const ret = {
                         value: widget.value,
-                        name: widget.label || widget.name,
                         outputType: widget.type || "string",
                         options: widget.options,
-                        uiWeight: uiWeight
+                        uiWeight: 12
                     }
+                    if (widget.type == "number" || widget.type == "combo") {
+                        ret.uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
+                    }
+                    if (widget.type == "toggle") {
+                        ret.uiWeight = 4;
+                        ret.name = widget.label || widget.name
+                    }
+                    return ret
                 })
                 .filter(Boolean)
             return {
@@ -249,6 +249,22 @@ export default function (sdppp) {
             }
         }
     });
+
+    sdppp.widgetable.add('__DEFAULT__', {
+        formatter: (node) => {
+            return {
+                id: node.id,
+                title: getTitle(node),
+                widgets: node.widgets.map((widget) => ({
+                    name: widget.label || widget.name,
+                    outputType: widget.type || "string",
+                    value: widget.value,
+                    options: widget.options,
+                    uiWeight: widget.uiWeight || 12
+                }))
+            };
+        }
+    })
 }
 
 

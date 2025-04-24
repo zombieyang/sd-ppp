@@ -482,8 +482,7 @@ sp-progressbar {
 }
 
 .workflow-edit-button sp-action-button.highlight {
-    background-color: var(--uxp-host-text-color-secondary);
-    color: var(--uxp-host-background-color);
+    box-shadow: inset 5px 5px var(--uxp-host-text-color);
 }
 
 .client-list {
