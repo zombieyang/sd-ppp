@@ -525,6 +525,45 @@ def define_comfyui_nodes(sdpppServer):
             
             return (res_text,)
 
+    class RunPhotoshopActionNode:
+        RETURN_TYPES = ("DOCUMENT",)
+        RETURN_NAMES = ("document",)
+        FUNCTION = "action"
+        CATEGORY = "SD-PPP"
+        OUTPUT_NODE = True
+
+        @classmethod
+        def IS_CHANGED(self, **kwargs):
+            return np.random.rand()
+
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {
+                "required": {
+                    "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
+                    "action_set": ("STRING", {"default": "", "sdppp_type": "STRING"}),
+                    "action": ("STRING", {"default": "", "sdppp_type": "STRING"}),
+                },
+                "optional": SDPPPOptional({}, {
+                    "sdppp": ("STRING", {"default": ""})
+                })
+            }
+        
+        def action(self, document, action_set, action, **kwargs):
+            sdpppServer.has_ps_instance(throw_error=True)
+            
+            call_async_func_in_server_thread(ProtocolPhotoshop.run_photoshop_action(
+                instance_id=document['instance_id'],
+                document_identify=document['identify'], 
+                action_set=action_set,
+                action=action
+            ), True)
+
+            return (document, )
+
+        
+        
+
     # class SDPPPSettingsNode:
     #     RETURN_TYPES = ()
     #     FUNCTION = "action"
@@ -550,5 +589,6 @@ def define_comfyui_nodes(sdpppServer):
         'SDPPP Send Text To Layer': SendTextToLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
+        'SDPPP Run Photoshop Action': RunPhotoshopActionNode,
         # 'SDPPP Settings': SDPPPSettingsNode,
     }

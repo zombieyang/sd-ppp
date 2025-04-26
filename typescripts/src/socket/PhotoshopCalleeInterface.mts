@@ -141,6 +141,17 @@ export interface LayerReducerActions {
     }
 }
 
+// =========== runPhotoshopAction Interfaces ===========
+export interface RunPhotoshopActionActions {
+    params: {
+        action_set: string,
+        action: string
+    },
+    result: {
+        success: boolean
+    }
+}
+
 // Main interface that aggregates all action types
 export interface PhotoshopCalleeActions {
     psd: PSDActions;
@@ -153,6 +164,7 @@ export interface PhotoshopCalleeActions {
     getDocumentInfo: getDocumentInfoActions;
     getLinkedLayers: LayerReducerActions;
     getLayersInGroup: LayerReducerActions;
+    runPhotoshopAction: RunPhotoshopActionActions;
 }
 
 // // PhotoshopCaller actions interface (referenced in PhotoshopCallee)

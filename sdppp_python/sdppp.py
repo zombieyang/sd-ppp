@@ -27,7 +27,9 @@ class SDPPP:
         self.sio = socketio.AsyncServer(
             async_mode='aiohttp', 
             cors_allowed_origins="*",
-            max_http_buffer_size=524288000
+            max_http_buffer_size=524288000,
+            ping_interval=60,
+            ping_timeout=50
         )
         self.sio.attach(
             PromptServer.instance.app, 

@@ -1,6 +1,6 @@
 import i18n from "../../../../src/common/i18n.mts";
 import { GetImageFromLayerNode, SendImageToLayerNode } from "../comfy-nodes/legacy-nodes.mjs";
-import { GetDocumentNode, GetLayerNode, GetLayersInGroupNode, GetLinkedLayersNode, GetSelectionNode, GetTextFromLayerNode, ParseLayerInfoNode, SendTextToLayerNode } from "../comfy-nodes/nodes.mjs";
+import { GetDocumentNode, GetLayerNode, GetLayersInGroupNode, GetLinkedLayersNode, GetSelectionNode, GetTextFromLayerNode, ParseLayerInfoNode, RunPhotoshopActionNode, SendTextToLayerNode } from "../comfy-nodes/nodes.mjs";
 import { SDPPPNode } from "../comfy-nodes/SDPPPNode.mjs";
 import { SDPPPNodeWithInput } from "../comfy-nodes/SDPPPNodeWithInput.mjs";
 declare const comfyAPI: any;
@@ -16,6 +16,7 @@ const SDPPPNodeList = {
     'SDPPP Get Layer By ID': GetLayerNode,
     'SDPPP Get Document': GetDocumentNode,
     'SDPPP Get Selection': GetSelectionNode,
+    'SDPPP Run Photoshop Action': RunPhotoshopActionNode,
     // 'SDPPP Settings': SDPPPSettingsNode,
 }
 export const ComfyNodeDefList: Record<any, any> = {} as any

@@ -38,7 +38,7 @@ export default {
     'SDPPP Get Image From Photoshop': 'SDPPP从PS获取图像(GetImageFromPhotoshop)',
     'SDPPP Send Images To Photoshop': 'SDPPP发送图像到PS(SendImagesToPhotoshop)',
     'SDPPP Send Text To Layer': 'SDPPP发送文本到图层(SendTextToLayer)',
-    'SDPPP Settings': 'SDPPP设置/杂项(Settings/Misc)',
+    'SDPPP Run Photoshop Action': 'SDPPP运行PS Action(RunPhotoshopAction)',
 
 // comfy widget/input
     'download PS plugin (.ccx)': '下载 Photoshop 插件 (.ccx)',
@@ -171,6 +171,8 @@ export default {
     'Workflow list loading failed: {0}': '工作流列表加载失败: {0}',
     'Please register a user in ComfyUI': '请在 ComfyUI 中注册一个用户',
     'GetSelection need Photoshop version 25+': 'GetSelection 需要 Photoshop 25+ 版本',
+    'Action {0} not found': 'Action {0} 未找到',
+    'Action set {0} not found': 'ActionSet {0} 未找到',
 
     // photoshop modal state
     'create document for sent images': '给发送的图片创建文档',
@@ -182,6 +184,7 @@ export default {
     'sdppp extract PSD': 'sdppp 导入 PSD',
     'sdppp get PSD': 'sdppp 获取 PSD', 
     'set text to layer': '设置图层的文本',
+    'sdppp Run Photoshop Action': 'sdppp 运行 Photoshop Action',
     
     // photoshop dialog/widget
     '{0} wants to extract a PSD file to Photoshop, are you sure?': '{0} 想要释放一个.psd文件到Photoshop，确定吗？',

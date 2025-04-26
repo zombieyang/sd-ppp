@@ -148,3 +148,11 @@ export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocum
         }
     }
 }
+
+export class RunPhotoshopActionNode extends SDPPPNodeWithInput {
+    async update() {
+        super.update();
+        this.node.inputs.forEach((i: any) => i.label = i18n(i.name));
+        this.node.outputs.forEach((i: any) => i.label = i18n(i.name));
+    }
+}
