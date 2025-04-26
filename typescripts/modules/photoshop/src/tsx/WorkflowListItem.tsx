@@ -81,7 +81,7 @@ const WorkflowListItem: React.FC<WorkflowListItemProps> = ({
                         openWorkflow(workflowAgentSID, workflow.path, true)
                     }} />
                 </div>
-                <ActionButton onClick={() => {
+                <ActionButton highlight={isChecked} onClick={() => {
                     if (!isChecked) {
                         setAutoRunning({ type: 'workflow', value: path })
                     } else {

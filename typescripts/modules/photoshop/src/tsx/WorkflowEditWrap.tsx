@@ -14,6 +14,7 @@ import WebEditIcon from "./icons/WebEditIcon"
 import CrossIcon from "./icons/CrossIcon"
 import StopIcon from "./icons/StopIcon"
 import CancelIcon from "./icons/CancelIcon"
+import { action } from "photoshop";
 
 // 状态显示组件
 const WorkflowStatus = () => {
@@ -161,7 +162,9 @@ const RunButton = () => {
     const { runPage } = useSDPPPComfyCaller();
 
     return (
-        <sp-action-button onClick={() => { runPage(workflowAgentSID) }}>
+        <sp-action-button onClick={() => { 
+            runPage(workflowAgentSID);
+        }}>
             <PlayIcon />
         </sp-action-button>
     );

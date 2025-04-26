@@ -477,13 +477,6 @@ sp-progressbar {
     justify-content: start;
 }
 
-.workflow-edit-button sp-action-button {
-    cursor: pointer;
-}
-
-.workflow-edit-button sp-action-button.highlight {
-    box-shadow: inset 5px 5px var(--uxp-host-text-color);
-}
 
 .client-list {
     margin-top: -5px;
@@ -626,11 +619,16 @@ sp-progressbar {
     justify-content: center;
 }
 
-.action-button:hover,
-.action-button.highlight {
+.action-button:hover {
     background-color: var(--sdppp-widget-hover-background-color);
     border-color: var(--sdppp-widget-hover-border-color);
     color: var(--sdppp-widget-hover-text-color);
+}
+sp-action-button.highlight, .action-button.highlight {
+    background-color: var(--uxp-host-text-color);
+}
+sp-action-button.highlight:hover, .action-button.highlight:hover {
+    background-color: var(--uxp-host-text-color-secondary);
 }
 
 .about-card {

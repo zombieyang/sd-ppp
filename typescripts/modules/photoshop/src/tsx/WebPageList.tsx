@@ -16,7 +16,7 @@ const WebPageList: React.FC = () => {
                 <h3>{i18n('webpages')}</h3>
             </div>
             {
-                !pageInstances.length && <sp-label class="list-error-label">{i18n("No opened ComfyUI pages")}</sp-label>
+                !pageInstances.length && <sp-label>{i18n("No opened ComfyUI pages")}</sp-label>
             }
             <ul className="client-list">
                 {
