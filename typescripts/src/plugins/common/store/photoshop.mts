@@ -27,7 +27,7 @@ export interface PhotoshopStoreData {
     documents: PhotoshopDataDocument
 
     canvasStateID: number  // last PS history state id that triggered image change
-    selectionStateID: number  // last PS history state id that triggered selection change
+    selectionStateID: string  // last PS history state id that triggered selection change
     historyStateID: number  // last PS history state id
 }
 
@@ -42,7 +42,7 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
             documents: {},
 
             canvasStateID: 0,
-            selectionStateID: 0,
+            selectionStateID: '',
             historyStateID: 0,
         });
         this._version = version || 0;
@@ -64,8 +64,8 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
         this._data.canvasStateID = historyStateID;
     }
     @StoreMutation
-    setSelectionStateID(historyStateID: number) {
-        this._data.selectionStateID = historyStateID;
+    setSelectionStateID(selectionState: string) {
+        this._data.selectionStateID = selectionState;
     }
     @StoreMutation
     setHistoryStateID(historyStateID: number) {

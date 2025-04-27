@@ -5,7 +5,7 @@ import json
 from ..protocols.photoshop import ProtocolPhotoshop
 from PIL import Image, ImageOps, ImageSequence, ImageFile, ImageDraw
 
-def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = 'canvasStateID'):
+def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = ''):
     document_instance_id = None
     try:
         sdppp_values = json.loads(sdppp_arg)
@@ -14,9 +14,12 @@ def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = 'canvasStateID'):
             document_instance_id = document['instance_id']
         else:
             document_instance_id = sdppp_values['document']['instance_id']
-        return sdppp.ppp_instances[document_instance_id].store.data[key]
+        if key == '':
+            return f"{sdppp.ppp_instances[document_instance_id].store.data['canvasStateID']}_{sdppp.ppp_instances[document_instance_id].store.data['selectionStateID']}"
+        else:
+            return sdppp.ppp_instances[document_instance_id].store.data[key]
     except Exception as e:
-        # print('=============error============', e)
+        print('=============sdppp_is_changed error============', e)
         # print(sdppp_arg)
         # print(document_arg)
         return np.random.rand()
@@ -189,7 +192,11 @@ def define_comfyui_nodes(sdpppServer):
         @classmethod
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
-            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
+            try:
+                if kwargs['document_name']['identify'] == '### Active Document ###' or kwargs['document_name']['identify'] == '### 当前文档 ###':
+                    return sdppp_is_changed(sdpppServer, sdppp_arg, 'selectionStateID')
+            finally:
+                return sdppp_is_changed(sdpppServer, sdppp_arg, '')
             
         @classmethod
         def INPUT_TYPES(cls):
@@ -229,7 +236,12 @@ def define_comfyui_nodes(sdpppServer):
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
             document_arg = kwargs['document']
-            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+
+            try:
+                if kwargs['layer_or_group'] == '### Selected Layer ###' or kwargs['layer_or_group'] == '### 所选图层 ###':
+                    return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg, 'selectionStateID')
+            finally:
+                return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):
