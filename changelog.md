@@ -1,3 +1,8 @@
+## [1.7.6] - 2025-04-27
+* fix: cannot disconnect when is connecting to ComfyUI
+* fix: unnecessary cache when useing selected layer.
+* cannot preview image in ImageWidget when first open a workflow
+
 ## [1.7.5] - 2025-04-19
 * fix: SendImage Node result cannot send back to PS plugin by @fichas in https://github.com/zombieyang/sd-ppp/pull/143
 * Fix: The image results of some workflows cannot be transmitted to Photoshop by @fichas in https://github.com/zombieyang/sd-ppp/pull/144
