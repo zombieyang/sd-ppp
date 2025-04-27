@@ -5,6 +5,7 @@ export interface PhotoshopCaller {
     exportPSDDataURLToPhotoshop(sid: string, document_identify: string, dataURL: string, fromSSID: string): Promise<void>;
     getImage(sid: string, payload: PhotoshopCalleeActions['getImage']['params']): Promise<any>;
     sendImage(sid: string, payload: PhotoshopCalleeActions['sendImages']['params']): Promise<any>;
+    getSpecialIdentifierValue(sid: string, payload: PhotoshopCalleeActions['getSpecialIdentifierValue']['params']): Promise<any>;
 }
 
 export interface PhotoshopCallerActions {
@@ -24,5 +25,6 @@ export interface PhotoshopCallerActions {
             type: string;
             subfolder: string;
         }
-    }
+    },
+
 }

@@ -152,6 +152,17 @@ export interface RunPhotoshopActionActions {
     }
 }
 
+// =========== getSpecialIdentifierValue Interfaces ===========
+export interface getSpecialIdentifierValueActions {
+    params: {
+        identifier: string
+        width?: number,
+        height?: number
+    },
+    result: {
+        value: string
+    }
+}
 // Main interface that aggregates all action types
 export interface PhotoshopCalleeActions {
     psd: PSDActions;
@@ -165,6 +176,7 @@ export interface PhotoshopCalleeActions {
     getLinkedLayers: LayerReducerActions;
     getLayersInGroup: LayerReducerActions;
     runPhotoshopAction: RunPhotoshopActionActions;
+    getSpecialIdentifierValue: getSpecialIdentifierValueActions;
 }
 
 // // PhotoshopCaller actions interface (referenced in PhotoshopCallee)

@@ -192,12 +192,8 @@ def define_comfyui_nodes(sdpppServer):
         @classmethod
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
-            try:
-                if kwargs['document_name']['identify'] == '### Active Document ###' or kwargs['document_name']['identify'] == '### 当前文档 ###':
-                    return sdppp_is_changed(sdpppServer, sdppp_arg, 'selectionStateID')
-            finally:
-                return sdppp_is_changed(sdpppServer, sdppp_arg, '')
-            
+            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
+                        
         @classmethod
         def INPUT_TYPES(cls):
             return {
@@ -237,11 +233,7 @@ def define_comfyui_nodes(sdpppServer):
             sdppp_arg = kwargs['sdppp']
             document_arg = kwargs['document']
 
-            try:
-                if kwargs['layer_or_group'] == '### Selected Layer ###' or kwargs['layer_or_group'] == '### 所选图层 ###':
-                    return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg, 'selectionStateID')
-            finally:
-                return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
         def INPUT_TYPES(cls):

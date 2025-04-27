@@ -86,6 +86,18 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
                 });
             });
         }
+
+        public async getSpecialIdentifierValue(sid: string, payload: PhotoshopCalleeActions['getSpecialIdentifierValue']['params']) {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('B_photoshop', {
+                    action: 'getSpecialIdentifierValue',    
+                    sid: sid,   
+                    params: payload
+                }, (data: any) => {
+                    data && data.error ? reject(new Error(data.error)) : resolve(data);
+                });
+            });
+        }
     }
 }
 

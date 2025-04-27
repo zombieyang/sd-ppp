@@ -63,9 +63,16 @@ export class DocumentWidget extends SDPPPComboWidget {
                 instance_id: i18n('document {0} not found', documentWidget.value),
                 identify: ''
             });
+            let identify = data.identify;
+            if (SpeicialIDManager.is_SPECIAL_DOCUMENT_CURRENT(identify)) {
+                const ret = await ComfySocket.instance.getSpecialIdentifierValue(data.instance_id, {
+                    identifier: identify
+                })
+                identify = ret.value;
+            }
             return JSON.stringify({
                 instance_id: data.instance_id,
-                identify: data.identify
+                identify: identify
             });
         }
         node.size = [size[0], Math.max(size[1], node.size[1])];
@@ -133,11 +140,29 @@ export class LayerWidget extends SDPPPComboWidget {
                 value = SpeicialIDManager.fixI18n(value);
             }
         })
+        layerWidget.serializeValue = async () => {
+            const documentWidget = this.documentWidgetByLinked;
+            if (!documentWidget) return layerWidget.value;
+
+            const document = parseDocumentOption(documentWidget.widget.value);
+            if (!document) return layerWidget.value
+            
+            let identify = layerWidget.value;
+            if (SpeicialIDManager.is_SPECIAL_LAYER_SELECTED_LAYER(identify)) {
+                const ret = await ComfySocket.instance.getSpecialIdentifierValue(document.instance_id, {
+                    identifier: identify
+                })
+                identify = ret.value;
+            }
+            return identify;
+        }
     }
     static create(node: any, name: I18nKey, options: LayerWidgetWithDocumentSelectionCtorOptions) {
         const size = node.size.slice(0);
         const layerWidget = node.addWidget('combo', name, options.extraOptions[0] || '', () => { }, { forceInput: true, values: options.extraOptions })
-        
+        // layerWidget.serializeValue = async () => {
+        //     this.documentWidgetByLinked
+        // }
 
         node.size = [size[0], Math.max(size[1], node.size[1])];
         return new LayerWidgetWithDocumentSelection(node, layerWidget, {
@@ -203,6 +228,22 @@ export class LayerWidgetWithDocumentSelection extends LayerWidget {
             const documentWidget = this.documentWidgetInNode || this.documentWidgetByLinked;
             documentWidget?.selectConcreteDocument();
         })
+        layerWidget.serializeValue = async () => {
+            const documentWidget = this.documentWidgetInNode || this.documentWidgetByLinked;
+            if (!documentWidget) return layerWidget.value;
+
+            const document = parseDocumentOption(documentWidget.widget.value);
+            if (!document) return layerWidget.value
+            
+            let identify = layerWidget.value;
+            if (SpeicialIDManager.is_SPECIAL_LAYER_SELECTED_LAYER(identify)) {
+                const ret = await ComfySocket.instance.getSpecialIdentifierValue(document.instance_id, {
+                    identifier: identify
+                })
+                identify = ret.value;
+            }
+            return identify;
+        }
         this.documentWidgetInNode?.onChange(this.update)
     }
     public override update() {
