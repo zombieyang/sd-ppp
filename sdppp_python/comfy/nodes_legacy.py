@@ -68,6 +68,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 },
                 "optional": SDPPPOptional({
                     "bound": ('MASK', {"default": None}),
+                    "quality": ('FLOAT', {"default": 100.0, "min": 0.0, "max": 100.0, "step": 1.0, "forceInput": True}),
                 }, {
                     # compat combo selection type
                     "document": ("STRING", {"default": "", "sdppp_type": "DOCUMENT_nameid"}),
@@ -79,7 +80,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 }
             }
 
-        def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", **kwargs):
+        def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", quality=100.0, **kwargs):
             sdppp_arg = kwargs['sdppp']
             sdppp.has_ps_instance(throw_error=True)
 
@@ -104,18 +105,32 @@ def define_comfyui_nodes_legacy(sdppp):
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
                         boundary=convert_mask_to_boundary(item_bound),
-                        max_wh=sdppp_arg_item['ps_maxGetImageWH']
+                        max_wh=sdppp_arg_item['ps_maxGetImageWH'],
+                        quality=sdppp_get_prompt_item_from_list(quality, i)
                     )
                 )
                 # change to use result['pngData']. a .png data
-                (output_image, output_mask) = self._load_image_from_png(
-                    result['pngData']
-                )
+                # (output_image, output_mask) = self._load_image_from_png(
+                #     result['pngData']
+                # )
+                output_image = self._load_image_from_jpeg(result['jpegData'])
+                (_, output_mask) = self._load_image_from_png(result['alphaData'])
 
                 res_image.append(output_image)
                 res_mask.append(output_mask)
 
             return (res_image, res_mask,)
+
+        def _load_image_from_jpeg(self, jpeg_data):
+            # Load the JPEG data using PIL
+            image = Image.open(BytesIO(jpeg_data))
+            
+            # Convert to RGB for the output image
+            rgb_image = image.convert("RGB")
+            rgb_array = np.array(rgb_image).astype(np.float32) / 255.0
+            output_image = torch.from_numpy(rgb_array)[None,]
+            return output_image
+
 
         def _load_image_from_png(self, png_data):
             # Load the PNG data using PIL

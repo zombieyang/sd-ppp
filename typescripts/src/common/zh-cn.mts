@@ -87,6 +87,7 @@ export default {
     'sample .psd': '示例.psd',
     'mask': '遮罩',
     'name': '名称',
+    'quality': '图像质量',
     
     // photoshop UI
     'timeout': '超时',

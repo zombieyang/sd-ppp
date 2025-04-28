@@ -20,13 +20,13 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
             documentWidgetInNode: documentWidget,
             extraOptions: SpeicialIDManager.getSpecialLayerForGet()
         });
+
         super(node);
         this.documentWidget = documentWidget
         this.layerWidget = layerWidget
 
-        this.node.widgets[0] = documentWidget.widget
-        this.node.widgets[1] = layerWidget.widget
-
+        this.node.widgets[1] = documentWidget.widget
+        this.node.widgets[2] = layerWidget.widget
     }
     protected onConfigure(nodeData: any): void {
         if (!nodeData.properties['sdppp-version']) {
@@ -54,6 +54,10 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
 
             this.node.widgets[0].value = nodeData.widgets_values[1];
             this.node.widgets[1].value = nodeData.widgets_values[2];
+        } else if (+nodeData.properties['sdppp-version'] < 504) {
+            this.node.widgets[0].value = 100;
+            this.node.widgets[1].value = nodeData.widgets_values[0];
+            this.node.widgets[2].value = nodeData.widgets_values[1];
         }
         super.onConfigure(nodeData);
     }
@@ -65,14 +69,18 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
         this.documentWidget.update();
         this.layerWidget.update();
         super.update();
-        if (!this.node.widgets[0].label)
-            this.node.widgets[0].label = i18n(this.node.widgets[0].name)
-        if (!this.node.widgets[1].label)
-            this.node.widgets[1].label = i18n(this.node.widgets[1].name)
-        this.node.inputs[0].label = i18n(this.node.inputs[0].name)
-        this.node.inputs[1].label = i18n(this.node.inputs[1].name)
-        this.node.outputs[0].label = i18n(this.node.outputs[0].name)
-        this.node.outputs[1].label = i18n(this.node.outputs[1].name)
+        this.node.widgets.forEach((i: any) => {
+            if (i.label) return
+            try { i.label = i18n(i.name) } catch (e) { }
+        })
+        this.node.inputs.forEach((i: any) => {
+            if (i.label) return
+            try { i.label = i18n(i.name) } catch (e) { }
+        })
+        this.node.outputs.forEach((i: any) => {
+            if (i.label) return
+            try { i.label = i18n(i.name) } catch (e) { }
+        })
     }
     private layerLinked: boolean = false;
     protected inputConnectionChange(index: number, connected: boolean) {

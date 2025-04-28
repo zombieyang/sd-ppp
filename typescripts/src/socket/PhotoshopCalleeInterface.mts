@@ -36,9 +36,12 @@ export interface getImageActions {
         layer_identify: string,
         boundary?: SDPPPBounds,
         max_wh?: number,
+        quality?: number,
     },
     result: {
-        pngData: Uint8Array | null
+        // pngData: Uint8Array | null,
+        jpegData: Uint8Array | null,
+        alphaData: Uint8Array | null
     }
 }
 

@@ -63,17 +63,17 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
             });
         }
 
-        public async getImage(sid: string, payload: PhotoshopCalleeActions['getImage']['params']) {
-            return new Promise((resolve, reject) => {
-                this.socket.emit('B_photoshop', {
-                    action: 'getImage',
-                    sid: sid,
-                    params: payload
-                }, (data: any) => {
-                    data && data.error ? reject(new Error(data.error)) : resolve(data);
-                });
-            });
-        }
+        // public async getImage(sid: string, payload: PhotoshopCalleeActions['getImage']['params']) {
+        //     return new Promise((resolve, reject) => {
+        //         this.socket.emit('B_photoshop', {
+        //             action: 'getImage',
+        //             sid: sid,
+        //             params: payload
+        //         }, (data: any) => {
+        //             data && data.error ? reject(new Error(data.error)) : resolve(data);
+        //         });
+        //     });
+        // }
 
         public async sendImage(sid: string, payload: PhotoshopCalleeActions['sendImages']['params']) {
             return new Promise((resolve, reject) => {

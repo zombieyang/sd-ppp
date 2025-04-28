@@ -1,8 +1,9 @@
 import { io } from 'socket.io-client';
 import { __GLOBAL_API_LEVEL__ } from '../version.mjs';
+import { Socket as SocketIOClient } from 'socket.io-client';
 
 export class Socket {
-    protected readonly socket: any;
+    protected readonly socket: SocketIOClient;
     constructor(url: string) {
         const path = '/' + [url.split('/').slice(3).filter(p => p).join('/'), 'sd-ppp/'].filter(p => p).join('/');
         url = url.split('/').slice(0, 3).join('/');
@@ -32,6 +33,7 @@ export class Socket {
 
     public close() {
         this.socket.close();
+        this.socket.removeAllListeners();
     }
 }
 
