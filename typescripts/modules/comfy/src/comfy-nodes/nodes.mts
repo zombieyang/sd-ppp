@@ -66,37 +66,8 @@ export class GetTextFromLayerNode extends SDPPPDownloadableNode {
             delete nodeData.input.optional['document'];
         }
     }
-    private documentWidget: DocumentWidget;
-    private layerWidget: LayerWidget;
-    protected async update() {
-        this.documentWidget?.lockMode(this.layerConnected, i18n('document linked'))
-        this.layerWidget?.lockMode(this.layerConnected, i18n('layer linked'))
-        this.documentWidget.update();
-        this.layerWidget.update();
-        super.update();
-        if (!this.node.widgets[0].label)
-            this.node.widgets[0].label = i18n(this.node.widgets[0].name)
-        if (!this.node.widgets[1].label)
-            this.node.widgets[1].label = i18n(this.node.widgets[1].name)
-        this.node.inputs[0].label = i18n(this.node.inputs[0].name)
-        this.node.outputs[0].label = i18n(this.node.outputs[0].name)
-    }
     constructor(node: any) {
-        const documentWidget = DocumentWidget.create(node, 'document')
-        const layerWidget = LayerWidget.create(node, 'layer_or_group', {
-            documentWidgetInNode: documentWidget,
-            extraOptions: []
-        });
         super(node);
-        this.documentWidget = documentWidget
-        this.layerWidget = layerWidget
-    }
-    protected layerConnected: boolean = false;
-    protected inputConnectionChange(index: number, connected: boolean) {
-        super.inputConnectionChange(index, connected);
-        if (index == 0) {
-            this.layerConnected = connected;
-        }
     }
 }
 

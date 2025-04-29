@@ -202,14 +202,12 @@ export default {
     // about
     'This plugin is based on sd-ppp': '本插件基于sd-ppp开发',
     'And follows its open source license:': '并遵循其开源协议：',
-    "https://www.youtube.com/@Github-Zombeeyang/videos": 'https://space.bilibili.com/44908313',
-    "Youtube": 'BiliBili',
-    "https://discord.gg/9HeGjDvEmn": "https://pd.qq.com/s/5m42umo28",
-    "Discord": 'QQ频道',
+    "Cloud": "云端",
     "Sponsors": "赞助",
     "waiting...": '虚位以待',
     'Links': '友情链接',
     'Community': '社区',
+    'LICENSE:': '许可证：',
 
     // comfy popup
     "upload": "上传",

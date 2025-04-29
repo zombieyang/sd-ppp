@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Flex, InputNumber, Slider, Space, Typography } from 'antd';
 import { useUIWeightCSS } from './hooks.mts';
 import { BaseWidgetProps } from './_base';
@@ -22,16 +22,26 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
     onValueChange
 }) => {
     const uiWeightCSS = useUIWeightCSS(uiWeight || 12);
-    const handleValueChange = (newValue: number | null) => {
+    const [localValue, setLocalValue] = useState<number>(+value.toFixed(3));
+    
+    // Update local state when props value changes
+    useEffect(() => {
+        setLocalValue(+value.toFixed(3));
+    }, [value]);
+    
+    const handleValueChange = useCallback((newValue: number | null) => {
         if (newValue !== null) {
             // 保留3位小数
-            const value = +newValue.toFixed(3);
-            onValueChange(value);
+            const roundedValue = +newValue.toFixed(3);
+            setLocalValue(roundedValue);
         }
-    };
-
-    const currentValue = +value.toFixed(3);
+    }, []);
     
+    const handleBlur = useCallback(() => {
+        // Only call onValueChange when input loses focus
+        onValueChange(localValue);
+    }, [localValue, onValueChange]);
+
     // 检查步长范围是否过大
     // const isStepRangeTooBig = ((inputMax - inputMin) / inputStep) > 1000;
 
@@ -70,8 +80,9 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
                 min={inputMin}
                 max={inputMax}
                 step={inputStep}
-                value={currentValue}
+                value={localValue}
                 onChange={handleValueChange}
+                onBlur={handleBlur}
                 controls={false}
             />
         </Flex>

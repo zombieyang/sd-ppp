@@ -1,0 +1,80 @@
+{
+    "LICENSE": {
+        "name": "BSD3-Clause",
+        "url": {
+            "en": "https://github.com/zombieyang/sd-ppp/blob/main/LICENSE",
+            "zhcn": "https://gitee.com/zombieyang/sd-ppp/blob/main/LICENSE"
+        }
+    },
+    "sponsors": [
+        {
+            "name": "四喜AI",
+            "url": "https://v.douyin.com/hD2X7S717uw/"
+        },
+        {
+            "name": "沐沐AI",
+            "url": "https://v.douyin.com/k6yKDEcVgP8/"
+        }
+    ],
+    "links": [
+        {
+            "name": "猫咪老师Reimagined",
+            "url": "https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f"
+        },
+        {
+            "name": "来真的",
+            "url": "https://space.bilibili.com/590784254"
+        },
+        {
+            "name": "哑狗Egao",
+            "url": "https://space.bilibili.com/284721975"
+        }
+    ],
+    "community": {
+        "en": [
+            {
+                "name": "Github",
+                "url": "https://github.com/zombieyang/sd-ppp"
+            },
+            {
+                "name": "Discord",
+                "url": "https://discord.gg/9HeGjDvEmn"
+            },
+            {
+                "name": "Youtube",
+                "url": "https://www.youtube.com/@Github-Zombeeyang/videos"
+            }
+        ],
+        "zhcn": [
+            {
+                "name": "Github",
+                "url": "https://github.com/zombieyang/sd-ppp"
+            },
+            {
+                "name": "QQ频道",
+                "url": "https://pd.qq.com/s/5m42umo28"
+            },
+            {
+                "name": "Bilibili",
+                "url": "https://space.bilibili.com/44908313"
+            }   
+        ]
+    },
+    "cloud": {
+        "en": [],
+        "zhcn": [
+            {
+                "name": "Cephalon",
+                "url": "https://cephalon.cloud/share/register-landing?invite_id=m95SDj",
+                "icon": "https://cephalon.cloud/favicon.ico",
+                "color": "#000000"
+            },
+            {
+                "name": "晨羽智云",
+                "url": "https://www.chenyu.cn/console/login?invitationCode=BUD913",
+                "icon": "https://www.chenyu.cn/favicon.ico",
+                "color": "#f3ac40"
+            }
+        ]
+    }
+}
