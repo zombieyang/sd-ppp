@@ -10,9 +10,12 @@ var docStyle = document.createElement('style');
 docStyle.innerHTML = cssText;
 document.head.appendChild(docStyle);
 
-export default function ComfyPopup({ onClose }: { onClose: () => void }) {
-    const [tab, setTab] = useState('1');
+export default function ComfyPopup({ onClose, tab }: { onClose: () => void, tab: string }) {
+    const [_tab, setTab] = useState('1');
     const [sidebarWidth, setSidebarWidth] = useState(0);
+    useEffect(() => {
+        setTab(tab);
+    }, [tab]);
     
     useEffect(() => {
         const $canvas = document.getElementById('graph-canvas');
@@ -58,17 +61,17 @@ export default function ComfyPopup({ onClose }: { onClose: () => void }) {
             }}>
                 <div className="sdppp-menu-header">
                     <div className="sdppp-menu-header-left">
-                        <button onClick={() => setTab('1')} className={tab === '1' ? 'active' : ''}>{i18n("Simplify Workflow")}</button>
-                        <button onClick={() => setTab('2')} className={tab === '2' ? 'active' : ''}>{i18n("Photoshop")}</button>
+                        <button onClick={() => setTab('1')} className={_tab === '1' ? 'active' : ''}>{i18n("Simplify Workflow")}</button>
+                        <button onClick={() => setTab('2')} className={_tab === '2' ? 'active' : ''}>{i18n("Photoshop")}</button>
                     </div>
                     <span>Powered by SDPPP</span>
                     <button className="sdppp-menu-close-button" onClick={onClose}><CloseOutlined /></button>
                 </div>
                 <div className="sdppp-menu-content">
-                    <div className="sdppp-menu-workflow-edit-wrap" style={{ display: tab === '1' ? 'block' : 'none' }}>
+                    <div className="sdppp-menu-workflow-edit-wrap" style={{ display: _tab === '1' ? 'block' : 'none' }}>
                         <WorkflowEditWrap />
                     </div>
-                    <div className="sdppp-menu-settings-wrap" style={{ display: tab === '2' ? 'block' : 'none' }}>
+                    <div className="sdppp-menu-settings-wrap" style={{ display: _tab === '2' ? 'block' : 'none' }}>
                         <Settings />
                     </div>
                 </div>

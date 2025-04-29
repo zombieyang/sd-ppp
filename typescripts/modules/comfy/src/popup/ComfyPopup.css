@@ -220,5 +220,12 @@
 .sdppp-side-container .sdppp-side-header button {
     width: 32px;
     height: 32px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
 }
-
+.sdppp-photoshop-icon {
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg");
+}
+.sdppp-premiere-icon {
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg");
+}

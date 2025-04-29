@@ -26,6 +26,7 @@ export interface WidgetTableStructure {
     nodes: Record<number, WidgetTableStructureNode>
     groups: Record<number, WidgetTableStructureGroup>
     nodeIndexes: number[]
+    extraOptions: Record<string, any>
 }
 
 export interface ComfyStatus {

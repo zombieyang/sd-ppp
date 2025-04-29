@@ -9,6 +9,7 @@ const { TextArea } = Input;
 interface StringWidgetProps extends BaseWidgetProps {
     value?: string;
     onValueChange: (value: string) => void;
+    extraOptions?: Record<string, any>;
 }
 
 export const StringWidget: React.FC<StringWidgetProps> = ({

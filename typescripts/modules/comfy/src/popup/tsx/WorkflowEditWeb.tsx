@@ -208,6 +208,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
+                            extraOptions={this.state.widgetTableStructure.extraOptions}
                         />)
                     return true
                 } else if (widget.outputType === 'combo') {
@@ -221,6 +222,7 @@ export class WorkflowEditWrap extends React.Component<{
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
                             value={this.state.widgetTableValue[fieldInfo.id][widgetIndex]}
+                            extraOptions={this.state.widgetTableStructure.extraOptions}
                         />
                     )
                     return true
@@ -234,6 +236,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
+                            extraOptions={this.state.widgetTableStructure.extraOptions}
                         />
                     )
                     return true
@@ -247,6 +250,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onValueChange={(v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
+                            extraOptions={this.state.widgetTableStructure.extraOptions}
                         />
                     )
                     return true
@@ -263,6 +267,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onValueChange={async (v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
+                            extraOptions={this.state.widgetTableStructure.extraOptions}
                         />
                     );
                     return true;

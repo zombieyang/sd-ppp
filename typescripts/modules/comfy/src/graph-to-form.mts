@@ -1,3 +1,4 @@
+import { pageStore } from "photoshopModels.mjs";
 import i18n from "../../../src/common/i18n.mts";
 import { sdpppX } from "../../../src/common/sdpppX.mts";
 import { WidgetTableStructure, WidgetTableStructureNode, WidgetTableValue } from "../../../src/types/sdppp";
@@ -80,7 +81,10 @@ export function makeWidgetTableStructure(graph: any, activeWorkflow: any): Widge
         widgetTablePersisted: false,
         groups: {},
         nodes: {},
-        nodeIndexes: []
+        nodeIndexes: [],
+        extraOptions: {
+            useSliderForNumberWidget: pageStore.data.useSliderForNumberWidget
+        }
     };
     const groups: WidgetTableStructure['groups'] = graph
         .groups
@@ -177,7 +181,10 @@ export function makeWidgetTableStructure(graph: any, activeWorkflow: any): Widge
             acc[node.id] = node;
             return acc;
         }, {}),
-        nodeIndexes: nodes.map((node: WidgetTableStructureNode) => node.id)
+        nodeIndexes: nodes.map((node: WidgetTableStructureNode) => node.id),
+        extraOptions: {
+            useSliderForNumberWidget: pageStore.data.useSliderForNumberWidget
+        }
     }
 }
 

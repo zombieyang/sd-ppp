@@ -13,10 +13,10 @@ export interface PageStoreData {
     widgetTableStructure: WidgetTableStructure
     widgetTableValue: WidgetTableValue
     widgetTableErrors: Record<string, string>,
+    useSliderForNumberWidget: boolean
     // lastOpenedWorkflow: string
 
     hasPSDNodes: boolean
-    maxImageWH: number
     comfyUserToken: string
 }
 
@@ -38,14 +38,15 @@ export class PageStore extends MainStore<PageStoreData> {
                 widgetTableID: '',
                 nodes: {},
                 groups: {},
-                nodeIndexes: []
+                nodeIndexes: [],
+                extraOptions: {}
             },
             widgetTableValue: {},
             widgetTableErrors: {},
+            useSliderForNumberWidget: false,
             // lastOpenedWorkflow: '',
 
             hasPSDNodes: false,
-            maxImageWH: 60606,
             comfyUserToken: ''
         });
         this._version = version || 0;
@@ -92,12 +93,12 @@ export class PageStore extends MainStore<PageStoreData> {
     }
 
     @StoreMutation
-    setMaxImageWH(maxImageWH: number) {
-        this._data.maxImageWH = maxImageWH;
+    setComfyUserToken(comfyUserToken: string) {
+        this._data.comfyUserToken = comfyUserToken;
     }
 
     @StoreMutation
-    setComfyUserToken(comfyUserToken: string) {
-        this._data.comfyUserToken = comfyUserToken;
+    setUseSliderForNumberWidget(useSliderForNumberWidget: boolean) {
+        this._data.useSliderForNumberWidget = useSliderForNumberWidget;
     }
 }

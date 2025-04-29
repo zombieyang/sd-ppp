@@ -9,6 +9,7 @@ export interface DropdownWidgetProps extends BaseWidgetProps {
     options: string[];
     value: string;
     name?: string;
+    extraOptions?: Record<string, any>;
 }
 
 export const ComboWidget: React.FC<DropdownWidgetProps> = ({
@@ -34,7 +35,7 @@ export const ComboWidget: React.FC<DropdownWidgetProps> = ({
             <Select
                 value={value}
                 options={options.map(option => ({ value: option, label: option }))}
-                style={{ flex: 2 }}
+                style={{ flex: 2, minWidth: '100%' }}
                 onSelect={handleSelect}
                 placeholder={i18n("select...")}
                 showSearch

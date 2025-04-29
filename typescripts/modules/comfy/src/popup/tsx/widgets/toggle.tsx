@@ -8,6 +8,7 @@ interface ToggleProps extends BaseWidgetProps {
     value?: any;
     name?: string;
     onValueChange: (value: boolean) => void;
+    extraOptions?: Record<string, any>;
 }
 
 export const ToggleWidget: React.FC<ToggleProps> = ({

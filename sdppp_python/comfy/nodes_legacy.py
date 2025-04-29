@@ -105,7 +105,6 @@ def define_comfyui_nodes_legacy(sdppp):
                         document_identify=document['identify'], 
                         layer_identify=item_layer, 
                         boundary=convert_mask_to_boundary(item_bound),
-                        max_wh=sdppp_arg_item['ps_maxGetImageWH'],
                         quality=sdppp_get_prompt_item_from_list(quality, i)
                     )
                 )

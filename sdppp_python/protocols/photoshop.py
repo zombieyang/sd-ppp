@@ -17,7 +17,7 @@ class ProtocolPhotoshop:
         cls.sdpppServer = sdpppServer
 
     @classmethod
-    async def get_image(cls, instance_id, document_identify, layer_identify, boundary, max_wh=60606, quality=100.0):
+    async def get_image(cls, instance_id, document_identify, layer_identify, boundary, quality=100.0):
         ppp_instance = cls.sdpppServer.ppp_instances[instance_id]
         result = await protocol_call(ppp_instance, 'B_photoshop', data={
             'action': 'getImage',
@@ -25,7 +25,6 @@ class ProtocolPhotoshop:
                 'document_identify': document_identify, 
                 'layer_identify': layer_identify, 
                 'boundary': boundary,
-                'max_wh': max_wh,
                 'quality': quality
             }
         })

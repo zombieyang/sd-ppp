@@ -66,9 +66,9 @@ export async function waitModelInited() {
         return Promise.resolve();
     }
     api.user && pageStore.setComfyUserToken(api.user);
-    const maxImageWH = await api.getSetting('sdppp.maxImageWH')
-    if (maxImageWH) {
-        pageStore.setMaxImageWH(maxImageWH)
+    const useSliderForNumberWidget = await api.getSetting('sdppp.useSliderForNumberWidget')
+    if (useSliderForNumberWidget) {
+        pageStore.setUseSliderForNumberWidget(useSliderForNumberWidget)
     }
     modelInited = true;
 }

@@ -7,6 +7,7 @@ interface ImageWidgetProps extends BaseWidgetProps {
     value: string;
     options: string[];
     onValueChange: (value: any) => void;
+    extraOptions?: Record<string, any>;
 }
 
 export const ImageWidget = ({ value, onValueChange, options }: ImageWidgetProps) => {

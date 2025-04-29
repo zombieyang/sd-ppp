@@ -45,10 +45,15 @@ export default function WorkflowEdit({
             }
             const group = Object.values(widgetTableStructure.groups).find(group => group.nodeIDs.includes(fieldInfo.id))
             const groupColor = group?.color || 'rgba(127, 127, 127, .4)'
+
+            const useShortTitle = fieldInfo.uiWeightSum <= 8 && fieldInfo.widgets.length == 1 && (
+                fieldInfo.widgets[0].outputType !== 'number' ||
+                !widgetTableStructure.extraOptions?.useSliderForNumberWidget
+            )
             return (
                 <div className="workflow-edit-field" key={fieldInfo.id}>
                     <div className="workflow-edit-field-title" title={fieldInfo.title} style={{
-                        ...computeUIWeightCSS(fieldInfo.uiWeightSum <= 8 && fieldInfo.widgets.length == 1 ? 4 : 12),
+                        ...computeUIWeightCSS(useShortTitle ? 4 : 12),
                         borderColor: groupColor
                     }}>
                         {onTitleRender ?

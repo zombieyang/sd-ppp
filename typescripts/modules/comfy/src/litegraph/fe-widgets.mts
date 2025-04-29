@@ -271,7 +271,6 @@ export class DownloadWidget extends SDPPPWidget {
             ];
             widget.serializeValue = async () => {
                 const ret: any = {
-                    ps_maxGetImageWH: pageStore.data.maxImageWH,
                     lastOpenedWorkflow: simplifyWorkflowPath(pageStore.data.widgetTableStructure.widgetTablePath)
                 }
                 const documentNode = findDocumentNodeRecursive(node);
