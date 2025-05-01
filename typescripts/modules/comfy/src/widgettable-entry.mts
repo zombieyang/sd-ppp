@@ -14,6 +14,9 @@ api.addEventListener("graphChanged", () => {
     }
     pageStore.setWidgetTableValue(getWidgetTableValue(app.graph));
 })
+api.addEventListener("executed", () => {
+    pageStore.setWidgetTableValue(getWidgetTableValue(app.graph));
+})
 
 
 let lastActiveWorkflowID: number = 0;

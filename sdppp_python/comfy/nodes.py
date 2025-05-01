@@ -427,45 +427,45 @@ def define_comfyui_nodes(sdpppServer):
 
             return (output_mask, )
 
-    class SendTextToLayerNode:
-        RETURN_TYPES = ("DOCUMENT",)
-        OUTPUT_NODE = True
-        FUNCTION = "action"
-        CATEGORY = "SD-PPP"
+    # class SendTextToLayerNode:
+    #     RETURN_TYPES = ("DOCUMENT",)
+    #     OUTPUT_NODE = True
+    #     FUNCTION = "action"
+    #     CATEGORY = "SD-PPP"
 
-        @classmethod
-        def IS_CHANGED(self, **kwargs):
-            return np.random.rand()
+    #     @classmethod
+    #     def IS_CHANGED(self, **kwargs):
+    #         return np.random.rand()
 
-        @classmethod
-        def INPUT_TYPES(cls):
-            return {
-                "required": {
-                    "text": ('STRING', {"sdppp_type": "STRING"}),
-                    "layer": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
-                },
-                "optional": SDPPPOptional({}, {
-                    "sdppp": ("STRING", {"default": ""})
-                }),
-                "hidden": {
-                    "unique_id": "UNIQUE_ID",
-                    "prompt": "PROMPT", 
-                }
-            }
+    #     @classmethod
+    #     def INPUT_TYPES(cls):
+    #         return {
+    #             "required": {
+    #                 "text": ('STRING', {"sdppp_type": "STRING"}),
+    #                 "layer": ('LAYER', {"default": None, "sdppp_type": "LAYER"}),
+    #             },
+    #             "optional": SDPPPOptional({}, {
+    #                 "sdppp": ("STRING", {"default": ""})
+    #             }),
+    #             "hidden": {
+    #                 "unique_id": "UNIQUE_ID",
+    #                 "prompt": "PROMPT", 
+    #             }
+    #         }
 
-        def action(self, text, layer, **kwargs):
-            sdpppServer.has_ps_instance(throw_error=True)
+    #     def action(self, text, layer, **kwargs):
+    #         sdpppServer.has_ps_instance(throw_error=True)
             
-            document = layer['document']
+    #         document = layer['document']
 
-            call_async_func_in_server_thread(ProtocolPhotoshop.send_text(
-                instance_id=document['instance_id'],
-                document_identify=document['identify'], 
-                text=text,  
-                layer_identify=layer['layer_identify'],
-            ), True)
+    #         call_async_func_in_server_thread(ProtocolPhotoshop.send_text(
+    #             instance_id=document['instance_id'],
+    #             document_identify=document['identify'], 
+    #             text=text,  
+    #             layer_identify=layer['layer_identify'],
+    #         ), True)
 
-            return (document, )
+    #         return (document, )
         
     class GetTextFromLayerNode:
         RETURN_TYPES = ("STRING",)

@@ -241,7 +241,7 @@ export class WorkflowEditWrap extends React.Component<{
                     )
                     return true
 
-                } else if (widget.outputType === 'string' || widget.outputType === 'customtext') {
+                } else if (widget.outputType === 'string' || widget.outputType === 'customtext' || widget.outputType === 'text') {
                     context.result.push(
                         <StringWidget
                             uiWeight={widget.uiWeight || 12}

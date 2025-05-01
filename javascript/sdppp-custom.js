@@ -250,18 +250,36 @@ export default function (sdppp) {
         }
     });
 
+    sdppp.widgetable.add("ShowText|pysssss", {
+        formatter: (node) => {
+            return {
+                title: getTitle(node),
+                widgets: [{
+                    value: node.widgets[1]?.value || '',
+                    outputType: "string"
+                }]
+            }
+        }
+    })
+
     sdppp.widgetable.add('__DEFAULT__', {
         formatter: (node) => {
             return {
                 id: node.id,
                 title: getTitle(node),
-                widgets: node.widgets.map((widget) => ({
-                    name: widget.label || widget.name,
-                    outputType: widget.type || "string",
-                    value: widget.value,
-                    options: widget.options,
-                    uiWeight: widget.uiWeight || 12
-                }))
+                widgets: node.widgets.map((widget) => {
+                    const ret = {
+                        outputType: widget.type || "string",
+                        value: widget.value,
+                        options: widget.options,
+                        uiWeight: widget.uiWeight || 12
+                    }
+                    if (node.widgets.length != 1) {
+                        ret.name = widget.label || widget.name;
+                    }
+
+                    return ret;
+                })
             };
         }
     })
