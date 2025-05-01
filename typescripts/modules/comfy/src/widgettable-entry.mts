@@ -4,9 +4,10 @@ import { makeWidgetTableStructure, getWidgetTableValue } from "./graph-to-form.m
 import { WidgetTableStructure } from "../../../src/types/sdppp";
 
 
-api.addEventListener("graphChanged", () => {
+api.addEventListener("graphChanged", (event: { detail: any }) => {
     const workflowManager = app.workflowManager || app.extensionManager.workflow
     const activeWorkflow = workflowManager.activeWorkflow;
+    if (event.detail.id !== activeWorkflow.activeState.id) return
     const originalWTStructure = pageStore.data.widgetTableStructure;
     const newWTStructure = makeWidgetTableStructure(app.graph, activeWorkflow);
     if (isStructureDiff(newWTStructure, originalWTStructure)) {
@@ -45,6 +46,7 @@ function checkGraphUpdate() {
     pageStore.setWidgetTableValue(wtValue);
     // rgthree may have some delay
     setTimeout(() => {
+        if (activeWorkflow !==  workflowManager.activeWorkflow) return
         const newWTStructure = makeWidgetTableStructure(app.graph, activeWorkflow);
         const newWTValue = getWidgetTableValue(app.graph);
         if (isStructureDiff(newWTStructure, wtStructure)) {
