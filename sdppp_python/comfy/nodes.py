@@ -232,7 +232,8 @@ def define_comfyui_nodes(sdpppServer):
         def IS_CHANGED(self, **kwargs):
             sdppp_arg = kwargs['sdppp']
             document_arg = kwargs['document']
-
+            if kwargs['layer_or_group'] == '### The Canvas ###' or kwargs['layer_or_group'] == '### 整个画布 ###':
+                return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg, 'historyStateID')
             return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
 
         @classmethod
@@ -578,7 +579,7 @@ def define_comfyui_nodes(sdpppServer):
         'SDPPP Get Linked Layers': GetLinkedLayersNode,
         'SDPPP Get Layers In Group': GetLayersInGroupNode,
         'SDPPP Get Text From Layer': GetTextFromLayerNode,
-        'SDPPP Send Text To Layer': SendTextToLayerNode,
+        # 'SDPPP Send Text To Layer': SendTextToLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
         'SDPPP Run Photoshop Action': RunPhotoshopActionNode,
