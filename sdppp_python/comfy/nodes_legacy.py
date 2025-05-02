@@ -99,7 +99,6 @@ def define_comfyui_nodes_legacy(sdppp):
                 if linked_style:
                     item_layer = item_layer['layer_identify']
                 item_bound = sdppp_get_prompt_item_from_list(bound, i)
-                start = time.time()
                 result = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_image(
                         instance_id=document['instance_id'],
@@ -109,6 +108,7 @@ def define_comfyui_nodes_legacy(sdppp):
                         quality=sdppp_get_prompt_item_from_list(quality, i)
                     )
                 )
+
                 # change to use result['pngData']. a .png data
                 # (output_image, output_mask) = self._load_image_from_png(
                 #     result['pngData']
@@ -152,7 +152,9 @@ def define_comfyui_nodes_legacy(sdppp):
 
 
     class SendImageToPhotoshopLayerNode:
-        RETURN_TYPES = ("DOCUMENT",)
+        RETURN_TYPES = ("IMAGE",)
+        RETURN_NAMES = ("images",)
+        OUTPUT_IS_LIST = (True,)
         OUTPUT_NODE = True
         INPUT_IS_LIST = True
         FUNCTION = "send_image"
@@ -191,37 +193,37 @@ def define_comfyui_nodes_legacy(sdppp):
             # dont check here, some python cannot read the data in this thread.
             # if document['instance_id'] not in sdppp.ppp_instances:
             #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
-
+            
             params = []
             # iterate layer_or_group
-            # diff between batch image and list is not known yet 
-            for index, image in enumerate(images[0]):
-                if len(layer_or_group) == 1:
-                    item_layer = layer_or_group[0]
-                else:
-                    item_layer = layer_or_group[index]
-                item_bound = sdppp_get_prompt_item_from_list(bound, index)
+            for tensor_index, batch in enumerate(images):
+                for batch_index, image in enumerate(batch):
+                    if len(layer_or_group) == 1:
+                        item_layer = layer_or_group[0]
+                    else:
+                        item_layer = layer_or_group[batch_index]
+                    item_bound = sdppp_get_prompt_item_from_list(bound, batch_index)
 
-                if linked_style:
-                    item_layer = item_layer['layer_identify']
+                    if linked_style:
+                        item_layer = item_layer['layer_identify']
+                        
+                    i = 255. * image.cpu().numpy()
+                    img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+                    if img.mode != "RGBA":
+                        img = img.convert("RGBA")
                     
-                i = 255. * image.cpu().numpy()
-                img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-                if img.mode != "RGBA":
-                    img = img.convert("RGBA")
-                
-                # 使用BytesIO而不是tobytes来获取PNG数据
-                buffer = BytesIO()
-                img.save(buffer, format="PNG")
-                png_data = buffer.getvalue()
-                
-                params.append({
-                    'layer_identify': item_layer, 
-                    'boundary': convert_mask_to_boundary(item_bound), 
-                    'image_blob': {
-                        'pngData': png_data
-                    }
-                })
+                    # 使用BytesIO而不是tobytes来获取PNG数据
+                    buffer = BytesIO()
+                    img.save(buffer, format="PNG")
+                    png_data = buffer.getvalue()
+                    
+                    params.append({
+                        'layer_identify': item_layer, 
+                        'boundary': convert_mask_to_boundary(item_bound), 
+                        'image_blob': {
+                            'pngData': png_data
+                        }
+                    })
 
             call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
                 instance_id=document['instance_id'],
@@ -231,8 +233,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ), True)
-
-            return (document,)
+            return (images,)
     
     class CLIPTextEncodePSRegional:
         @classmethod

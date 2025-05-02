@@ -37,9 +37,16 @@ export function Content({
 
     const editorCardShowingIndex = editorMode ? 1 : 0;
 
+    const [prevIsNotWebview, setPrevIsNotWebview] = useState(false);
+
+    // when disconnect and the agent is not webview, set editor mode to false
     useEffect(() => {
-        if (!workflowAgentSID) {
-            setEditorMode(false);
+        if (workflowAgentSID) {
+            setPrevIsNotWebview(workflowAgentSID != webviewAgentSID);
+        } else {
+            if (prevIsNotWebview) {
+                setEditorMode(false);
+            }
         }
     }, [workflowAgentSID]);
     useEffect(() => {

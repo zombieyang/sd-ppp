@@ -245,7 +245,6 @@ def define_comfyui_nodes(sdpppServer):
         
         def action(self, document, layer_or_group, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
-            print('GetLayerNode action:', layer_or_group)
             layer = json.loads(layer_or_group)
 
             result = call_async_func_in_server_thread(

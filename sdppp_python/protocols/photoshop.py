@@ -1,7 +1,7 @@
 import time
 async def protocol_call(ppp_instance, protocol_name, data):
     start = time.time()
-    result = await ppp_instance.sdppp.sio.call(protocol_name, data=data, to=ppp_instance.sid, timeout=600)
+    result = await ppp_instance.sdppp.sio.call(protocol_name, data=data, to=ppp_instance.sid, timeout=60)
     if not result:
         return None, None
     if 'error' in result:
