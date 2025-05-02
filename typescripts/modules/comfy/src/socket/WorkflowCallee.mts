@@ -60,7 +60,6 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
 
         private async run(params: WorkflowCalleeActions['run']['params']) {
             const batchCount = params.size;
-            console.log("run", batchCount)
             const fromSID = params.from_sid
             for (let i = 0; i < batchCount; i++) {
                 const p = await app.graphToPrompt()
@@ -159,9 +158,9 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             const { workflow_path } = params;
             try {
                 if (workflow_path.startsWith('sdppp://')) {
-                    this.openSDPPPWorkflow(params)
+                    await this.openSDPPPWorkflow(params)
                 } else {
-                    this.openComfyWorkflow(params)
+                    await this.openComfyWorkflow(params)
                 }
             } catch (error) {
                 throw error
@@ -197,7 +196,7 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             await openWorkflow(this.workflowManager, workflow);
 
             // wait for some third party nodes to update
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             if (!pageStore.data.widgetTableStructure) { return; }
 

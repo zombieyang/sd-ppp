@@ -68,7 +68,7 @@ const WorkflowListItem: React.FC<WorkflowListItemProps> = ({
         <li className={"client-list-item" + (isChecked ? ' checked' : '')}>
             <sp-label class="client-list-item-left" onClick={() => {
                 setEditorMode(true)
-                openWorkflow(workflowAgentSID, workflow.path, true)
+                openWorkflow(workflowAgentSID, workflow.path)
             }}>
                 <div>
                     {workflow.error ? workflow.error.replace('sdppp PS side error:', '') : workflow.path}
@@ -78,7 +78,7 @@ const WorkflowListItem: React.FC<WorkflowListItemProps> = ({
                 <div className="tips-icon">
                     <EditIcon size={0.6} onClick={() => {
                         setEditorMode(true)
-                        openWorkflow(workflowAgentSID, workflow.path, true)
+                        openWorkflow(workflowAgentSID, workflow.path)
                     }} />
                 </div>
                 <ActionButton highlight={isChecked} onClick={() => {

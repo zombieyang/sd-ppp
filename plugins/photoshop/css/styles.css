@@ -624,6 +624,9 @@ sp-progressbar {
     border-color: var(--sdppp-widget-hover-border-color);
     color: var(--sdppp-widget-hover-text-color);
 }
+.action-button:active {
+    background-color: var(--uxp-host-text-color);
+}
 sp-action-button.highlight, .action-button.highlight {
     background-color: var(--uxp-host-text-color);
 }

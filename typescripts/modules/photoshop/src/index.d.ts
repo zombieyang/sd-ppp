@@ -29,7 +29,7 @@ declare module "SDPPPInternal" {
     }
 
     export function useSDPPPComfyCaller(): {
-        openWorkflow: (workflowAgentSID: string, workflow_path: string, reset: boolean) => Promise<void>;
+        openWorkflow: (workflowAgentSID: string, workflow_path: string) => Promise<void>;
         reopenWorkflow: (workflowAgentSID: string) => Promise<void>;
         saveWorkflow: (workflowAgentSID: string) => Promise<void>;
         runPage: (agentSID?: string, size?: number) => Promise<void>;
