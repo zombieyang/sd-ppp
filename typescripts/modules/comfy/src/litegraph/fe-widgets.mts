@@ -2,9 +2,11 @@ import i18n, { I18nKey } from "../../../../src/common/i18n.mts";
 import { SpeicialIDManager } from "../../../../src/common/photoshop/specialLayer.mts";
 import { LayerData } from "../../../../src/store/photoshop.mts";
 import { pagePhotoshopStoreMap, pageStore } from "../../photoshopModels.mts";
-import { findDocumentNodeRecursive, getLayerOptionsByDocumentValue, isPhotoshopConnected, makeDocumentDataOptions, makeDocumentOption, parseDocumentOption } from "../util.mts";
+import { findDocumentNodeRecursive, getLayerOptionsByDocumentValue, makeDocumentDataOptions, makeDocumentOption, parseDocumentOption } from "../util.mts";
 import { ComfySocket } from "../socket/ComfySocket.mts";
 import { simplifyWorkflowPath } from "../../../../src/common/string-util.mts";
+import { PhotoshopStoreHelper } from "../../../../src/store/helpers.mts";
+import { parseLayerIdentify } from "../../../../src/common/photoshop/identify.mts";
 
 export abstract class SDPPPWidget {
     widget: any
@@ -61,7 +63,8 @@ export class DocumentWidget extends SDPPPComboWidget {
             const data = parseDocumentOption(documentWidget.value);
             if (!data) return JSON.stringify({
                 instance_id: i18n('document {0} not found', documentWidget.value),
-                identify: ''
+                identify: '',
+                dirtyID: 0
             });
             let identify = data.identify;
             if (SpeicialIDManager.is_SPECIAL_DOCUMENT_CURRENT(identify)) {
@@ -72,7 +75,9 @@ export class DocumentWidget extends SDPPPComboWidget {
             }
             return JSON.stringify({
                 instance_id: data.instance_id,
-                identify: identify
+                identify: identify,
+                canvasDirtyID: data.documentData.canvasDirtyID,
+                selectionDirtyID: data.documentData.selectionDirtyID
             });
         }
         node.size = [size[0], Math.max(size[1], node.size[1])];
@@ -132,7 +137,7 @@ export class LayerWidget extends SDPPPComboWidget {
         super(node, layerWidget);
         this.extraOptions = options.extraOptions;
         this.update = this.update.bind(this);
-        
+
         this.onChange((value) => {
             this.node.setProperty('layerWidgetDetail' + this.indexInNode, this.currentOptionsDetail[Object.values(this.currentOptions).indexOf(this.widget.value)]);
 
@@ -142,11 +147,17 @@ export class LayerWidget extends SDPPPComboWidget {
         })
         layerWidget.serializeValue = async () => {
             const documentWidget = this.documentWidgetByLinked;
-            if (!documentWidget) return layerWidget.value;
+            if (!documentWidget) return JSON.stringify({
+                identify: layerWidget.value,
+                dirtyID: 0
+            });
 
             const document = parseDocumentOption(documentWidget.widget.value);
-            if (!document) return layerWidget.value
-            
+            if (!document) return JSON.stringify({
+                identify: layerWidget.value,
+                dirtyID: 0
+            });
+
             let identify = layerWidget.value;
             if (SpeicialIDManager.is_SPECIAL_LAYER_SELECTED_LAYER(identify)) {
                 const ret = await ComfySocket.instance.getSpecialIdentifierValue(document.instance_id, {
@@ -154,7 +165,16 @@ export class LayerWidget extends SDPPPComboWidget {
                 })
                 identify = ret.value;
             }
-            return identify;
+            let dirtyID = 0
+            if (SpeicialIDManager.is_SPECIAL_LAYER_NEW_LAYER(identify) || SpeicialIDManager.is_SPECIAL_LAYER_USE_CANVAS(identify)) {
+                dirtyID = PhotoshopStoreHelper.getCanvasDirtyID(document.documentData);
+            } else {
+                dirtyID = PhotoshopStoreHelper.getLayerDirtyID(document.documentData, identify);
+            }
+            return JSON.stringify({
+                identify,
+                dirtyID
+            });
         }
     }
     static create(node: any, name: I18nKey, options: LayerWidgetWithDocumentSelectionCtorOptions) {
@@ -230,11 +250,17 @@ export class LayerWidgetWithDocumentSelection extends LayerWidget {
         })
         layerWidget.serializeValue = async () => {
             const documentWidget = this.documentWidgetInNode || this.documentWidgetByLinked;
-            if (!documentWidget) return layerWidget.value;
+            if (!documentWidget) return JSON.stringify({
+                identify: layerWidget.value,
+                dirtyID: 0
+            });
 
             const document = parseDocumentOption(documentWidget.widget.value);
-            if (!document) return layerWidget.value
-            
+            if (!document) return JSON.stringify({
+                identify: layerWidget.value,
+                dirtyID: 0
+            });
+
             let identify = layerWidget.value;
             if (SpeicialIDManager.is_SPECIAL_LAYER_SELECTED_LAYER(identify)) {
                 const ret = await ComfySocket.instance.getSpecialIdentifierValue(document.instance_id, {
@@ -242,7 +268,16 @@ export class LayerWidgetWithDocumentSelection extends LayerWidget {
                 })
                 identify = ret.value;
             }
-            return identify;
+            let dirtyID = 0 
+            if (SpeicialIDManager.is_SPECIAL_LAYER_NEW_LAYER(identify) || SpeicialIDManager.is_SPECIAL_LAYER_USE_CANVAS(identify)) {
+                dirtyID = PhotoshopStoreHelper.getCanvasDirtyID(document.documentData);
+            } else {
+                dirtyID = PhotoshopStoreHelper.getLayerDirtyID(document.documentData, identify);
+            }
+            return JSON.stringify({
+                identify,
+                dirtyID
+            });
         }
         this.documentWidgetInNode?.onChange(this.update)
     }
@@ -310,7 +345,7 @@ export class DownloadWidget extends SDPPPWidget {
             i18n('current ComfyUI pageid: {0}', ComfySocket.instance.id.slice(0, 4)) :
             i18n('download PS plugin (.ccx)');
     }
- 
+
     private documentWidgetByLinked: DocumentWidget | null = null;
     public linkDocumentWidget(documentWidget: DocumentWidget | null) {
         this.documentWidgetByLinked = documentWidget;

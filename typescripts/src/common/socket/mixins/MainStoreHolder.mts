@@ -44,7 +44,7 @@ export function MainStoreHolderSocket(store: MainStore<any>, type: string) {
                     flusher.pause();
                 });
                 this.socket.on('connect', () => {
-                    store.setSID(this.socket.id)
+                    store.setSID(this.socket.id || '')
                     requestAnimationFrame(() => {
                         this.socket.emit('sdppp_init', {
                             type,

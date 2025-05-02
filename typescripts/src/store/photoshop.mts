@@ -6,13 +6,16 @@ export interface LayerData {
     name: string,
     identify: Identify,
     level: number,
-    fullPath: string
+    fullPath: string,
+    dirtyID: number
 }
 export interface DocumentData {
     name: string
     id: number
     identify: Identify
     layers: LayerData[]
+    canvasDirtyID: number
+    selectionDirtyID: number
 }
 
 

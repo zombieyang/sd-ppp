@@ -71,7 +71,10 @@ async function _init(app: any, api: any, $el: any) {
 			}
 			if (!fromSID) return;
 			if (
-				!app.graph.nodes.find((node: any) => node.type == 'Send Images To Photoshop')
+				!app.graph.nodes
+					.filter((node: any) => node.type == 'Send Images To Photoshop')
+					.filter((node: any) => { return node.mode == 0 })
+					.length
 			) {
 				socket?.sendImage(fromSID, {
 					document_identify: SpeicialIDManager.getSpecialDocumentForPreview(),

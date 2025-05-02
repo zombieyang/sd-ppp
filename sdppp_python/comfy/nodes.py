@@ -157,10 +157,8 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp']
-            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
-        
+        def IS_CHANGED(self, layer_info, **kwargs):
+            return json.dumps(layer_info)
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -190,9 +188,9 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp']
-            return sdppp_is_changed(sdpppServer, sdppp_arg, '')
+        def IS_CHANGED(self, document_name, **kwargs):
+            document = json.loads(document_name)
+            return f"{document['identify']}_{document['selectionDirtyID']}"
                         
         @classmethod
         def INPUT_TYPES(cls):
@@ -229,12 +227,9 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp']
-            document_arg = kwargs['document']
-            if kwargs['layer_or_group'] == '### The Canvas ###' or kwargs['layer_or_group'] == '### 整个画布 ###' or kwargs['layer_or_group'] == '### Selected Layer ###' or kwargs['layer_or_group'] == '### 所选图层 ###':
-                return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg, 'historyStateID')
-            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+        def IS_CHANGED(self, layer_or_group, **kwargs):
+            layer = json.loads(layer_or_group)
+            return f"{layer['identify']}_{layer['dirtyID']}"
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -250,18 +245,21 @@ def define_comfyui_nodes(sdpppServer):
         
         def action(self, document, layer_or_group, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
+            print('GetLayerNode action:', layer_or_group)
+            layer = json.loads(layer_or_group)
 
             result = call_async_func_in_server_thread(
                 ProtocolPhotoshop.get_layer_info(
                     instance_id=document['instance_id'], 
                     document_identify=document['identify'], 
-                    layer_identify=layer_or_group
+                    layer_identify=layer['identify']
                 )
             )
                 
             return ({
                 "document": document,
-                "layer_identify": result['identify']
+                "layer_identify": result['identify'],
+                "dirtyID": layer['dirtyID']
             }, convert_boundary_to_mask(result['boundary']), result)
         
     class GetLayersInGroupNode:
@@ -274,9 +272,7 @@ def define_comfyui_nodes(sdpppServer):
 
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp'][0]
-            document_arg = ''
-            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+            return np.random.rand()
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -320,9 +316,7 @@ def define_comfyui_nodes(sdpppServer):
         
         @classmethod
         def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp'][0]
-            document_arg = ''
-            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+            return np.random.rand()
 
         @classmethod
         def INPUT_TYPES(cls):
@@ -477,10 +471,8 @@ def define_comfyui_nodes(sdpppServer):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp'][0]
-            document_arg = kwargs['document'][0] if 'document' in kwargs and kwargs['document'] != None else ''
-            return sdppp_is_changed(sdpppServer, sdppp_arg, document_arg)
+        def IS_CHANGED(self, layer_or_group, **kwargs):
+            return 1
 
         @classmethod
         def INPUT_TYPES(cls):

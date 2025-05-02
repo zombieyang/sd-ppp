@@ -27,4 +27,14 @@ export class PhotoshopStoreHelper {
 
         return options
     }
+    static getLayerDirtyID(documentData: DocumentData, identify: string) {
+        const layer = documentData.layers.find(layer => layer.identify === identify);
+        return layer?.dirtyID || 0;
+    }
+    static getCanvasDirtyID(documentData: DocumentData) {
+        return documentData.canvasDirtyID || 0;
+    }
+    static getSelectionDirtyID(documentData: DocumentData) {
+        return documentData.selectionDirtyID || 0;
+    }
 }

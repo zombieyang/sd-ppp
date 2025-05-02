@@ -55,10 +55,11 @@ def define_comfyui_nodes_legacy(sdppp):
         CATEGORY = "SD-PPP"
 
         @classmethod
-        def IS_CHANGED(self, **kwargs):
-            sdppp_arg = kwargs['sdppp'][0]
-            document_arg = kwargs['document'][0] if 'document' in kwargs and kwargs['document'] != None else ''
-            return sdppp_is_changed(sdppp, sdppp_arg, document_arg)
+        def IS_CHANGED(self, layer_or_group, **kwargs):
+            if layer_or_group is not None and len(layer_or_group) > 0 and layer_or_group[0] is not None:
+                return json.loads(layer_or_group[0])['dirtyID']
+            else:
+                return 1
         
         @classmethod
         def INPUT_TYPES(cls):
