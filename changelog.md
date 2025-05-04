@@ -1,3 +1,22 @@
+## [1.8.0] - 2025-05-04
+* fix: got `network error` when fetching workflow list.
+* fix: comfy side modify number component input error.
+* fix: comfy side single line text primitive display error.
+* fix: `### Selected Layer ###` cache strategy fix.
+* fix: unexpected disconnection when sending large image.
+* optimization: image compression when sending images.
+* optimization: speicial layer such as `### Selected Layer ###` will now be calculated when query.
+* optimization: error of controlling node will now be displayed in the node's panel.
+* optimization: build script optimization by @ashen-sensored.
+* optimization: new layer will now be named as the workflow name.
+* optimization: the highligh style of livepainting button optimization.
+* feature: stop button in workflow running panel.
+* feature: supppoted displaying widget name if `name` is specified in `sdppp_custom.js`.
+* feature: supported `Show Text|pssss` node in workflow panel.
+* feature: a setting option for slider widget.
+* feature: image quality on `GetImageFromPS` node.
+* feature: added a output slot for `SendImageToPS` node.
+
 ## [1.7.6] - 2025-04-27
 * fix: cannot disconnect when is connecting to ComfyUI
 * fix: unnecessary cache when useing selected layer.
