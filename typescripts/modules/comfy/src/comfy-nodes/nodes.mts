@@ -79,7 +79,8 @@ export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocum
 
     public extractPSD(sid: string, documentIdentify: string) {
         if (this.node.properties.psd) {
-            ComfySocket.instance.exportPSDDataURLToPhotoshop(sid, documentIdentify, this.node.properties['psd'], pageStore.data.ssid)
+            ComfySocket.instance
+                .exportPSDDataURLToPhotoshop(sid, documentIdentify, this.node.properties['psd'], pageStore.data.ssid)
                 .then(async () => {
                     await new Promise(resolve => setTimeout(resolve, 300));
                     (globalThis as any).app.canvas.draw(true, true)
@@ -98,7 +99,8 @@ export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocum
                 this.extractPSD(backendDatas[instanceName].sid, documentIdentify);
 
             } else {
-                ComfySocket.instance.importPSDDataURLFromPhotoshop(backendDatas[instanceName].sid, documentIdentify, pageStore.data.ssid)
+                ComfySocket.instance
+                    .importPSDDataURLFromPhotoshop(backendDatas[instanceName].sid, documentIdentify, pageStore.data.ssid)
                     .then(psdBase64 => {
                         this.node.setProperty('psd', psdBase64);
                     });

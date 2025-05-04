@@ -4,20 +4,23 @@ import { PhotoshopCaller } from "./PhotoshopCallerInterface.mts";
 import { PhotoshopCalleeActions } from "./PhotoshopCalleeInterface.mts";
 
 export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
-    
+
     return class extends SocketClass implements PhotoshopCaller {
         constructor(url: string) {
             super(url);
             this.socket.on('F_photoshop', (payload: any, callback: any) => {
-                if (payload.action == 'extractPSD') {
-                    app.graph.nodes.forEach((node: any) => {    
-                        if (node.type == 'SDPPP Get Document') {
-                            //@ts-ignore
-                            SDPPPNode.nodeMap.get(node)?.extractPSD(payload.params.from_sid, '');
-                        }
-                    })
+                try {
+                    if (payload.action == 'extractPSD') {
+                        app.graph.nodes.forEach((node: any) => {
+                            if (node.type == 'SDPPP Get Document') {
+                                this.extractPSD(node, payload.params.from_sid, '');
+                            }
+                        }) 
+                    }
+                    callback({})
+                } catch (error) {
+                    callback({ error: error.message })
                 }
-                callback({})
             })
         }
 
@@ -28,8 +31,8 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
                     sid: sid,
                     params: {
                         action: 'get',
-                        fromSSID: fromSSID,
-                        document_identify: document_identify
+                        fromSSID,
+                        document_identify
                     }
                 }, (payload: any) => {
                     resolve(payload.data as any);
@@ -53,8 +56,8 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
                     sid: sid,
                     params: {
                         action: 'extract',
-                        fromSSID: fromSSID,
-                        document_identify: document_identify,
+                        fromSSID,
+                        document_identify,
                         data: buffer
                     }
                 }, (payload: any) => {
@@ -90,14 +93,25 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
         public async getSpecialIdentifierValue(sid: string, payload: PhotoshopCalleeActions['getSpecialIdentifierValue']['params']) {
             return new Promise((resolve, reject) => {
                 this.socket.emit('B_photoshop', {
-                    action: 'getSpecialIdentifierValue',    
-                    sid: sid,   
+                    action: 'getSpecialIdentifierValue',
+                    sid: sid,
                     params: payload
                 }, (data: any) => {
                     data && data.error ? reject(new Error(data.error)) : resolve(data);
                 });
             });
         }
+
+        // same as the one in SDPPPDocument node.
+        private async extractPSD(node: any, sid: string, documentIdentify: string) {
+            if (node.properties.psd) {
+                await this.exportPSDDataURLToPhotoshop(sid, documentIdentify, node.properties['psd'], this.socket.id || "??")
+                    .then(async () => {
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                        (globalThis as any).app.canvas.draw(true, true)
+                    })
+                    .catch(console.error);
+            }
+        }
     }
 }
-
