@@ -13,13 +13,13 @@ export class SDPPPNodeWithInput extends SDPPPDownloadableNode {
             )
         });
         if (firstConnectedInput) return (firstConnectedInput as any).documentWidget;
-        return this.widgets.find(widget => {
+        return this.sdpppWidgets.find(widget => {
             return widget instanceof DocumentWidget
         }) as DocumentWidget;
     }
 
     protected inputs: SDPPPInput[] = [];
-    protected widgets: SDPPPWidget[] = [];
+    protected sdpppWidgets: SDPPPWidget[] = [];
     constructor(node: any) {
         super(node);
         let firstDocumentWidget: DocumentWidget | null = null;
@@ -31,13 +31,13 @@ export class SDPPPNodeWithInput extends SDPPPDownloadableNode {
             if (inputData[1].sdppp_type == 'DOCUMENT_nameid') {
                 const dWidget = DocumentWidget.link(node, this.node.widgets[i])
                 firstDocumentWidget = firstDocumentWidget || dWidget
-                this.widgets.push(dWidget);
+                this.sdpppWidgets.push(dWidget);
             }
             if (inputData[1].sdppp_type == 'LAYER_select') {
-                this.node.widgets[i].type = 'combo'
-                this.widgets.push(new LayerWidget(node, this.node.widgets[i], {
+                const lWidget = LayerWidget.link(node, this.node.widgets[i], {
                     extraOptions: SpeicialIDManager.getSpecialLayerForGet()
-                }));
+                })
+                this.sdpppWidgets.push(lWidget);
             }
         }
         for (let i = 0; i < this.node.inputs?.length; i++) {
@@ -61,7 +61,7 @@ export class SDPPPNodeWithInput extends SDPPPDownloadableNode {
                 widget.label = widget.name;
             }
         });
-        this.widgets?.forEach(widget => {
+        this.sdpppWidgets?.forEach(widget => {
             widget.update();
         });
         this.inputs?.forEach(input => {
@@ -78,7 +78,7 @@ export class SDPPPNodeWithInput extends SDPPPDownloadableNode {
                 if (this.downloadWidget) {
                     this.downloadWidget.linkDocumentWidget(newDocumentWidget);
                 }
-                this.widgets.forEach(widget => {
+                this.sdpppWidgets.forEach(widget => {
                     if (widget instanceof LayerWidget || widget instanceof DownloadWidget) {
                         widget.linkDocumentWidget(newDocumentWidget);
                     }

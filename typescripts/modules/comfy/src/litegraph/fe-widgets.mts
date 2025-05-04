@@ -6,7 +6,6 @@ import { findDocumentNodeRecursive, getLayerOptionsByDocumentValue, makeDocument
 import { ComfySocket } from "../socket/ComfySocket.mts";
 import { simplifyWorkflowPath } from "../../../../src/common/string-util.mts";
 import { PhotoshopStoreHelper } from "../../../../src/store/helpers.mts";
-import { parseLayerIdentify } from "../../../../src/common/photoshop/identify.mts";
 
 export abstract class SDPPPWidget {
     widget: any
@@ -177,18 +176,15 @@ export class LayerWidget extends SDPPPComboWidget {
             });
         }
     }
-    static create(node: any, name: I18nKey, options: LayerWidgetWithDocumentSelectionCtorOptions) {
-        const size = node.size.slice(0);
-        const layerWidget = node.addWidget('combo', name, options.extraOptions[0] || '', () => { }, { forceInput: true, values: options.extraOptions })
-        // layerWidget.serializeValue = async () => {
-        //     this.documentWidgetByLinked
-        // }
 
-        node.size = [size[0], Math.max(size[1], node.size[1])];
-        return new LayerWidgetWithDocumentSelection(node, layerWidget, {
-            documentWidgetInNode: options.documentWidgetInNode,
-            extraOptions: options.extraOptions
-        });
+    static link(node: any, widget: any, options: LayerWidgetCtorOptions) {
+        if (widget.type == "combo") {
+            return new LayerWidget(node, widget, options);
+        }
+        const lWidget = LayerWidget.create(node, widget.name, options);
+        const oldWidgetIndex = node.widgets.indexOf(widget);
+        node.widgets[oldWidgetIndex] = node.widgets.pop();
+        return lWidget;
     }
 
     public linkDocumentWidget(documentWidget: DocumentWidget | null) {
@@ -232,6 +228,16 @@ export class LayerWidget extends SDPPPComboWidget {
             }
             // or set the node to red
         }
+    }
+
+    static create(node: any, name: I18nKey, options: LayerWidgetCtorOptions) {
+        const size = node.size.slice(0);
+        const layerWidget = node.addWidget('combo', name, options.extraOptions[0] || '', () => { }, { forceInput: true, values: options.extraOptions })
+
+        node.size = [size[0], Math.max(size[1], node.size[1])];
+        return new LayerWidget(node, layerWidget, {
+            extraOptions: options.extraOptions
+        });
     }
 }
 const defaultLayerWidgetWithDocumentSelectionOptions: LayerWidgetWithDocumentSelectionCtorOptions = {
@@ -287,6 +293,20 @@ export class LayerWidgetWithDocumentSelection extends LayerWidget {
             this.widget.options.values = getLayerOptionsByDocumentValue(documentWidget.widget.value, this.extraOptions)
             widgetCheckContainOrReset(this.widget, this.widget.options.values)
         }
+    }
+
+    static create(node: any, name: I18nKey, options: LayerWidgetWithDocumentSelectionCtorOptions) {
+        const size = node.size.slice(0);
+        const layerWidget = node.addWidget('combo', name, options.extraOptions[0] || '', () => { }, { forceInput: true, values: options.extraOptions })
+        // layerWidget.serializeValue = async () => {
+        //     this.documentWidgetByLinked
+        // }
+
+        node.size = [size[0], Math.max(size[1], node.size[1])];
+        return new LayerWidgetWithDocumentSelection(node, layerWidget, {
+            documentWidgetInNode: options.documentWidgetInNode,
+            extraOptions: options.extraOptions
+        });
     }
 }
 export interface BoundaryWidgetCtorOptions {

@@ -73,7 +73,7 @@ export class GetTextFromLayerNode extends SDPPPDownloadableNode {
 
 export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocumentOutput {
     get documentWidget() {
-        return this.widgets[0] as DocumentWidget;
+        return this.sdpppWidgets[0] as DocumentWidget;
     }
     protected psdWidget: any
 

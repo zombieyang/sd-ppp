@@ -1,6 +1,6 @@
 import i18n from "../../../../src/common/i18n.mts";
 import { SpeicialIDManager } from "../../../../src/common/photoshop/specialLayer.mts";
-import { DocumentWidget, LayerWidget } from "../litegraph/fe-widgets.mjs";
+import { DocumentWidget, LayerWidget, LayerWidgetWithDocumentSelection } from "../litegraph/fe-widgets.mjs";
 import { ComfyNodeDefList } from "../litegraph/node-wrapper.mjs";
 import { GetSelectionNode } from "./nodes.mjs";
 import { SDPPPDownloadableNode } from "./SDPPPDownloadableNode.mjs";
@@ -16,7 +16,7 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
     private layerWidget: LayerWidget;
     constructor(node: any) {
         const documentWidget = DocumentWidget.create(node, 'document')
-        const layerWidget = LayerWidget.create(node, 'layer_or_group', {
+        const layerWidget = LayerWidgetWithDocumentSelection.create(node, 'layer_or_group', {
             documentWidgetInNode: documentWidget,
             extraOptions: SpeicialIDManager.getSpecialLayerForGet()
         });
@@ -99,7 +99,7 @@ export class SendImageToLayerNode extends SDPPPDownloadableNode {
 
     constructor(node: any) {
         const documentWidget = DocumentWidget.create(node, 'document')
-        const layerWidget = LayerWidget.create(node, 'layer_or_group', {
+        const layerWidget = LayerWidgetWithDocumentSelection.create(node, 'layer_or_group', {
             documentWidgetInNode: documentWidget,
             extraOptions: SpeicialIDManager.getSpecialLayerForSend()
         });
