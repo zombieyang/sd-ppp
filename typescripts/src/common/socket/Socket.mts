@@ -33,7 +33,6 @@ export class Socket {
 
     public close() {
         this.socket.close();
-        this.socket.removeAllListeners();
     }
 }
 
