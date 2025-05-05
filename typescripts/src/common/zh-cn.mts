@@ -210,6 +210,7 @@ export default {
     'Links': '友情链接',
     'Community': '社区',
     'LICENSE:': '许可证：',
+    'Official Site': '官方网站',
 
     // comfy popup
     "upload": "上传",

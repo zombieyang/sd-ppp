@@ -641,7 +641,7 @@ sp-action-button.highlight:hover, .action-button.highlight:hover {
     overflow-y: scroll;
 }
 
-.about-card h2 {
+.about-card h2, h1 {
     display: block;
     text-align: center;
 }

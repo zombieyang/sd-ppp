@@ -1,4 +1,4 @@
-## [1.8.0] - 2025-05-04
+## [1.8.0] - 2025-05-05
 * fix: got `network error` when fetching workflow list.
 * fix: comfy side modify number component input error.
 * fix: comfy side single line text primitive display error.
