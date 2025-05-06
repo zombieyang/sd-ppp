@@ -1,3 +1,7 @@
+## [1.8.1] - 2025-05-06
+* fix: `GetImage` with `quality` not works in some ComfyUI.
+* optimization: more detailed websocket error
+
 ## [1.8.0] - 2025-05-05
 * fix: got `network error` when fetching workflow list.
 * fix: comfy side modify number component input error.

@@ -1,7 +1,7 @@
 {
   "id": "sd-ppp",
   "name": "SD-PPP",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "main": "index.html",
   "manifestVersion": 5,
   "host": {
@@ -38,7 +38,7 @@
       "type": "panel",
       "id": "sdppp-connect",
       "label": {
-        "default": "SD-PPP 1.8.0"
+        "default": "SD-PPP 1.8.1"
       },
       "minimumSize": {
         "width": 300,
