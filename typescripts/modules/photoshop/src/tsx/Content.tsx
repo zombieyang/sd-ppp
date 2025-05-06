@@ -92,7 +92,7 @@ export function Content({
                         <div className="comfy-list-wrap">
                             {initAfter8s && !webviewAgentSID && <sp-label class="error-label">{i18n('hidden webview load failed: {0}, please select a browser page to continue', i18n('timeout'))}</sp-label>}
                             <WebPageList />
-                            {workflowAgentSID && <WorkflowList setEditorMode={setEditorMode} />}
+                            <WorkflowList setEditorMode={setEditorMode} />
                         </div>
                     </div>
                     <div className="editor-card" style={editorMode ? {} : { display: 'none' }}>

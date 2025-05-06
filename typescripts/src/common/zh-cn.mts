@@ -114,6 +114,7 @@ export default {
     'Error {0}... please contact me via Discord/Github': '出现错误 {0}...，请通过 QQ/Github 联系我',
     'Webview initialize failed. Please report to me via Discord/Github with your ComfyURL, Operate System': 'Webview 初始化失败，请通过 QQ/Github 联系我并附上你的Comfy地址、操作系统',
     'Workflow List of ComfyUI with --multi-user is only available for sponsors': '带"--multi-user"的ComfyUI仅对赞助者开放',
+    'Workflow Agent is loading...': '运行载体尚在加载...',
     '(Page ID: {0})Queue: {1}': '(页面ID: {0}) 队列长度 {1}',
     'no suitable node to control in this workflow': '这个工作流中没有能控制的节点',
     "Save": "保存",
@@ -204,7 +205,7 @@ export default {
     // about
     'This plugin is based on sd-ppp': '本插件基于sd-ppp开发',
     'And follows its open source license:': '并遵循其开源协议：',
-    "Cloud": "云端",
+    "Cloud": "云端推荐",
     "Sponsors": "赞助",
     "waiting...": '虚位以待',
     'Links': '友情链接',

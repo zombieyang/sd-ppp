@@ -58,7 +58,7 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
 
     let listReplacer = null;
     if (workflowsError)
-        listReplacer = <sp-label class="list-error-label">{workflowsError}</sp-label>
+        listReplacer = <sp-label>{workflowsError}</sp-label>
 
     return (
         <>
