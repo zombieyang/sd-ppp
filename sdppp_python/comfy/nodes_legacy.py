@@ -82,7 +82,6 @@ def define_comfyui_nodes_legacy(sdppp):
             }
 
         def get_image(self, unique_id, prompt, layer_or_group, bound="", document="", quality=100.0, **kwargs):
-            sdppp_arg = kwargs['sdppp']
             sdppp.has_ps_instance(throw_error=True)
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
@@ -95,7 +94,6 @@ def define_comfyui_nodes_legacy(sdppp):
             res_mask = []
             startTime = time.time()
             for i, item_layer in enumerate(layer_or_group):
-                sdppp_arg_item = json.loads(sdppp_get_prompt_item_from_list(sdppp_arg, i))
                 if linked_style:
                     item_layer = item_layer['layer_identify']
                 item_bound = sdppp_get_prompt_item_from_list(bound, i)

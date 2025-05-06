@@ -25,8 +25,13 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
         this.documentWidget = documentWidget
         this.layerWidget = layerWidget
 
-        this.node.widgets[1] = documentWidget.widget
-        this.node.widgets[2] = layerWidget.widget
+        if (this.node.widgets[0].name == 'quality') {
+            this.node.widgets[1] = documentWidget.widget
+            this.node.widgets[2] = layerWidget.widget
+        } else {
+            this.node.widgets[0] = documentWidget.widget
+            this.node.widgets[1] = layerWidget.widget
+        }
     }
     protected onConfigure(nodeData: any): void {
         if (!nodeData.properties['sdppp-version']) {
@@ -55,9 +60,11 @@ export class GetImageFromLayerNode extends SDPPPDownloadableNode {
             this.node.widgets[0].value = nodeData.widgets_values[1];
             this.node.widgets[1].value = nodeData.widgets_values[2];
         } else if (+nodeData.properties['sdppp-version'] < 504) {
-            this.node.widgets[0].value = 100;
-            this.node.widgets[1].value = nodeData.widgets_values[0];
-            this.node.widgets[2].value = nodeData.widgets_values[1];
+            if (this.node.widgets[0].name == 'quality') {
+                this.node.widgets[0].value = 100;
+                this.node.widgets[1].value = nodeData.widgets_values[0];
+                this.node.widgets[2].value = nodeData.widgets_values[1];
+            }
         }
         super.onConfigure(nodeData);
     }
