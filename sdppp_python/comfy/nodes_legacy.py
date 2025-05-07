@@ -96,6 +96,9 @@ def define_comfyui_nodes_legacy(sdppp):
             for i, item_layer in enumerate(layer_or_group):
                 if linked_style:
                     item_layer = item_layer['layer_identify']
+                else: 
+                    item_layer = json.loads(item_layer)
+                    item_layer = item_layer['identify']
                 item_bound = sdppp_get_prompt_item_from_list(bound, i)
                 result = call_async_func_in_server_thread(
                     ProtocolPhotoshop.get_image(
@@ -204,6 +207,9 @@ def define_comfyui_nodes_legacy(sdppp):
 
                     if linked_style:
                         item_layer = item_layer['layer_identify']
+                    else:
+                        item_layer = json.loads(item_layer)
+                        item_layer = item_layer['identify']
                         
                     i = 255. * image.cpu().numpy()
                     img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
