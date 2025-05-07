@@ -68,6 +68,22 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 let nodeErrors: Record<string, string> = {}
                 let promptId = ''
 
+                for (const n of p.workflow.nodes) {
+                    const node = app.graph.getNodeById(n.id)
+                    if (node.widgets) {
+                        for (const widget of node.widgets) {
+                            if (widget.beforeQueued) {
+                                try {
+                                    widget.beforeQueued()
+                                } catch (e: any) {
+                                    console.error(e)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+
                 try {
                     const res = await api.queuePrompt(0, p)
                     if (res.node_errors && Object.keys(res.node_errors).length > 0) {
@@ -108,7 +124,11 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     if (node.widgets) {
                         for (const widget of node.widgets) {
                             if (widget.afterQueued) {
-                                widget.afterQueued()
+                                try {
+                                    widget.afterQueued()
+                                } catch (e: any) {
+                                    console.error(e)
+                                }
                             }
                         }
                     }
@@ -279,8 +299,4 @@ async function openWorkflow(workflowManager: any, workflow: any) {
             }
         )
     }
-}
-
-
-async function queuePrompt(batchCount: number) {
 }
