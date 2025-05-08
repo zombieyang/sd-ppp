@@ -51,7 +51,6 @@ async function _init(app: any, api: any, $el: any) {
 		pageStore.setExecutingNodeTitle('');
 		if (PreviewSender.get(ev.detail.prompt_id)) {
 			PreviewSender.delete(ev.detail.prompt_id);
-
 		}
 	});
 	api.addEventListener("execution_interrupted", () => {

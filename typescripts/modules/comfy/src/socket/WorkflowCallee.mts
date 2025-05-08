@@ -59,82 +59,41 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
         }
 
         private async run(params: WorkflowCalleeActions['run']['params']) {
+            if (!hijackedQueuePrompt) {
+                hijackQueuePrompt()
+            }
+
             const batchCount = params.size;
-            const fromSID = params.from_sid
-            for (let i = 0; i < batchCount; i++) {
-                const p = await app.graphToPrompt()
-                let hasAnyError = false
-                let generalError = ''
-                let nodeErrors: Record<string, string> = {}
-                let promptId = ''
 
-                for (const n of p.workflow.nodes) {
-                    const node = app.graph.getNodeById(n.id)
-                    if (node.widgets) {
-                        for (const widget of node.widgets) {
-                            if (widget.beforeQueued) {
-                                try {
-                                    widget.beforeQueued()
-                                } catch (e: any) {
-                                    console.error(e)
-                                }
-                            }
-                        }
-                    }
-                }
-                
-
-                try {
-                    const res = await api.queuePrompt(0, p)
-                    if (res.node_errors && Object.keys(res.node_errors).length > 0) {
-                        hasAnyError = true
-                        nodeErrors = formatNodeErrors(res.node_errors)
-                    }
-                    promptId = res.prompt_id
-
-                } catch (error: any) {
-                    if (error.response) {
-                        hasAnyError = true
-                        nodeErrors = formatNodeErrors(error.response.node_errors)
-                    } else {
-                        hasAnyError = true
-                        generalError = error.stack
-                    }
-                }
-                function formatNodeErrors(errors: any) {
-                    const ret: Record<string, string> = {};
-                    Object.keys(errors).forEach((nodeID) => {
-                        ret[nodeID.split(":")[0]] = errors[nodeID].errors.map(JSON.stringify).join('\n')
-                    })
-                    return ret
+            let hasAnyError = false
+            let generalError = ''
+            let nodeErrors: Record<string, string> = {}
+            try {
+                const success = await app.queuePrompt(1, batchCount)
+                if (!success) {
+                    hasAnyError = true
+                    nodeErrors = formatNodeErrors(app.lastNodeErrors)
                 }
 
-                if (hasAnyError) {
-                    if (generalError) {
-                        pageStore.setLastError(generalError)
-                    } else {
-                        pageStore.setWidgetTableErrors(nodeErrors)
-                    }
-                    break
-                }
-                PreviewSender.set(promptId, fromSID)
+            } catch (error) {
+                hasAnyError = true
+            }
 
-                for (const n of p.workflow.nodes) {
-                    const node = app.graph.getNodeById(n.id)
-                    if (node.widgets) {
-                        for (const widget of node.widgets) {
-                            if (widget.afterQueued) {
-                                try {
-                                    widget.afterQueued()
-                                } catch (e: any) {
-                                    console.error(e)
-                                }
-                            }
-                        }
-                    }
+            if (hasAnyError) {
+                if (generalError) {
+                    pageStore.setLastError(generalError)
+                } else {
+                    pageStore.setWidgetTableErrors(nodeErrors)
                 }
-                const workflow = this.workflowManager.activeWorkflow
-                workflow.changeTracker.checkState()
+            }
+            const promptId = lastQueuePromptRes.prompt_id
+            PreviewSender.set(promptId, params.from_sid)
+            function formatNodeErrors(errors: any) {
+                const ret: Record<string, string> = {};
+                Object.keys(errors).forEach((nodeID) => {
+                    ret[nodeID.split(":")[0]] = errors[nodeID].errors.map(JSON.stringify).join('\n')
+                })
+                return ret
             }
         }
         public async list() {
@@ -299,4 +258,15 @@ async function openWorkflow(workflowManager: any, workflow: any) {
             }
         )
     }
+}
+let hijackedQueuePrompt = false
+let lastQueuePromptRes: any = null;
+function hijackQueuePrompt() {
+    if (hijackedQueuePrompt) return;
+    const originalQueuePrompt = api.queuePrompt;
+    api.queuePrompt = async (...args: any[]) => {
+        lastQueuePromptRes = await originalQueuePrompt(...args)
+        return lastQueuePromptRes
+    }
+    hijackedQueuePrompt = true
 }
