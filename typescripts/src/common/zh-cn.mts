@@ -188,7 +188,8 @@ export default {
     'sdppp extract PSD': 'sdppp 导入 PSD',
     'sdppp get PSD': 'sdppp 获取 PSD', 
     'set text to layer': '设置图层的文本',
-    'sdppp Run Photoshop Action': 'sdppp 运行 Photoshop Action',
+    'run Photoshop Action': 'sdppp 运行 Photoshop Action',
+    'select layer': 'sdppp 选中图层',
     
     // photoshop dialog/widget
     '{0} wants to extract a PSD file to Photoshop, are you sure?': '{0} 想要释放一个.psd文件到Photoshop，确定吗？',

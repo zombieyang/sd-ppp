@@ -153,9 +153,9 @@ def define_comfyui_nodes_legacy(sdppp):
 
 
     class SendImageToPhotoshopLayerNode:
-        RETURN_TYPES = ("IMAGE",)
-        RETURN_NAMES = ("images",)
-        OUTPUT_IS_LIST = (True,)
+        RETURN_TYPES = ("LAYER",)
+        RETURN_NAMES = ("layer_or_group",)
+        OUTPUT_IS_LIST = (True, True)
         OUTPUT_NODE = True
         INPUT_IS_LIST = True
         FUNCTION = "send_image"
@@ -237,7 +237,8 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ), True)
-            return (images,)
+            ret_layer_or_group = None if not linked_style else layer_or_group
+            return (ret_layer_or_group,)
     
     class CLIPTextEncodePSRegional:
         @classmethod

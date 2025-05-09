@@ -145,10 +145,12 @@ export interface LayerReducerActions {
 }
 
 // =========== runPhotoshopAction Interfaces ===========
-export interface RunPhotoshopActionActions {
+export interface RunPhotoshopActionOnLayerActions {
     params: {
         action_set: string,
-        action: string
+        action: string,
+        layer_identify: string,
+        document_identify: string
     },
     result: {
         success: boolean
@@ -178,7 +180,7 @@ export interface PhotoshopCalleeActions {
     getDocumentInfo: getDocumentInfoActions;
     getLinkedLayers: LayerReducerActions;
     getLayersInGroup: LayerReducerActions;
-    runPhotoshopAction: RunPhotoshopActionActions;
+    runPhotoshopActionOnLayer: RunPhotoshopActionOnLayerActions;
     getSpecialIdentifierValue: getSpecialIdentifierValueActions;
 }
 

@@ -509,9 +509,10 @@ def define_comfyui_nodes(sdpppServer):
             
             return (res_text,)
 
-    class RunPhotoshopActionNode:
-        RETURN_TYPES = ("DOCUMENT",)
-        RETURN_NAMES = ("document",)
+    class SelectLayerAndRunPSActionNode:
+        RETURN_TYPES = ("LAYER",)
+        RETURN_NAMES = ("layer_or_group",)
+        INPUT_IS_LIST = False
         FUNCTION = "action"
         CATEGORY = "SD-PPP"
         OUTPUT_NODE = True
@@ -524,7 +525,7 @@ def define_comfyui_nodes(sdpppServer):
         def INPUT_TYPES(cls):
             return {
                 "required": {
-                    "document": ("DOCUMENT", {"default": None, "sdppp_type": "DOCUMENT"}),
+                    "layer_or_group": ("LAYER", {"default": None, "sdppp_type": "LAYER"}),
                     "action_set": ("STRING", {"default": "", "sdppp_type": "STRING"}),
                     "action": ("STRING", {"default": "", "sdppp_type": "STRING"}),
                 },
@@ -533,17 +534,19 @@ def define_comfyui_nodes(sdpppServer):
                 })
             }
         
-        def action(self, document, action_set, action, **kwargs):
+        def action(self, layer_or_group, action_set, action, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
             
-            call_async_func_in_server_thread(ProtocolPhotoshop.run_photoshop_action(
-                instance_id=document['instance_id'],
-                document_identify=document['identify'], 
+            start_time = time.time()
+            result = call_async_func_in_server_thread(ProtocolPhotoshop.run_photoshop_action(
+                instance_id=layer_or_group['document']['instance_id'],
+                document_identify=layer_or_group['document']['identify'],
+                layer_identify=layer_or_group['layer_identify'], 
                 action_set=action_set,
                 action=action
-            ), True)
-
-            return (document, )
+            ))
+            print(result)
+            return (layer_or_group, )
 
         
         
@@ -573,6 +576,6 @@ def define_comfyui_nodes(sdpppServer):
         # 'SDPPP Send Text To Layer': SendTextToLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
-        'SDPPP Run Photoshop Action': RunPhotoshopActionNode,
+        'SDPPP Run PS Action On Layer': SelectLayerAndRunPSActionNode,
         # 'SDPPP Settings': SDPPPSettingsNode,
     }
