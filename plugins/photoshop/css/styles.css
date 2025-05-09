@@ -325,6 +325,9 @@ sp-progressbar {
     justify-content: start;
 
 }
+.workflow-edit-field .image-widget-layer-widget-container {
+    width: 100%;
+}
 
 .widget-mode-selection {
     display: flex;
