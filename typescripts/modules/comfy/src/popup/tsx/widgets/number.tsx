@@ -60,14 +60,16 @@ export const NumberWidget: React.FC<NumberWidgetProps> = ({
                     step={inputStep}
                     value={localValue}
                     onChange={handleValueChange}
+                    onChangeComplete={handleBlur}
                 />
                 <InputNumber
                     style={{ width: 80 }}
                     min={inputMin}
                     max={inputMax}
-                    step={inputStep}
+                    step={inputStep} 
                     value={localValue}
                     onChange={handleValueChange}
+                    onBlur={handleBlur}
                     controls={false}
                 />
             </Flex>
