@@ -128,6 +128,7 @@ export class SendImageToLayerNode extends SDPPPDownloadableNode {
         this.node.inputs[0].label = i18n(this.node.inputs[0].name)
         this.node.inputs[1].label = i18n(this.node.inputs[1].name)
         this.node.inputs[2].label = i18n(this.node.inputs[2].name)
+        this.node.outputs[0].label = i18n(this.node.outputs[0].name)
     }
     private layerLinked: boolean = false;
     protected inputConnectionChange(index: number, connected: boolean) {

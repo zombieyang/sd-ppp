@@ -39,6 +39,7 @@ export class GetLayersInGroupNode extends SDPPPNodeWithInput implements NodeWith
         super.update();
         this.node.inputs.forEach((i: any) => i.label = i18n(i.name));
         this.node.outputs.forEach((i: any) => i.label = i18n(i.name));
+        this.node.widgets[0].label = i18n(this.node.widgets[0].name)
     }
 }
 export class GetLinkedLayersNode extends SDPPPNodeWithInput implements NodeWithLayerOutput {
@@ -49,6 +50,7 @@ export class GetLinkedLayersNode extends SDPPPNodeWithInput implements NodeWithL
         super.update();
         this.node.inputs.forEach((i: any) => i.label = i18n(i.name));
         this.node.outputs.forEach((i: any) => i.label = i18n(i.name));
+        this.node.widgets[0].label = i18n(this.node.widgets[0].name)
     }
 }
 
@@ -68,6 +70,11 @@ export class GetTextFromLayerNode extends SDPPPDownloadableNode {
     }
     constructor(node: any) {
         super(node);
+    }
+    async update() {
+        super.update();
+        this.node.inputs[0].label = i18n(this.node.inputs[0].name)
+        this.node.outputs[0] && (this.node.outputs[0].label = i18n(this.node.outputs[0].name))
     }
 }
 

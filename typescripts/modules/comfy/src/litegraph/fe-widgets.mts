@@ -333,6 +333,7 @@ export class DownloadWidget extends SDPPPWidget {
                     const val = await documentNode.widgets[0].serializeValue();
                     try {
                         ret.document = JSON.parse(val);
+                        ret.isLocal = pagePhotoshopStoreMap.getStore(ret.document.instance_id)?.data.isLocal || false;
                     } catch (e) {
                         return '';
                     }

@@ -5,7 +5,7 @@ import json
 from ..protocols.photoshop import ProtocolPhotoshop
 from PIL import Image, ImageOps, ImageSequence, ImageFile, ImageDraw
 
-def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = ''):
+def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key):
     document_instance_id = None
     try:
         sdppp_values = json.loads(sdppp_arg)
@@ -14,10 +14,7 @@ def sdppp_is_changed(sdppp, sdppp_arg, document_arg, key = ''):
             document_instance_id = document['instance_id']
         else:
             document_instance_id = sdppp_values['document']['instance_id']
-        if key == '':
-            return f"{sdppp.ppp_instances[document_instance_id].store.data['canvasStateID']}_{sdppp.ppp_instances[document_instance_id].store.data['selectionStateID']}"
-        else:
-            return sdppp.ppp_instances[document_instance_id].store.data[key]
+        return sdppp.ppp_instances[document_instance_id].store.data[key]
     except Exception as e:
         print('=============sdppp_is_changed error============', e)
         # print(sdppp_arg)

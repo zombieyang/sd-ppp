@@ -8,7 +8,7 @@ from PIL import Image, ImageOps, ImageSequence, ImageFile
 from nodes import CLIPTextEncode, ConditioningConcat, ConditioningSetMask
 from ..apis import addImageCache
 from ..protocols.photoshop import ProtocolPhotoshop
-from .nodes import check_linked_in_prompt, sdppp_get_prompt_item_from_list, convert_mask_to_boundary, SDPPPOptional, sdppp_is_changed
+from .nodes import check_linked_in_prompt, sdppp_get_prompt_item_from_list, convert_mask_to_boundary, SDPPPOptional
 
 def define_comfyui_nodes_legacy(sdppp):
     def call_async_func_in_server_thread(coro, dontwait = False):
@@ -186,11 +186,13 @@ def define_comfyui_nodes_legacy(sdppp):
 
         def send_image(self, unique_id, prompt, images, layer_or_group, bound="", document="", **kwargs):
             sdppp.has_ps_instance(throw_error=True)
+            total_start_time = time.time()
 
             linked_style, document = parse_params(unique_id, prompt, layer_or_group, document)
             sdppp_arg = kwargs['sdppp']
             sdppp_arg_item = json.loads(sdppp_get_prompt_item_from_list(sdppp_arg, 0))
 
+            is_local = sdppp_arg_item.get('isLocal', False)
             # dont check here, some python cannot read the data in this thread.
             # if document['instance_id'] not in sdppp.ppp_instances:
             #     raise ValueError(f'Photoshop instance {document["instance_id"]} not found')
@@ -216,19 +218,29 @@ def define_comfyui_nodes_legacy(sdppp):
                     if img.mode != "RGBA":
                         img = img.convert("RGBA")
                     
-                    # 使用BytesIO而不是tobytes来获取PNG数据
-                    buffer = BytesIO()
-                    img.save(buffer, format="PNG")
-                    png_data = buffer.getvalue()
+                    if (is_local):
+                        buffer = img.tobytes('raw')
+                        blob = {
+                            'buffer': buffer,
+                            'width': img.width,
+                            'height': img.height
+                        }
+
+                    else:
+                        buffer = BytesIO()
+                        img.save(buffer, format="PNG")
+                        png_data = buffer.getvalue()
+                        blob = {
+                            'pngData': png_data,
+                        }
                     
                     params.append({
                         'layer_identify': item_layer, 
                         'boundary': convert_mask_to_boundary(item_bound), 
-                        'image_blob': {
-                            'pngData': png_data
-                        }
+                        'image_blob': blob
                     })
 
+            start_time = time.time()
             call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
                 instance_id=document['instance_id'],
                 document_identify=document['identify'], 
@@ -236,8 +248,8 @@ def define_comfyui_nodes_legacy(sdppp):
                 layer_identifies=[p['layer_identify'] for p in params], 
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
-            ), True)
-            ret_layer_or_group = None if not linked_style else layer_or_group
+            ))
+            ret_layer_or_group = [None] if not linked_style else layer_or_group
             return (ret_layer_or_group,)
     
     class CLIPTextEncodePSRegional:

@@ -46,9 +46,14 @@ export interface getImageActions {
 }
 
 // =========== sendImages Interfaces ===========
-export interface ImageBlobParams {
+export type ImageBlobParams = {
     components: number,
     pngData: Blob
+} | {
+    components: number,
+    buffer: Uint8Array,
+    width: number,
+    height: number
 }
 
 export interface sendImagesActions {

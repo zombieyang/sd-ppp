@@ -23,8 +23,9 @@ export interface PhotoshopDataDocument {
     [id: number]: DocumentData
 }
 export interface PhotoshopStoreData {
-    uname: string // userpath name
+    uname: string // random string instance name
     comfyUserToken: string
+    isLocal: boolean
 
     activeDocumentID: number  // active document name
     documents: PhotoshopDataDocument
@@ -40,6 +41,7 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
         super(data || {
             uname: '',
             comfyUserToken: '',
+            isLocal: false,
 
             activeDocumentID: 0,
             documents: {},
@@ -49,6 +51,11 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
             historyStateID: 0,
         });
         this._version = version || 0;
+    }
+
+    @StoreMutation
+    setIsLocal(isLocal: boolean) {
+        this._data.isLocal = isLocal;
     }
 
     @StoreMutation
