@@ -1,6 +1,7 @@
 temptest
 node_modules
 typescripts/photoshop-internal
+typescripts/modules/photoshop-internal
 __pycache__
 sd-ppp_all.zip
 .uxprc
