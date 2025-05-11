@@ -240,8 +240,7 @@ def define_comfyui_nodes_legacy(sdppp):
                         'image_blob': blob
                     })
 
-            start_time = time.time()
-            call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
+            ret = call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
                 instance_id=document['instance_id'],
                 document_identify=document['identify'], 
                 image_blobs=[p['image_blob'] for p in params],  
@@ -249,7 +248,13 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ))
-            ret_layer_or_group = [None] if not linked_style else layer_or_group
+            ret_layer_or_group = []
+            for i, ret_layer in enumerate(ret['layers']):
+                ret_layer_or_group.append({
+                    'document': document,
+                    'layer_identify': ret_layer['identify'],
+                    'dirtyID': ret_layer['dirtyID']
+                })
             return (ret_layer_or_group,)
     
     class CLIPTextEncodePSRegional:
