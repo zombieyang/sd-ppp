@@ -885,6 +885,7 @@
       }
     }, [connectState]);
     return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(import_jsx_runtime19.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(SDPPPInternalBridge_exports.Promote, {}),
       /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("div", { className: "connect-box", children: [
         !editorMode ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "status-bar " + connectState, children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "status-icon", title: lastConnectErrorMessage?.toString() || i18n(connectState), children: "\u2B24" }) }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
           "sp-action-button",
@@ -898,7 +899,7 @@
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(AddressBar, {})
       ] }),
       lastConnectErrorMessage ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("sp-label", { class: "error-label", children: isValidI18nKey(lastConnectErrorMessage) ? i18n(lastConnectErrorMessage) : lastConnectErrorMessage }) }) : "",
-      /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(SDPPPInternalBridge_exports.Promote, {}),
+      /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(SDPPPInternalBridge_exports.Auths, {}),
       /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("sp-divider", { size: "small" }),
       connectState === "connected" && /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("div", { className: "panel-body", children: [
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "editor-card", style: editorCardShowingIndex === 0 ? {} : { display: "none" }, children: /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("div", { className: "comfy-list-wrap", children: [
@@ -937,36 +938,6 @@
   globalThis.sdppp = globalThis.sdppp || {};
   globalThis.sdppp.renderPhotoshopPlugin = (rootElement) => {
     (0, import_client.createRoot)(rootElement).render(/* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Main, {}));
-  };
-  var logs = [];
-  var warningLogs = [];
-  var errorLogs = [];
-  globalThis.sdppp.getLogs = () => {
-    return {
-      logs,
-      warningLogs,
-      errorLogs
-    };
-  };
-  globalThis.sdppp.enableLogCapture = () => {
-    console.log = /* @__PURE__ */ function(log) {
-      return function(...args) {
-        log(...args);
-        logs.push(args);
-      };
-    }(console.log);
-    console.warn = /* @__PURE__ */ function(log) {
-      return function(...args) {
-        log(...args);
-        warningLogs.push(args);
-      };
-    }(console.warn);
-    console.error = /* @__PURE__ */ function(log) {
-      return function(...args) {
-        log(...args);
-        errorLogs.push(args);
-      };
-    }(console.error);
   };
 })();
 //# sourceMappingURL=index.js.map

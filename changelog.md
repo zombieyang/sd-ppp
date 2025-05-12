@@ -1,3 +1,12 @@
+## [1.8.2] - 2025-05-12
+* fix: seeds would not randomize in some Comfy setting
+* fix: combo of `LoadImage` became smaller in last version
+* fix: sliders not worked.
+* fix: cannot run API nodes even is logged in.
+* fix: NaN error when there is no `getLayer` linked to `getImage`
+* optimization: output of `SendImage` now become a `layer_or_group`
+* optimization: no longer compress image when connecting with IP address. (For those who use Comfy in intranet)
+
 ## [1.8.1] - 2025-05-06
 * fix: `GetImage` with `quality` not works in some ComfyUI.
 * optimization: more detailed websocket error

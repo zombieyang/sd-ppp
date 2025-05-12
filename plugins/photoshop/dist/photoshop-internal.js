@@ -640,6 +640,472 @@
     }
   });
 
+  // node_modules/ms/index.js
+  var require_ms = __commonJS({
+    "node_modules/ms/index.js"(exports, module) {
+      "use strict";
+      var s = 1e3;
+      var m = s * 60;
+      var h = m * 60;
+      var d = h * 24;
+      var w = d * 7;
+      var y = d * 365.25;
+      module.exports = function(val, options) {
+        options = options || {};
+        var type3 = typeof val;
+        if (type3 === "string" && val.length > 0) {
+          return parse(val);
+        } else if (type3 === "number" && isFinite(val)) {
+          return options.long ? fmtLong(val) : fmtShort(val);
+        }
+        throw new Error(
+          "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
+        );
+      };
+      function parse(str) {
+        str = String(str);
+        if (str.length > 100) {
+          return;
+        }
+        var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+          str
+        );
+        if (!match) {
+          return;
+        }
+        var n = parseFloat(match[1]);
+        var type3 = (match[2] || "ms").toLowerCase();
+        switch (type3) {
+          case "years":
+          case "year":
+          case "yrs":
+          case "yr":
+          case "y":
+            return n * y;
+          case "weeks":
+          case "week":
+          case "w":
+            return n * w;
+          case "days":
+          case "day":
+          case "d":
+            return n * d;
+          case "hours":
+          case "hour":
+          case "hrs":
+          case "hr":
+          case "h":
+            return n * h;
+          case "minutes":
+          case "minute":
+          case "mins":
+          case "min":
+          case "m":
+            return n * m;
+          case "seconds":
+          case "second":
+          case "secs":
+          case "sec":
+          case "s":
+            return n * s;
+          case "milliseconds":
+          case "millisecond":
+          case "msecs":
+          case "msec":
+          case "ms":
+            return n;
+          default:
+            return void 0;
+        }
+      }
+      function fmtShort(ms) {
+        var msAbs = Math.abs(ms);
+        if (msAbs >= d) {
+          return Math.round(ms / d) + "d";
+        }
+        if (msAbs >= h) {
+          return Math.round(ms / h) + "h";
+        }
+        if (msAbs >= m) {
+          return Math.round(ms / m) + "m";
+        }
+        if (msAbs >= s) {
+          return Math.round(ms / s) + "s";
+        }
+        return ms + "ms";
+      }
+      function fmtLong(ms) {
+        var msAbs = Math.abs(ms);
+        if (msAbs >= d) {
+          return plural(ms, msAbs, d, "day");
+        }
+        if (msAbs >= h) {
+          return plural(ms, msAbs, h, "hour");
+        }
+        if (msAbs >= m) {
+          return plural(ms, msAbs, m, "minute");
+        }
+        if (msAbs >= s) {
+          return plural(ms, msAbs, s, "second");
+        }
+        return ms + " ms";
+      }
+      function plural(ms, msAbs, n, name) {
+        var isPlural = msAbs >= n * 1.5;
+        return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
+      }
+    }
+  });
+
+  // node_modules/debug/src/common.js
+  var require_common = __commonJS({
+    "node_modules/debug/src/common.js"(exports, module) {
+      "use strict";
+      function setup(env) {
+        createDebug.debug = createDebug;
+        createDebug.default = createDebug;
+        createDebug.coerce = coerce;
+        createDebug.disable = disable;
+        createDebug.enable = enable;
+        createDebug.enabled = enabled;
+        createDebug.humanize = require_ms();
+        createDebug.destroy = destroy;
+        Object.keys(env).forEach((key) => {
+          createDebug[key] = env[key];
+        });
+        createDebug.names = [];
+        createDebug.skips = [];
+        createDebug.formatters = {};
+        function selectColor(namespace) {
+          let hash = 0;
+          for (let i = 0; i < namespace.length; i++) {
+            hash = (hash << 5) - hash + namespace.charCodeAt(i);
+            hash |= 0;
+          }
+          return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+        }
+        createDebug.selectColor = selectColor;
+        function createDebug(namespace) {
+          let prevTime;
+          let enableOverride = null;
+          let namespacesCache;
+          let enabledCache;
+          function debug3(...args) {
+            if (!debug3.enabled) {
+              return;
+            }
+            const self2 = debug3;
+            const curr = Number(/* @__PURE__ */ new Date());
+            const ms = curr - (prevTime || curr);
+            self2.diff = ms;
+            self2.prev = prevTime;
+            self2.curr = curr;
+            prevTime = curr;
+            args[0] = createDebug.coerce(args[0]);
+            if (typeof args[0] !== "string") {
+              args.unshift("%O");
+            }
+            let index = 0;
+            args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+              if (match === "%%") {
+                return "%";
+              }
+              index++;
+              const formatter = createDebug.formatters[format];
+              if (typeof formatter === "function") {
+                const val = args[index];
+                match = formatter.call(self2, val);
+                args.splice(index, 1);
+                index--;
+              }
+              return match;
+            });
+            createDebug.formatArgs.call(self2, args);
+            const logFn = self2.log || createDebug.log;
+            logFn.apply(self2, args);
+          }
+          debug3.namespace = namespace;
+          debug3.useColors = createDebug.useColors();
+          debug3.color = createDebug.selectColor(namespace);
+          debug3.extend = extend;
+          debug3.destroy = createDebug.destroy;
+          Object.defineProperty(debug3, "enabled", {
+            enumerable: true,
+            configurable: false,
+            get: () => {
+              if (enableOverride !== null) {
+                return enableOverride;
+              }
+              if (namespacesCache !== createDebug.namespaces) {
+                namespacesCache = createDebug.namespaces;
+                enabledCache = createDebug.enabled(namespace);
+              }
+              return enabledCache;
+            },
+            set: (v) => {
+              enableOverride = v;
+            }
+          });
+          if (typeof createDebug.init === "function") {
+            createDebug.init(debug3);
+          }
+          return debug3;
+        }
+        function extend(namespace, delimiter) {
+          const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
+          newDebug.log = this.log;
+          return newDebug;
+        }
+        function enable(namespaces) {
+          createDebug.save(namespaces);
+          createDebug.namespaces = namespaces;
+          createDebug.names = [];
+          createDebug.skips = [];
+          const split = (typeof namespaces === "string" ? namespaces : "").trim().replace(" ", ",").split(",").filter(Boolean);
+          for (const ns of split) {
+            if (ns[0] === "-") {
+              createDebug.skips.push(ns.slice(1));
+            } else {
+              createDebug.names.push(ns);
+            }
+          }
+        }
+        function matchesTemplate(search, template) {
+          let searchIndex = 0;
+          let templateIndex = 0;
+          let starIndex = -1;
+          let matchIndex = 0;
+          while (searchIndex < search.length) {
+            if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
+              if (template[templateIndex] === "*") {
+                starIndex = templateIndex;
+                matchIndex = searchIndex;
+                templateIndex++;
+              } else {
+                searchIndex++;
+                templateIndex++;
+              }
+            } else if (starIndex !== -1) {
+              templateIndex = starIndex + 1;
+              matchIndex++;
+              searchIndex = matchIndex;
+            } else {
+              return false;
+            }
+          }
+          while (templateIndex < template.length && template[templateIndex] === "*") {
+            templateIndex++;
+          }
+          return templateIndex === template.length;
+        }
+        function disable() {
+          const namespaces = [
+            ...createDebug.names,
+            ...createDebug.skips.map((namespace) => "-" + namespace)
+          ].join(",");
+          createDebug.enable("");
+          return namespaces;
+        }
+        function enabled(name) {
+          for (const skip of createDebug.skips) {
+            if (matchesTemplate(name, skip)) {
+              return false;
+            }
+          }
+          for (const ns of createDebug.names) {
+            if (matchesTemplate(name, ns)) {
+              return true;
+            }
+          }
+          return false;
+        }
+        function coerce(val) {
+          if (val instanceof Error) {
+            return val.stack || val.message;
+          }
+          return val;
+        }
+        function destroy() {
+          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        }
+        createDebug.enable(createDebug.load());
+        return createDebug;
+      }
+      module.exports = setup;
+    }
+  });
+
+  // node_modules/debug/src/browser.js
+  var require_browser = __commonJS({
+    "node_modules/debug/src/browser.js"(exports, module) {
+      "use strict";
+      exports.formatArgs = formatArgs;
+      exports.save = save;
+      exports.load = load;
+      exports.useColors = useColors;
+      exports.storage = localstorage();
+      exports.destroy = /* @__PURE__ */ (() => {
+        let warned = false;
+        return () => {
+          if (!warned) {
+            warned = true;
+            console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+          }
+        };
+      })();
+      exports.colors = [
+        "#0000CC",
+        "#0000FF",
+        "#0033CC",
+        "#0033FF",
+        "#0066CC",
+        "#0066FF",
+        "#0099CC",
+        "#0099FF",
+        "#00CC00",
+        "#00CC33",
+        "#00CC66",
+        "#00CC99",
+        "#00CCCC",
+        "#00CCFF",
+        "#3300CC",
+        "#3300FF",
+        "#3333CC",
+        "#3333FF",
+        "#3366CC",
+        "#3366FF",
+        "#3399CC",
+        "#3399FF",
+        "#33CC00",
+        "#33CC33",
+        "#33CC66",
+        "#33CC99",
+        "#33CCCC",
+        "#33CCFF",
+        "#6600CC",
+        "#6600FF",
+        "#6633CC",
+        "#6633FF",
+        "#66CC00",
+        "#66CC33",
+        "#9900CC",
+        "#9900FF",
+        "#9933CC",
+        "#9933FF",
+        "#99CC00",
+        "#99CC33",
+        "#CC0000",
+        "#CC0033",
+        "#CC0066",
+        "#CC0099",
+        "#CC00CC",
+        "#CC00FF",
+        "#CC3300",
+        "#CC3333",
+        "#CC3366",
+        "#CC3399",
+        "#CC33CC",
+        "#CC33FF",
+        "#CC6600",
+        "#CC6633",
+        "#CC9900",
+        "#CC9933",
+        "#CCCC00",
+        "#CCCC33",
+        "#FF0000",
+        "#FF0033",
+        "#FF0066",
+        "#FF0099",
+        "#FF00CC",
+        "#FF00FF",
+        "#FF3300",
+        "#FF3333",
+        "#FF3366",
+        "#FF3399",
+        "#FF33CC",
+        "#FF33FF",
+        "#FF6600",
+        "#FF6633",
+        "#FF9900",
+        "#FF9933",
+        "#FFCC00",
+        "#FFCC33"
+      ];
+      function useColors() {
+        if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+          return true;
+        }
+        if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+          return false;
+        }
+        let m;
+        return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
+        typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
+        // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+        typeof navigator !== "undefined" && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+        typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+      }
+      function formatArgs(args) {
+        args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module.exports.humanize(this.diff);
+        if (!this.useColors) {
+          return;
+        }
+        const c = "color: " + this.color;
+        args.splice(1, 0, c, "color: inherit");
+        let index = 0;
+        let lastC = 0;
+        args[0].replace(/%[a-zA-Z%]/g, (match) => {
+          if (match === "%%") {
+            return;
+          }
+          index++;
+          if (match === "%c") {
+            lastC = index;
+          }
+        });
+        args.splice(lastC, 0, c);
+      }
+      exports.log = console.debug || console.log || (() => {
+      });
+      function save(namespaces) {
+        try {
+          if (namespaces) {
+            exports.storage.setItem("debug", namespaces);
+          } else {
+            exports.storage.removeItem("debug");
+          }
+        } catch (error) {
+        }
+      }
+      function load() {
+        let r;
+        try {
+          r = exports.storage.getItem("debug");
+        } catch (error) {
+        }
+        if (!r && typeof process !== "undefined" && "env" in process) {
+          r = process.env.DEBUG;
+        }
+        return r;
+      }
+      function localstorage() {
+        try {
+          return localStorage;
+        } catch (error) {
+        }
+      }
+      module.exports = require_common()(exports);
+      var { formatters } = module.exports;
+      formatters.j = function(v) {
+        try {
+          return JSON.stringify(v);
+        } catch (error) {
+          return "[UnexpectedJSONParseError]: " + error.message;
+        }
+      };
+    }
+  });
+
   // node_modules/chai/chai.js
   function isErrorInstance(obj) {
     return obj instanceof Error || Object.prototype.toString.call(obj) === "[object Error]";
@@ -8317,7 +8783,7 @@
           ].join(":");
           return [d2.getDate(), months[d2.getMonth()], time].join(" ");
         }
-        function log() {
+        function log2() {
           console.log("%s - %s", timestamp(), format$1.apply(null, arguments));
         }
         function _extend(origin, add) {
@@ -8335,7 +8801,7 @@
         var _polyfillNode_util = {
           inherits: inherits$3,
           _extend,
-          log,
+          log: log2,
           isBuffer: isBuffer$1,
           isPrimitive: isPrimitive2,
           isFunction,
@@ -8377,7 +8843,7 @@
           isFunction,
           isPrimitive: isPrimitive2,
           isBuffer: isBuffer$1,
-          log,
+          log: log2,
           inherits: inherits$3,
           _extend,
           "default": _polyfillNode_util
@@ -14024,11 +14490,11 @@
             let enableOverride = null;
             let namespacesCache;
             let enabledCache;
-            function debug2(...args) {
-              if (!debug2.enabled) {
+            function debug4(...args) {
+              if (!debug4.enabled) {
                 return;
               }
-              const self2 = debug2;
+              const self2 = debug4;
               const curr = Number(/* @__PURE__ */ new Date());
               const ms2 = curr - (prevTime || curr);
               self2.diff = ms2;
@@ -14058,12 +14524,12 @@
               const logFn = self2.log || createDebug.log;
               logFn.apply(self2, args);
             }
-            debug2.namespace = namespace;
-            debug2.useColors = createDebug.useColors();
-            debug2.color = createDebug.selectColor(namespace);
-            debug2.extend = extend;
-            debug2.destroy = createDebug.destroy;
-            Object.defineProperty(debug2, "enabled", {
+            debug4.namespace = namespace;
+            debug4.useColors = createDebug.useColors();
+            debug4.color = createDebug.selectColor(namespace);
+            debug4.extend = extend;
+            debug4.destroy = createDebug.destroy;
+            Object.defineProperty(debug4, "enabled", {
               enumerable: true,
               configurable: false,
               get: () => {
@@ -14081,9 +14547,9 @@
               }
             });
             if (typeof createDebug.init === "function") {
-              createDebug.init(debug2);
+              createDebug.init(debug4);
             }
-            return debug2;
+            return debug4;
           }
           function extend(namespace, delimiter2) {
             const newDebug = createDebug(this.namespace + (typeof delimiter2 === "undefined" ? ":" : delimiter2) + namespace);
@@ -14949,7 +15415,7 @@
             inherits: inherits2,
             isString: isString2
           } = utils$3;
-          const debug2 = browser.exports("mocha:suite");
+          const debug4 = browser.exports("mocha:suite");
           const milliseconds2 = ms$1;
           const errors2 = errors$2;
           const { MOCHA_ID_PROP_NAME: MOCHA_ID_PROP_NAME2 } = utilsConstants;
@@ -15011,7 +15477,7 @@
           };
           Suite2.prototype.clone = function() {
             var suite2 = new Suite2(this.title);
-            debug2("clone");
+            debug4("clone");
             suite2.ctx = this.ctx;
             suite2.root = this.root;
             suite2.timeout(this.timeout());
@@ -15030,7 +15496,7 @@
             var INT_MAX = Math.pow(2, 31) - 1;
             var range = [0, INT_MAX];
             ms2 = clamp(ms2, range);
-            debug2("timeout %d", ms2);
+            debug4("timeout %d", ms2);
             this._timeout = parseInt(ms2, 10);
             return this;
           };
@@ -15038,7 +15504,7 @@
             if (!arguments.length) {
               return this._retries;
             }
-            debug2("retries %d", n);
+            debug4("retries %d", n);
             this._retries = parseInt(n, 10) || 0;
             return this;
           };
@@ -15049,7 +15515,7 @@
             if (typeof ms2 === "string") {
               ms2 = milliseconds2(ms2);
             }
-            debug2("slow %d", ms2);
+            debug4("slow %d", ms2);
             this._slow = ms2;
             return this;
           };
@@ -15057,7 +15523,7 @@
             if (!arguments.length) {
               return this._bail;
             }
-            debug2("bail %s", bail);
+            debug4("bail %s", bail);
             this._bail = bail;
             return this;
           };
@@ -15329,7 +15795,7 @@
         var EventEmitter = require$$0.EventEmitter;
         var Pending = pending;
         var utils$1 = utils$3;
-        var debug = browser.exports("mocha:runner");
+        var debug3 = browser.exports("mocha:runner");
         var Runnable$1 = runnable;
         var Suite$2 = suite.exports;
         var HOOK_TYPE_BEFORE_EACH = Suite$2.constants.HOOK_TYPE_BEFORE_EACH;
@@ -15361,39 +15827,7 @@
         ];
         var constants$1 = utils$1.defineConstants(
           /**
-           * {@link Runner}-related constants. Used by reporters. Each event emits the corresponding object, unless otherwise indicated.
-           * @example
-           * const Mocha = require('mocha');
-           * const Base = Mocha.reporters.Base;
-           * const {
-           *   EVENT_HOOK_BEGIN,
-           *   EVENT_TEST_PASS,
-           *   EVENT_TEST_FAIL,
-           *   EVENT_TEST_END
-           * } = Mocha.Runner.constants
-           *
-           * function MyReporter(runner, options) {
-           *   Base.call(this, runner, options);
-           *
-           *   runner.on(EVENT_HOOK_BEGIN, function(hook) {
-           *     console.log('hook called: ', hook.title);
-           *   });
-           *
-           *   runner.on(EVENT_TEST_PASS, function(test) {
-           *     console.log('pass: %s', test.fullTitle());
-           *   });
-           *
-           *   runner.on(EVENT_TEST_FAIL, function(test, err) {
-           *     console.log('fail: %s -- error: %s', test.fullTitle(), err.message);
-           *   });
-           *
-           *   runner.on(EVENT_TEST_END, function() {
-           *     console.log('end: %d/%d', runner.stats.passes, runner.stats.tests);
-           *   });
-           * }
-           *
-           * module.exports = MyReporter;
-           *
+           * {@link Runner}-related constants.
            * @public
            * @memberof Runner
            * @readonly
@@ -15443,13 +15877,7 @@
              */
             EVENT_TEST_END: "test end",
             /**
-             * Emitted when {@link Test} execution fails. Includes an `err` object of type `Error`.
-             * @example
-             * runner.on(EVENT_TEST_FAIL, function(test, err) {
-             *   console.log('fail: %s -- error: %s', test.fullTitle(), err.message);
-             * });
-             *
-             *
+             * Emitted when {@link Test} execution fails
              */
             EVENT_TEST_FAIL: "fail",
             /**
@@ -15519,13 +15947,13 @@
             this.uncaught = this._uncaught.bind(this);
             this.unhandled = (reason, promise) => {
               if (isMochaError(reason)) {
-                debug(
+                debug3(
                   "trapped unhandled rejection coming out of Mocha; forwarding to uncaught handler:",
                   reason
                 );
                 this.uncaught(reason);
               } else {
-                debug(
+                debug3(
                   "trapped unhandled rejection from (probably) user code; re-emitting on process"
                 );
                 this._removeEventListener(
@@ -15544,13 +15972,13 @@
         }
         Runner.immediately = commonjsGlobal.setImmediate || nextTick$1;
         Runner.prototype._addEventListener = function(target, eventName, listener) {
-          debug(
+          debug3(
             "_addEventListener(): adding for event %s; %d current listeners",
             eventName,
             target.listenerCount(eventName)
           );
           if (this._eventListeners.has(target) && this._eventListeners.get(target).has(eventName) && this._eventListeners.get(target).get(eventName).has(listener)) {
-            debug(
+            debug3(
               "warning: tried to attach duplicate event listener for %s",
               eventName
             );
@@ -15578,7 +16006,7 @@
               this._eventListeners.delete(target);
             }
           } else {
-            debug("trying to remove listener for untracked object %s", target);
+            debug3("trying to remove listener for untracked object %s", target);
           }
         };
         Runner.prototype.dispose = function() {
@@ -15593,7 +16021,7 @@
           this._eventListeners.clear();
         };
         Runner.prototype.grep = function(re, invert) {
-          debug("grep(): setting to %s", re);
+          debug3("grep(): setting to %s", re);
           this._grep = re;
           this._invert = invert;
           this.total = this.grepTotal(this.suite);
@@ -15627,7 +16055,7 @@
           if (!arguments.length) {
             return this._globals;
           }
-          debug("globals(): setting to %O", arr);
+          debug3("globals(): setting to %O", arr);
           this._globals = this._globals.concat(arr);
           return this;
         };
@@ -15667,7 +16095,7 @@
             );
           }
           ++this.failures;
-          debug("total number of failures: %d", this.failures);
+          debug3("total number of failures: %d", this.failures);
           test3.state = STATE_FAILED;
           if (!isError(err)) {
             err = thrown2Error(err);
@@ -15948,9 +16376,9 @@
           var i = 0;
           var self2 = this;
           var total = this.grepTotal(suite2);
-          debug("runSuite(): running %s", suite2.fullTitle());
+          debug3("runSuite(): running %s", suite2.fullTitle());
           if (!total || self2.failures && suite2._bail) {
-            debug("runSuite(): bailing");
+            debug3("runSuite(): bailing");
             return fn();
           }
           this.emit(constants$1.EVENT_SUITE_BEGIN, this.suite = suite2);
@@ -16001,21 +16429,21 @@
             );
           }
           if (err instanceof Pending) {
-            debug("uncaught(): caught a Pending");
+            debug3("uncaught(): caught a Pending");
             return;
           }
           if (this.allowUncaught && !utils$1.isBrowser()) {
-            debug("uncaught(): bubbling exception due to --allow-uncaught");
+            debug3("uncaught(): bubbling exception due to --allow-uncaught");
             throw err;
           }
           if (this.state === constants$1.STATE_STOPPED) {
-            debug("uncaught(): throwing after run has completed!");
+            debug3("uncaught(): throwing after run has completed!");
             throw err;
           }
           if (err) {
-            debug("uncaught(): got truthy exception %O", err);
+            debug3("uncaught(): got truthy exception %O", err);
           } else {
-            debug("uncaught(): undefined/falsy exception");
+            debug3("uncaught(): undefined/falsy exception");
             err = createInvalidExceptionError(
               "Caught falsy/undefined exception which would otherwise be uncaught. No stack trace found; try a debugger",
               err
@@ -16023,19 +16451,19 @@
           }
           if (!isError(err)) {
             err = thrown2Error(err);
-            debug('uncaught(): converted "error" %o to Error', err);
+            debug3('uncaught(): converted "error" %o to Error', err);
           }
           err.uncaught = true;
           var runnable2 = this.currentRunnable;
           if (!runnable2) {
             runnable2 = new Runnable$1("Uncaught error outside test suite");
-            debug("uncaught(): no current Runnable; created a phony one");
+            debug3("uncaught(): no current Runnable; created a phony one");
             runnable2.parent = this.suite;
             if (this.state === constants$1.STATE_RUNNING) {
-              debug("uncaught(): failing gracefully");
+              debug3("uncaught(): failing gracefully");
               this.fail(runnable2, err);
             } else {
-              debug("uncaught(): test run has not yet started; unrecoverable");
+              debug3("uncaught(): test run has not yet started; unrecoverable");
               this.emit(constants$1.EVENT_RUN_BEGIN);
               this.fail(runnable2, err);
               this.emit(constants$1.EVENT_RUN_END);
@@ -16044,49 +16472,49 @@
           }
           runnable2.clearTimeout();
           if (runnable2.isFailed()) {
-            debug("uncaught(): Runnable has already failed");
+            debug3("uncaught(): Runnable has already failed");
             return;
           } else if (runnable2.isPending()) {
-            debug("uncaught(): pending Runnable wound up failing!");
+            debug3("uncaught(): pending Runnable wound up failing!");
             this.fail(runnable2, err, true);
             return;
           }
           if (runnable2.isPassed()) {
-            debug("uncaught(): Runnable has already passed; bailing gracefully");
+            debug3("uncaught(): Runnable has already passed; bailing gracefully");
             this.fail(runnable2, err);
             this.abort();
           } else {
-            debug("uncaught(): forcing Runnable to complete with Error");
+            debug3("uncaught(): forcing Runnable to complete with Error");
             return runnable2.callback(err);
           }
         };
         Runner.prototype.run = function(fn, opts = {}) {
           var rootSuite = this.suite;
           var options = opts.options || {};
-          debug("run(): got options: %O", options);
+          debug3("run(): got options: %O", options);
           fn = fn || function() {
           };
           const end = () => {
             if (!this.total && this._opts.failZero) this.failures = 1;
-            debug("run(): root suite completed; emitting %s", constants$1.EVENT_RUN_END);
+            debug3("run(): root suite completed; emitting %s", constants$1.EVENT_RUN_END);
             this.emit(constants$1.EVENT_RUN_END);
           };
           const begin = () => {
-            debug("run(): emitting %s", constants$1.EVENT_RUN_BEGIN);
+            debug3("run(): emitting %s", constants$1.EVENT_RUN_BEGIN);
             this.emit(constants$1.EVENT_RUN_BEGIN);
-            debug("run(): emitted %s", constants$1.EVENT_RUN_BEGIN);
+            debug3("run(): emitted %s", constants$1.EVENT_RUN_BEGIN);
             this.runSuite(rootSuite, end);
           };
           const prepare = () => {
-            debug("run(): starting");
+            debug3("run(): starting");
             if (rootSuite.hasOnly()) {
               rootSuite.filterOnly();
-              debug("run(): filtered exclusive Runnables");
+              debug3("run(): filtered exclusive Runnables");
             }
             this.state = constants$1.STATE_RUNNING;
             if (this._opts.delay) {
               this.emit(constants$1.EVENT_DELAY_END);
-              debug('run(): "delay" ended');
+              debug3('run(): "delay" ended');
             }
             return begin();
           };
@@ -16097,7 +16525,7 @@
           }
           this.on(constants$1.EVENT_RUN_END, function() {
             this.state = constants$1.STATE_STOPPED;
-            debug("run(): emitted %s", constants$1.EVENT_RUN_END);
+            debug3("run(): emitted %s", constants$1.EVENT_RUN_END);
             fn(this.failures);
           });
           this._removeEventListener(process2, "uncaughtException", this.uncaught);
@@ -16107,7 +16535,7 @@
           if (this._opts.delay) {
             this.emit(constants$1.EVENT_DELAY_BEGIN, rootSuite);
             rootSuite.once(EVENT_ROOT_SUITE_RUN, prepare);
-            debug("run(): waiting for green light due to --delay");
+            debug3("run(): waiting for green light due to --delay");
           } else {
             Runner.immediately(prepare);
           }
@@ -16122,7 +16550,7 @@
           });
         };
         Runner.prototype.abort = function() {
-          debug("abort(): aborting");
+          debug3("abort(): aborting");
           this._abort = true;
           return this;
         };
@@ -17411,7 +17839,7 @@
                 )
               );
               tests.forEach(function(t) {
-                self2.test(t, options);
+                self2.test(t);
               });
               self2.write("</testsuite>");
             });
@@ -17435,12 +17863,12 @@
               Base.consoleLog(line2);
             }
           };
-          XUnit.prototype.test = function(test3, options) {
+          XUnit.prototype.test = function(test3) {
             Base.useColors = false;
             var attrs = {
               classname: test3.parent.fullTitle(),
               name: test3.title,
-              file: testFilePath(test3.file, options),
+              file: test3.file,
               time: test3.duration / 1e3 || 0
             };
             if (test3.state === STATE_FAILED2) {
@@ -17479,12 +17907,6 @@
               tag2 += content + "</" + name2 + end;
             }
             return tag2;
-          }
-          function testFilePath(filepath, options) {
-            if (options && options.reporterOptions && options.reporterOptions.showRelativePaths) {
-              return path.relative(process2.cwd(), filepath);
-            }
-            return filepath;
           }
           XUnit.description = "XUnit-compatible XML output";
         })(xunit);
@@ -18253,7 +18675,7 @@
           return this;
         };
         var name = "mocha";
-        var version = "11.2.2";
+        var version = "11.1.0";
         var homepage = "https://mochajs.org/";
         var notifyLogo = "https://ibin.co/4QuRuGjXvl36.png";
         var require$$17 = {
@@ -18279,7 +18701,7 @@
             createUnsupportedError: createUnsupportedError2
           } = errors$2;
           const { EVENT_FILE_PRE_REQUIRE: EVENT_FILE_PRE_REQUIRE2, EVENT_FILE_POST_REQUIRE, EVENT_FILE_REQUIRE } = Suite2.constants;
-          var debug2 = browser.exports("mocha:mocha");
+          var debug4 = browser.exports("mocha:mocha");
           exports2 = module2.exports = Mocha2;
           var mochaStates = utils2.defineConstants({
             /**
@@ -18418,7 +18840,7 @@
             this.isWorker = Boolean(options.isWorker);
             this.globalSetup(options.globalSetup).globalTeardown(options.globalTeardown).enableGlobalSetup(options.enableGlobalSetup).enableGlobalTeardown(options.enableGlobalTeardown);
             if (options.parallel && (typeof options.jobs === "undefined" || options.jobs > 1)) {
-              debug2("attempting to enable parallel mode");
+              debug4("attempting to enable parallel mode");
               this.parallelMode(true);
             }
           }
@@ -18766,37 +19188,37 @@
           };
           Mocha2.prototype.lazyLoadFiles = function lazyLoadFiles(enable) {
             this._lazyLoadFiles = enable === true;
-            debug2("set lazy load to %s", enable);
+            debug4("set lazy load to %s", enable);
             return this;
           };
           Mocha2.prototype.globalSetup = function globalSetup(setupFns = []) {
             setupFns = utils2.castArray(setupFns);
             this.options.globalSetup = setupFns;
-            debug2("configured %d global setup functions", setupFns.length);
+            debug4("configured %d global setup functions", setupFns.length);
             return this;
           };
           Mocha2.prototype.globalTeardown = function globalTeardown(teardownFns = []) {
             teardownFns = utils2.castArray(teardownFns);
             this.options.globalTeardown = teardownFns;
-            debug2("configured %d global teardown functions", teardownFns.length);
+            debug4("configured %d global teardown functions", teardownFns.length);
             return this;
           };
           Mocha2.prototype.runGlobalSetup = async function runGlobalSetup(context2 = {}) {
             const { globalSetup } = this.options;
             if (globalSetup && globalSetup.length) {
-              debug2("run(): global setup starting");
+              debug4("run(): global setup starting");
               await this._runGlobalFixtures(globalSetup, context2);
-              debug2("run(): global setup complete");
+              debug4("run(): global setup complete");
             }
             return context2;
           };
           Mocha2.prototype.runGlobalTeardown = async function runGlobalTeardown(context2 = {}) {
             const { globalTeardown } = this.options;
             if (globalTeardown && globalTeardown.length) {
-              debug2("run(): global teardown starting");
+              debug4("run(): global teardown starting");
               await this._runGlobalFixtures(globalTeardown, context2);
             }
-            debug2("run(): global teardown complete");
+            debug4("run(): global teardown complete");
             return context2;
           };
           Mocha2.prototype._runGlobalFixtures = async function _runGlobalFixtures(fixtureFns = [], context2 = {}) {
@@ -19003,6 +19425,7 @@
   // typescripts/modules/photoshop-internal/src/entry.mts
   var entry_exports2 = {};
   __export(entry_exports2, {
+    Auths: () => Auths,
     Promote: () => Promote,
     SDPPP: () => SDPPP,
     SDPPPProvider: () => SDPPPProvider,
@@ -20265,9 +20688,26 @@
   requestAnimationFrame(checkCurrentDocument);
   setInterval(() => fetchDocuments(), 5e3);
 
+  // typescripts/modules/photoshop-internal/src/log.ts
+  init_sdpppX();
+  var import_debug = __toESM(require_browser(), 1);
+  var logs = [];
+  sdpppX.getLogs = () => {
+    return logs;
+  };
+  localStorage.setItem("debug", "sdppp:*");
+  import_debug.debug.log = (...args) => {
+    logs.push(args.join(" "));
+  };
+
   // typescripts/modules/photoshop-internal/test/entry.mts
   var import_photoshop12 = __require("photoshop");
   init_sdpppX();
+  var originalLog = sdpppX.log;
+  sdpppX.log = (...args) => {
+    originalLog(...args);
+    console.log(...args);
+  };
   globalThis.sdppp_debugPhotoshopStore = photoshopStore;
   globalThis.sdppp_debugPhotoshopPageStoreMap = photoshopPageStoreMap;
   globalThis.sdppp_app = import_photoshop12.app;
@@ -20964,27 +21404,10 @@
         _layer.selected = false;
       });
       layer.selected = true;
-    }, {
-      commandName: i18n("select layer"),
-      document: import_photoshop17.app.activeDocument
-    });
-    await runNextModalState(async () => {
-      await import_photoshop17.action.batchPlay([
-        {
-          "_obj": "select",
-          "_target": [{
-            "_name": layer.name,
-            "_ref": "layer"
-          }],
-          "layerID": [layer.id],
-          "makeVisible": false
-        }
-      ], {
-        synchronousExecution: true
-      });
       await actionForPlay.play();
     }, {
       commandName: i18n("run Photoshop Action"),
+      dontRecoverSelection: true,
       document: import_photoshop17.app.activeDocument
     });
     return {
@@ -21001,6 +21424,7 @@
   init_modalStateWrapper();
   init_util();
   init_sdpppX();
+  init_identify();
   async function getPreviewDocumentOrCreate(width, height) {
     const document2 = import_photoshop18.app.documents.find((document3) => document3.name == SpeicialIDManager.getSpecialDocumentForPreview());
     if (document2) {
@@ -21124,9 +21548,10 @@
       );
     }));
     const newLayers = [];
+    let finalLayerOrGroups = [];
     await runNextModalState(async (restorer) => {
       let targetLayerOrGroup = null;
-      const layerOrGroups = await Promise.all(
+      finalLayerOrGroups = await Promise.all(
         jimps.map(async (imageId, index) => {
           const layerIdentify = layerIdentifies.length == 1 ? layerIdentifies[0] : layerIdentifies[index];
           if (!SpeicialIDManager.is_SPECIAL_LAYER_NEW_LAYER(layerIdentify)) {
@@ -21163,7 +21588,7 @@
         });
       }
       await Promise.all(
-        layerOrGroups.map(async (layer, index) => {
+        finalLayerOrGroups.map(async (layer, index) => {
           await import_photoshop18.imaging.putPixels({
             documentID: document2.id,
             layerID: layer.id,
@@ -21173,13 +21598,21 @@
           });
         })
       );
-      notifyLayerChange(layerOrGroups.map((layer) => layer.id));
+      notifyLayerChange(finalLayerOrGroups.map((layer) => layer.id));
       notifyCanvasChange();
     }, {
       commandName: i18n("show sent images"),
       document: document2
     });
-    return {};
+    const documentStore = usePhotoshopDocumentStore.getState();
+    return {
+      layers: finalLayerOrGroups.map((layer) => {
+        return {
+          identify: makeLayerIdentify(layer.id, layer.name),
+          dirtyID: documentStore.layerDirtyIDs.get(layer.id) || 0
+        };
+      })
+    };
   }
 
   // typescripts/modules/photoshop-internal/src/logics/socket/events/send_text_to_layer.mts
@@ -21534,7 +21967,9 @@
   };
 
   // typescripts/modules/photoshop-internal/src/contexts/sdppp-internal.tsx
+  var import_debug2 = __toESM(require_browser(), 1);
   var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
+  var log = (0, import_debug2.debug)("sdppp:internal");
   var DEFAULT_BACKEND_URL = "http://127.0.0.1:8188";
   var SDPPPInternalContext = (0, import_react3.createContext)(null);
   function SDPPPInternalContextProvider({ children }) {
@@ -21561,7 +21996,9 @@
       if (connectState === "connected") {
         setLastErrorMessage("");
         setSrc(`${backendURL}`);
-        photoshopStore.setIsLocal(!!(backendURL.includes("localhost") || backendURL.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)));
+        const isLocal = !!(backendURL.includes("localhost") || backendURL.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/));
+        log("setBackendURL:", backendURL, "src:", isLocal);
+        photoshopStore.setIsLocal(true);
       } else {
         setSrc("");
         setWorkflowAgentSID("");
@@ -23970,7 +24407,7 @@
   function SDPPPExternalProvider({ children }) {
     const webviewContext = useSDPPPWebview();
     const internalContext = useSDPPPInternalContext();
-    const { logout } = useSDPPPLoginContext();
+    const { logout, isLogin } = useSDPPPLoginContext();
     if (sdpppX.registerTestCase) {
       globalThis.sdppp_debugPhotoshopInternalContext = internalContext;
       globalThis.sdppp_debugPhotoshopWebviewContext = webviewContext;
@@ -24001,6 +24438,7 @@
     }, [setShouldTriggerLivePainting]);
     return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(SDPPPExternalContext.Provider, { value: {
       logout,
+      isLogin,
       connectOrDisconnect: doConnectOrDisconnect,
       lastConnectErrorMessage: lastErrorMessage,
       setAutoRunning,
@@ -24336,7 +24774,7 @@
     GITEE: "https://gitee.com/zombieyang/sd-ppp/raw/main/sponsors.json",
     GITHUB: "https://raw.githubusercontent.com/zombieyang/sd-ppp/refs/heads/main/sponsors.json"
   };
-  var TIMEOUT_MS = 15e3;
+  var TIMEOUT_MS = 5e3;
   function getDataFromLocalStorage() {
     try {
       const storedData = localStorage.getItem(STORAGE_KEY);
@@ -24432,6 +24870,7 @@
   }
   var sponsorDataPromise = null;
   function useSponsor() {
+    const [isLoading, setIsLoading] = import_react13.default.useState(true);
     if (!sponsorDataPromise) {
       const cachedData = getDataFromLocalStorage();
       sponsorDataPromise = new Promise((resolve) => {
@@ -24441,6 +24880,7 @@
             resolved = true;
             saveDataToLocalStorage(data2);
             resolve(data2);
+            setIsLoading(false);
           }
         });
         fetchSponsorData(DATA_SOURCES.GITHUB).then((data2) => {
@@ -24448,6 +24888,7 @@
             resolved = true;
             saveDataToLocalStorage(data2);
             resolve(data2);
+            setIsLoading(false);
           }
         });
         setTimeout(() => {
@@ -24455,9 +24896,11 @@
             resolved = true;
             if (cachedData && validateSponsorData(cachedData)) {
               resolve(cachedData);
+              setIsLoading(false);
             } else {
               console.warn("Using default data as fallback");
               resolve(DEFAULT_DATA);
+              setIsLoading(false);
             }
           }
         }, TIMEOUT_MS);
@@ -24478,56 +24921,20 @@
         });
       }
     }, []);
-    return { data };
+    let [retIsLoading, setRetIsLoading] = (0, import_react13.useState)(true);
+    (0, import_react13.useEffect)(() => {
+      if (retIsLoading && !isLoading) {
+        setRetIsLoading(isLoading);
+      }
+    }, [isLoading]);
+    return { data, isLoading: retIsLoading };
   }
 
   // typescripts/modules/photoshop-internal/src/tsx/About.tsx
   var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
-  var aboutComponentShowTimeSum = 0;
-  var lastStartTime = 0;
   function About() {
-    const persistentDivRef = (0, import_react14.useRef)(null);
     const { loginStyle } = useSDPPPLoginContext();
     const { data: sponsorData } = useSponsor();
-    (0, import_react14.useEffect)(() => {
-      let detectedMinHeight = Infinity;
-      let detectedMinWidth = Infinity;
-      let ended = false;
-      if (persistentDivRef.current) {
-        let start2 = function(event) {
-          if (!lastStartTime) {
-            lastStartTime = Date.now();
-          }
-        };
-        var start = start2;
-        const webview = document.createElement("webview");
-        webview.addEventListener("loadstart", start2);
-        webview.addEventListener("loadstop", start2);
-        webview.addEventListener("loaderror", start2);
-        webview.setAttribute("src", "./_.html");
-        webview.style.width = "1px";
-        webview.style.height = "1px";
-        persistentDivRef.current.appendChild(webview);
-      }
-      function minHeightWidthDetection() {
-        const boundingRect = persistentDivRef.current?.parentElement?.parentElement?.getBoundingClientRect();
-        if (boundingRect?.height && boundingRect?.width) {
-          detectedMinHeight = Math.min(detectedMinHeight, boundingRect.height);
-          detectedMinWidth = Math.min(detectedMinWidth, boundingRect.width);
-        }
-        if (!ended) {
-          requestAnimationFrame(minHeightWidthDetection);
-        }
-      }
-      requestAnimationFrame(minHeightWidthDetection);
-      return () => {
-        ended = true;
-        if (lastStartTime) {
-          aboutComponentShowTimeSum += Date.now() - lastStartTime;
-          lastStartTime = 0;
-        }
-      };
-    }, [persistentDivRef]);
     const community = (0, import_react14.useMemo)(
       () => sponsorData.community[getI18nLocale() == "zhcn" ? "zhcn" : "en"],
       [sponsorData]
@@ -24555,17 +24962,7 @@
         /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "about-card-sections about-card-title", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h6", { children: i18n("And follows its open source license:") }) }),
         /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "about-card-sections about-card-title", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("a", { href: "https://github.com/zombieyang/sd-ppp/blob/main/LICENSE", children: "LICENSE: BSD3-Clause" }) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "about-card-sections about-card-links", children: [
-        community.map((item) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("a", { href: item.url, children: item.name }, item.name)),
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { style: {
-          width: 1,
-          height: 1,
-          position: "absolute",
-          right: 0,
-          bottom: 0,
-          opacity: 0.1
-        }, ref: persistentDivRef, className: "persistent-div" })
-      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "about-card-sections about-card-links", children: community.map((item) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("a", { href: item.url, children: item.name }, item.name)) }),
       /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("sp-divider", {}),
       sponsorData.site && /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h1", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("a", { href: sponsorData.site[getI18nLocale() == "zhcn" ? "zhcn" : "en"].url, children: sponsorData.site[getI18nLocale() == "zhcn" ? "zhcn" : "en"].name }) })
     ] });
@@ -25805,7 +26202,7 @@
     ] });
   }
 
-  // typescripts/modules/photoshop-internal/src/tsx/Promote.tsx
+  // typescripts/modules/photoshop-internal/src/tsx/Auths.tsx
   var import_react28 = __toESM(require_react(), 1);
 
   // typescripts/modules/photoshop-internal/src/tsx/ComfyMultiUserLogin.tsx
@@ -25855,50 +26252,72 @@
     }, children: i18n("--multi-user activated, Not Login!") }) });
   }
 
-  // typescripts/modules/photoshop-internal/src/tsx/Promote.tsx
-  var import_uxp5 = __require("uxp");
-  init_i18n();
+  // typescripts/modules/photoshop-internal/src/tsx/Auths.tsx
   var import_jsx_runtime24 = __toESM(require_jsx_runtime(), 1);
-  function Promote() {
+  function Auths() {
     const { state: photoshopStoreData } = useStore2(photoshopStore, ["/uname", "/comfyUser"]);
     const internalContext = useSDPPPInternalContext();
     const { toggleWebviewDialog } = useSDPPPWebview();
     const onRequestLogin = (0, import_react28.useCallback)(() => {
       toggleWebviewDialog();
     }, [toggleWebviewDialog]);
-    return /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "promote-bar", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(CloudPromote, {}),
-      /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "identifier-bar", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("div", { className: "identifier-bar-left", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("sp-label", { children: [
-          "(Photoshop ID: ",
-          photoshopStoreData?.uname,
-          ")"
-        ] }) }),
-        internalContext.comfyMultiUser && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(ComfyMultiUserLogin, { onRequestLogin })
-      ] })
-    ] });
+    return /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("div", { className: "auths-bar", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "identifier-bar", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("div", { className: "identifier-bar-left", children: /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("sp-label", { children: [
+        "(Photoshop ID: ",
+        photoshopStoreData?.uname,
+        ")"
+      ] }) }),
+      internalContext.comfyMultiUser && /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(ComfyMultiUserLogin, { onRequestLogin })
+    ] }) });
   }
-  function CloudPromote() {
-    const { data: sponsorData } = useSponsor();
+
+  // typescripts/modules/photoshop-internal/src/tsx/Promote.tsx
+  init_i18n();
+  var import_react29 = __toESM(require_react(), 1);
+  var import_react30 = __toESM(require_react(), 1);
+  var import_uxp5 = __require("uxp");
+  var import_jsx_runtime25 = __toESM(require_jsx_runtime(), 1);
+  function Promote() {
+    const color = document.getElementById("color_computer")?.style.color || "#777";
+    const { data: sponsorData, isLoading } = useSponsor();
+    const webviewRef = (0, import_react29.useRef)(null);
+    const [loadedError, setLoadedError] = (0, import_react29.useState)(false);
+    const [inited, setInited] = (0, import_react29.useState)(false);
+    (0, import_react30.useEffect)(() => {
+      if (!webviewRef.current) return;
+      if (isLoading) return;
+      if (inited) return;
+      setInited(true);
+      webviewRef.current.addEventListener("loadstop", (event) => {
+        event.target.postMessage({
+          action: "init",
+          payload: {
+            color,
+            cloud
+          }
+        });
+      });
+      webviewRef.current.addEventListener("loaderror", (event) => {
+        setLoadedError(true);
+      });
+      webviewRef.current.addEventListener("message", (event) => {
+        const message = event.message;
+        if (!message) return;
+        const data = JSON.parse(message);
+        if (data.action === "open") {
+          import_uxp5.shell.openExternal(data.payload.url);
+        }
+      });
+    }, [webviewRef, isLoading]);
+    if (isLoading || loadedError) {
+      return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { style: { height: "8px" } });
+    }
+    const src = "./promote.html?color=" + color;
     const cloud = sponsorData.cloud[getI18nLocale() == "zhcn" ? "zhcn" : "en"];
-    if (!cloud || cloud.length == 0) return null;
-    return /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)("div", { className: "cloud-promote-bar", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { className: "cloud-promote-bar-left", children: i18n("Cloud") }),
-      /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("span", { className: "cloud-promote-bar-right", children: cloud.map((item) => /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(
-        "span",
-        {
-          style: { borderColor: item.color },
-          onClick: () => {
-            import_uxp5.shell.openExternal(item.url);
-          },
-          children: [
-            /* @__PURE__ */ (0, import_jsx_runtime24.jsx)("img", { src: item.icon }),
-            item.name
-          ]
-        },
-        item.name
-      )) })
-    ] });
+    if (!cloud.length) {
+      return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { style: { height: "8px" } });
+    }
+    return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("webview", { ref: webviewRef, className: "promote-webview", style: { width: "100%", height: "24px" }, src });
   }
 
   // typescripts/modules/photoshop-internal/src/global.mts
