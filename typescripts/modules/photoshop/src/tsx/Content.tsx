@@ -1,4 +1,4 @@
-import { useSDPPPContext, Promote } from "./SDPPPInternalBridge.js";
+import { useSDPPPContext, Promote, Auths } from "./SDPPPInternalBridge.js";
 import i18n, { isValidI18nKey } from "../../../../src/common/i18n.mjs";
 import WebPageList from "./WebPageList.js";
 import WorkflowList from "./WorkflowList.js";
@@ -56,6 +56,7 @@ export function Content({
     }, [connectState]);
     return (
         <>
+            <Promote />
             <div className="connect-box">
                 {
                     !editorMode ?
@@ -81,7 +82,7 @@ export function Content({
                 ) : ''
             }
 
-            <Promote />
+            <Auths />
 
             <sp-divider size="small"></sp-divider>
 

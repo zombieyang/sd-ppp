@@ -80,7 +80,7 @@ entrypoints.setup({
                     enabled: true,
                     checked: false,
                     oninvoke: () => {
-                        const logs = globalThis.sdppp.getLogs();
+                        const logs = globalThis.sdpppX.getLogs();
                         alert(JSON.stringify(logs));
                     }
                 }
