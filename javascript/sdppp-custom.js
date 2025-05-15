@@ -128,7 +128,7 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('*rgthree*', {
         formatter: (node) => {
-            if (node.type.indexOf('Group') != -1) {
+            if (node.type.startsWith('Fast Groups Muter')|| node.type.startsWith('Fast Muter')) {
                 return {
                     title: getTitle(node),
                     widgets: node.widgets.map((widget) => ({
@@ -136,6 +136,20 @@ export default function (sdppp) {
                         name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
                         outputType: fixRGthreeWidgetType(widget.type),
                         options: widget.options,
+                        uiWeight: 4
+                    }))
+                }
+            }
+            if(node.type.startsWith('Power Lora Loader')){
+                return{
+                    title: getTitle(node),
+                    widgets: node.widgets
+                    .filter(widget=> widget.name.startsWith('lora_'))
+                    .map((widget) => ({
+                        value: widget.value.on,
+                        name: widget.value.lora,
+                        outputType: 'toggle',
+                        options: {on: true, off: false},
                         uiWeight: 4
                     }))
                 }
@@ -163,7 +177,15 @@ export default function (sdppp) {
             }
         },
         setter: (node, widgetIndex, value) => {
-            if (node.widgets[widgetIndex].type == 'custom') {
+            if(node.type.startsWith('Power Lora Loader')){
+                const ws = node.widgets.filter(widget => widget.name.startsWith('lora_'));
+                if(ws[widgetIndex].name.startsWith('lora_')) {
+                    if (ws[widgetIndex].value.on != value) {
+                        ws[widgetIndex].value.on = value;
+                    }
+                }
+                return true;
+            }else if (node.widgets[widgetIndex].type == 'custom') {
                 if (node.widgets[widgetIndex].value.toggled != value) {
                     node.widgets[widgetIndex].doModeChange();
                 }
