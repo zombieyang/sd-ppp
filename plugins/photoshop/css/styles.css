@@ -8,6 +8,7 @@
         --sdppp-widget-hover-border-color: #5c5c5c;
     }
 }
+
 @media (prefers-color-scheme: dark) {
     :root {
         --sdppp-widget-background-color: #2f2f2f;
@@ -18,6 +19,7 @@
         --sdppp-widget-hover-border-color: #6e6e6e;
     }
 }
+
 @media (prefers-color-scheme: light) {
     :root {
         --sdppp-widget-background-color: #fafafa;
@@ -28,6 +30,7 @@
         --sdppp-widget-hover-border-color: #b3b3b3;
     }
 }
+
 @media (prefers-color-scheme: lightest) {
     :root {
         --sdppp-widget-background-color: #fff;
@@ -116,12 +119,17 @@ sp-progressbar {
     justify-content: start;
 }
 
+.header-container {
+    margin-bottom: 12px;
+}
+
 .connect-box {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
+    height: 28px;
 }
 
 .connect-box #url-bar {
@@ -287,6 +295,7 @@ sp-progressbar {
     justify-content: start;
 
 }
+
 .workflow-edit-field .image-widget-layer-widget-container {
     width: 100%;
 }
@@ -423,6 +432,7 @@ sp-progressbar {
     height: 72px;
     margin-left: 3px;
 }
+
 .workflow-edit-controls-right {
     display: flex;
     flex-direction: column;
@@ -589,13 +599,18 @@ sp-progressbar {
     border-color: var(--sdppp-widget-hover-border-color);
     color: var(--sdppp-widget-hover-text-color);
 }
+
 .action-button:active {
     background-color: var(--uxp-host-text-color);
 }
-sp-action-button.highlight, .action-button.highlight {
+
+sp-action-button.highlight,
+.action-button.highlight {
     background-color: var(--uxp-host-text-color);
 }
-sp-action-button.highlight:hover, .action-button.highlight:hover {
+
+sp-action-button.highlight:hover,
+.action-button.highlight:hover {
     background-color: var(--uxp-host-text-color-secondary);
 }
 
@@ -606,7 +621,8 @@ sp-action-button.highlight:hover, .action-button.highlight:hover {
     overflow-y: scroll;
 }
 
-.about-card h2, h1 {
+.about-card h2,
+h1 {
     display: block;
     text-align: center;
 }
@@ -712,3 +728,196 @@ sp-action-button.highlight:hover, .action-button.highlight:hover {
     background-color: var(--uxp-host-background-color);
     margin-bottom: 4px;
 }
+
+.sdppp-login-block {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+.sdppp-login-block img {
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+}
+
+.connect-configuration {
+    background-color: rgba(127, 127, 127, .5);
+    margin: 0 5px;
+    flex: 2;
+    color: var(--uxp-host-text-color);
+    height: 100%;
+    padding-left: 5px;
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.connect-configuration:hover {
+    background-color: rgba(127, 127, 127, .7);
+}
+
+.connect-config-content span {
+    display: flex;
+}
+
+.connect-config-content {
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+}
+
+.connect-config-actions {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.connect-config-error {
+    color: lightcoral;
+}
+
+.connect-config-message {
+    color: var(--uxp-host-text-color-secondary);
+}
+
+.web-page-list .client-list-item-left {
+    font-size: 16px;
+    color: var(--uxp-host-text-color);
+}
+
+.app-login-container {
+    width: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.app-login-line {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.app-login-line-left {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex: 1
+}
+
+.app-login-line-right {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex: 1;
+}
+
+
+
+/* agent config panel */
+.client-panel {
+    border-radius: 16px;
+    padding: 24px;
+    width: 456px;
+    color: var(--uxp-host-text-color);
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+.client-panel .client-panel-title {
+    text-align: center;
+    margin: 0 0 16px 0;
+    font-size: 1.2em;
+    /* 21px */
+    color: var(--uxp-host-text-color);
+}
+
+.client-panel .agent-list {
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 24px;
+    border: 1px solid var(--uxp-host-border-color);
+}
+
+.client-panel .agent-list-item {
+    padding: 16px 20px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1em;
+    /* 16.8px */
+    border-bottom: 1px solid var(--uxp-host-border-color);
+    transition: background 0.2s;
+    color: var(--uxp-host-text-color);
+}
+
+.client-panel .agent-list-item.selected {
+    background: rgba(127, 127, 127, 0.1);
+}
+
+.client-panel .agent-list-item:last-child {
+    border-bottom: none;
+}
+
+.client-panel .login-block {
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--uxp-host-border-color);
+    padding-bottom: 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.client-panel .login-title {
+    font-size: 1.1em;
+    /* 15.4px */
+    margin-bottom: 4px;
+    color: var(--uxp-host-text-color);
+}
+
+.client-panel .login-title-secondary {
+    color: var(--uxp-host-text-color-secondary);
+    font-size: 1em;
+    /* 14px */
+}
+
+.client-panel .login-desc {
+    color: var(--uxp-host-text-color-secondary);
+    font-size: 1em;
+    /* 14px */
+    margin-bottom: 8px;
+}
+
+.client-panel .logout-btn {
+    color: var(--uxp-host-text-color);
+    border: none;
+    padding: 10px 24px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.client-panel .api-key-title {
+    /* 15.4px */
+    margin-bottom: 8px;
+    color: var(--uxp-host-text-color);
+}
+
+.client-panel .api-key-input {
+    width: 100%;
+    color: var(--uxp-host-text-color);
+    font-size: 1em;
+    /* 14px */
+}
+/* end of agent config panel */

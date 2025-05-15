@@ -92,7 +92,11 @@ export default {
     'quality': '图像质量',
     
     // photoshop UI
+    'Runner': '运行载体',
+    'PS Webview': 'PS 内置网页',
+    'Browser Page {0}': '浏览器页面 {0}',
     'timeout': '超时',
+    'Loading...': '加载中...',
     '--multi-user activated, Not Login!': '--multi-user已激活，但未登录！',
     'Logout': '登出',
     'User: ': '用户: ',
@@ -113,7 +117,7 @@ export default {
     'Set As:': '设置为:',
     'Error {0}... please contact me via Discord/Github': '出现错误 {0}...，请通过 QQ/Github 联系我',
     'Webview initialize failed. Please report to me via Discord/Github with your ComfyURL, Operate System': 'Webview 初始化失败，请通过 QQ/Github 联系我并附上你的Comfy地址、操作系统',
-    'Workflow List of ComfyUI with --multi-user is only available for sponsors': '带"--multi-user"的ComfyUI仅对赞助者开放',
+    'ComfyUI with --multi-user is only available for sponsors': '带"--multi-user"的ComfyUI仅对赞助者开放',
     'Workflow Agent is loading...': '运行载体尚在加载...',
     '(Page ID: {0})Queue: {1}': '(页面ID: {0}) 队列长度 {1}',
     'no suitable node to control in this workflow': '这个工作流中没有能控制的节点',
@@ -134,6 +138,14 @@ export default {
     'Please input invitation code': '请输入邀请码',
     'Please input username': '请输入用户名',
     'Please input password': '请输入密码',
+    'Open more ComfyUI pages to see more options here': '打开更多 ComfyUI 页面以查看更多选项',
+    'Comfy multi-user: ': 'Comfy 多用户: ',
+    'Not Login': '未登录',
+    'Comfy API-Key: ': 'Comfy API-Key: ',
+    'Login/Auth': '登录/认证',
+    'Logged in by email/password': '已通过邮箱/密码登录',
+    'Set API Key': '设置 API Key',
+    'Please input API key (will reload Runner)': '请输入 API Key (会重启运行载体)',
 
     // photoshop connect error
     '502: Maybe the server is not running': '502: 服务器可能未运行',

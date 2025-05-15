@@ -11,6 +11,7 @@ export interface WorkflowCaller {
     interrupt(workflowAgentSID: string): Promise<void>;
     clearQueue(workflowAgentSID: string): Promise<void>;
     reboot(workflowAgentSID: string): Promise<WorkflowCalleeActions['reboot']['result']>;
+    setComfyOrgAPIKey(workflowAgentSID: string, api_key: string): Promise<void>;
 }
 
 export interface WorkflowCallerActions {

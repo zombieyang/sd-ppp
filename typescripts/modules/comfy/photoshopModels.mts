@@ -1,7 +1,7 @@
 import { PageStore } from "../../src/store/page.mts";
 import { PhotoshopDataDocument, PhotoshopStore } from "../../src/store/photoshop.mts";
 import { StoreMap } from "../../src/common/store/store-map.mts";
-import { api } from "./src/comfy-globals.mts";
+import { api, app } from "./src/comfy-globals.mts";
 
 class PagePhotoshopStoreMap extends StoreMap<PhotoshopStore> {
     createStore(data: any, version: number): PhotoshopStore {
@@ -52,13 +52,16 @@ if ((window as any).uxpHost) {
         action: "webview-connect",
     }, '*')
 }
-function refreshTitle() {
+function checkComfyStatus() {
     if (document.title !== pageStore.data.title) {
         pageStore.setTitle(document.title);
     }
-    requestAnimationFrame(refreshTitle);
+    if ('user' in app.extensionManager.user) {
+        pageStore.setComfyOrgLoggedIn(app.extensionManager.user.isLoggedIn);
+    }
+    requestAnimationFrame(checkComfyStatus);
 }
-requestAnimationFrame(refreshTitle)
+requestAnimationFrame(checkComfyStatus)
 
 let modelInited = false;
 export async function waitModelInited() {

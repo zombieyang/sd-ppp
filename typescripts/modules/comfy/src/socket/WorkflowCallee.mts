@@ -34,7 +34,8 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     payload.action == 'logout' ||
                     payload.action == 'interrupt' ||
                     payload.action == 'clearQueue' ||
-                    payload.action == 'reboot'
+                    payload.action == 'reboot' ||
+                    payload.action == 'setComfyOrgAPIKey'
                 ) {
                     try {
                         // @ts-expect-error 
@@ -236,6 +237,12 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     success: false
                 }
             }
+        }
+
+        public async setComfyOrgAPIKey(params: WorkflowCalleeActions['setComfyOrgAPIKey']['params']) {
+            const { api_key } = params;
+            localStorage.setItem('comfy_api_key', api_key);
+            location.reload();
         }
     }
 }

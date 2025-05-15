@@ -18,6 +18,8 @@ export interface PageStoreData {
 
     hasPSDNodes: boolean
     comfyUserToken: string
+    comfyOrgLoggedIn: boolean
+    comfyOrgAPIKey: string
 }
 
 export class PageStore extends MainStore<PageStoreData> {
@@ -47,7 +49,9 @@ export class PageStore extends MainStore<PageStoreData> {
             // lastOpenedWorkflow: '',
 
             hasPSDNodes: false,
-            comfyUserToken: ''
+            comfyUserToken: '',
+            comfyOrgLoggedIn: false,
+            comfyOrgAPIKey: ''
         });
         this._version = version || 0;
     }
@@ -95,6 +99,16 @@ export class PageStore extends MainStore<PageStoreData> {
     @StoreMutation
     setComfyUserToken(comfyUserToken: string) {
         this._data.comfyUserToken = comfyUserToken;
+    }
+
+    @StoreMutation
+    setComfyOrgLoggedIn(comfyOrgLoggedIn: boolean) {
+        this._data.comfyOrgLoggedIn = comfyOrgLoggedIn;
+    }
+
+    @StoreMutation
+    setComfyOrgAPIKey(comfyOrgAPIKey: string) {
+        this._data.comfyOrgAPIKey = comfyOrgAPIKey;
     }
 
     @StoreMutation

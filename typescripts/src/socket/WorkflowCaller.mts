@@ -184,6 +184,18 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
                 });
             })
         }
+        public async setComfyOrgAPIKey(workflowAgentSID: string, api_key: string) {
+            return await new Promise<void>((resolve, reject) => {
+                this.socket.emit('F_workflow', {
+                    action: 'setComfyOrgAPIKey',
+                    sid: workflowAgentSID,
+                    params: { api_key } 
+                }, (payload: any) => {
+                    resolve(payload);
+                });
+            })
+        }
+        
     }
 }
 

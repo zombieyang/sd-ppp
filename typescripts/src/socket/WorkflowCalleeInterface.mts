@@ -60,5 +60,10 @@ export interface WorkflowCalleeActions {
             error?: string,
             success: boolean
         }
+    },
+    setComfyOrgAPIKey: {
+        params: {
+            api_key: string
+        }
     }
 }

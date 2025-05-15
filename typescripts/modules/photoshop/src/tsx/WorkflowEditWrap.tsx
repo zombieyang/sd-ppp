@@ -204,7 +204,7 @@ export function WorkflowEditWrap({
         return (
             <div className="workflow-edit-wrap">
                 <div className="workflow-edit-top">
-                    <sp-label>{i18n('(Page ID: {0})Queue: {1}', ssid, queueSize)}</sp-label>
+                    {/* <sp-label>{i18n('(Page ID: {0})Queue: {1}', ssid, queueSize)}</sp-label> */}
                     <div className="workflow-edit-controls">
                         <div className="workflow-edit-controls-left">
                             <div className="workflow-edit-button-line workflow-edit-button-lineone">

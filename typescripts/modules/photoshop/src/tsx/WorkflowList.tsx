@@ -13,7 +13,6 @@ interface WorkflowListProps {
 const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
     const {
         autoRunning,
-        webviewAgentSID,
         workflowAgentSID,
     } = useSDPPPContext();
 
@@ -29,43 +28,12 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
         showingList
     } = useSDPPPWorkflowList();
 
-    const {
-        ssid,
-        lastError,
-        progress,
-        executingNodeTitle,
-        queueSize,
-    } = useAgentState(workflowAgentSID);
-
-    let statusText = '';
-    let queueText = ' ';
-    let hasLastError = false;
-    if (workflowAgentSID) {
-        if (lastError) {
-            statusText += i18n('Error: {0}', lastError);
-            hasLastError = true;
-        } else if (progress) {
-            statusText += `(${progress}% - ${executingNodeTitle}...)`;
-        } else if (workflowAgentSID) {
-            if (workflowAgentSID == webviewAgentSID) {
-                statusText += i18n('workflow running by hidden webview');
-            } else {
-                statusText += i18n('using browser page [{0}] for workflow running', ssid);
-            }
-        }
-        queueText += `(${i18n('Queue:')} ${queueSize})`;
-    }
-
     let listReplacer = null;
     if (workflowsError)
         listReplacer = <sp-label>{workflowsError}</sp-label>
 
     return (
-        <>
-            <div className="client-list-title">
-                <h3>{i18n('workflows')}{queueText}</h3>
-                <sp-label class={hasLastError ? 'error-label' : ''}>{statusText}</sp-label>
-            </div>
+        <div className="workflow-list">
             {listReplacer ||
                 <ul className="client-list">
                     {
@@ -125,7 +93,7 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
                 </ul>
             }
             {autoRunning?.type == 'workflow' ? <sp-label class="autorun-desc">{i18n(`auto run workflow [{0}] after change..`, workflows[autoRunning?.value]?.path)}</sp-label> : ''}
-        </>
+        </div>
     );
 };
 
