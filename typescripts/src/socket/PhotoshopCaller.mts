@@ -15,11 +15,11 @@ export function PhotoshopCallerSocket(SocketClass: SocketConstructor<Socket>) {
                             if (node.type == 'SDPPP Get Document') {
                                 this.extractPSD(node, payload.params.from_sid, '');
                             }
-                        }) 
+                        })
                     }
                     callback({})
                 } catch (error) {
-                    callback({ error: error.message })
+                    callback({ error: error instanceof Error ? error.message : (error?.toString() || 'unknown error') })
                 }
             })
         }

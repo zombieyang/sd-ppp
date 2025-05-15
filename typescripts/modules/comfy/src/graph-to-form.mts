@@ -173,7 +173,7 @@ export function makeWidgetTableStructure(graph: any, activeWorkflow: any): Widge
         })
 
     return {
-        widgetTablePath: activeWorkflow.path,
+        widgetTablePath: activeWorkflow.activeState.extra['sdppp_workflow_alias'] || activeWorkflow.path,
         widgetTablePersisted: activeWorkflow.isPersisted,
         widgetTableID: activeWorkflow.activeState.id,
         groups,

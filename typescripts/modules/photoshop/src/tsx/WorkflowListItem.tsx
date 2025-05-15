@@ -5,30 +5,123 @@ import FolderIcon from "./icons/FolderIcon.js";
 import LivePaintingIcon from "./icons/LivePaintingIcon.js";
 import PlayIcon from "./icons/PlayIcon.js";
 import { useSDPPPContext, useSDPPPComfyCaller } from "./SDPPPInternalBridge.js";
+import i18n from "../../../../src/common/i18n.mjs";
 
-interface WorkflowListItemProps {
-    path: string
-    isDir: boolean
-    isChecked: boolean
-    workflow?: {
-        path: string
-        error: string
-    }
+const ICON_SIZE = 0.6;
+const CLASS_NAMES = {
+    LIST_ITEM: "client-list-item",
+    LIST_ITEM_LEFT: "client-list-item-left",
+    LIST_ITEM_RIGHT: "client-list-item-right",
+    TIPS_ICON: "tips-icon",
+    CHECKED: "checked"
+};
 
-    onRun: (path: string) => Promise<void>,
-    dirname?: string,
-    onDirectorySet?: (path: string) => void,
-    setEditorMode: (editorMode: boolean) => void
+interface BaseListItemProps {
+    isChecked?: boolean;
+    children: React.ReactNode;
+    rightContent?: React.ReactNode;
+    onClick?: () => void;
 }
 
-const WorkflowListItem: React.FC<WorkflowListItemProps> = ({
+const BaseListItem: React.FC<BaseListItemProps> = ({
+    isChecked = false,
+    children,
+    rightContent,
+    onClick
+}) => {
+    return (
+        <li className={`${CLASS_NAMES.LIST_ITEM}${isChecked ? ` ${CLASS_NAMES.CHECKED}` : ''}`} onClick={onClick}>
+            <sp-label className={CLASS_NAMES.LIST_ITEM_LEFT}>
+                {children}
+            </sp-label>
+            {rightContent && (
+                <div className={CLASS_NAMES.LIST_ITEM_RIGHT}>
+                    {rightContent}
+                </div>
+            )}
+        </li>
+    );
+};
+
+interface DirectoryItemProps {
+    path: string;
+    dirname: string;
+    onDirectorySet: (path: string) => void;
+}
+
+const DirectoryItem: React.FC<DirectoryItemProps> = ({
     path,
-    isDir,
+    dirname,
+    onDirectorySet
+}) => {
+    const handleClick = () => {
+        if (path === '../') {
+            const directoryWithoutSuffix = dirname || '';
+            const lastSlashIndex = directoryWithoutSuffix.lastIndexOf('/');
+            if (lastSlashIndex === -1) {
+                onDirectorySet?.('');
+            } else {
+                onDirectorySet?.(directoryWithoutSuffix.slice(0, lastSlashIndex));
+            }
+        } else {
+            onDirectorySet?.(path);
+        }
+    };
+
+    return (
+        <BaseListItem onClick={handleClick}>
+            <FolderIcon size={ICON_SIZE} />
+            <div style={{ marginLeft: 3 }}>{path}</div>
+        </BaseListItem>
+    );
+};
+
+interface WorkflowItemProps {
+    path: string;
+    isChecked: boolean;
+    workflow: {
+        path: string;
+        error: string;
+    };
+    onRun: (path: string) => Promise<void>;
+    setEditorMode: (editorMode: boolean) => void;
+}
+
+interface ActiveWorkflowItemProps {
+    path: string | null;
+    title: string;
+    onRun: () => Promise<void>;
+    setEditorMode: (editorMode: boolean) => void;
+}
+
+const WorkflowActions: React.FC<{
+    isChecked?: boolean;
+    onEdit: () => void;
+    onAutoRun?: () => void;
+    onRun: () => void;
+}> = ({ isChecked, onEdit, onAutoRun, onRun }) => {
+    return (
+        <>
+            <div className={CLASS_NAMES.TIPS_ICON}>
+                <EditIcon size={ICON_SIZE} onClick={onEdit} />
+            </div>
+            {onAutoRun && (
+                <ActionButton highlight={isChecked} onClick={onAutoRun}>
+                    <LivePaintingIcon size={ICON_SIZE} />
+                </ActionButton>
+            )}
+            <ActionButton onClick={onRun}>
+                <PlayIcon size={ICON_SIZE} />
+            </ActionButton>
+        </>
+    );
+};
+
+const WorkflowItem: React.FC<WorkflowItemProps> = ({
+    path,
     isChecked,
     workflow,
     onRun,
-    dirname,
-    onDirectorySet,
     setEditorMode
 }) => {
     const {
@@ -39,63 +132,72 @@ const WorkflowListItem: React.FC<WorkflowListItemProps> = ({
         openWorkflow
     } = useSDPPPComfyCaller();
 
-    if (isDir) {
-        return (
-            <li className="client-list-item">
-                <sp-label class="client-list-item-left" onClick={() => {
-                    if (path == '../') {
-                        const directoryWithoutSuffix = dirname || ''
-                        const lastSlashIndex = directoryWithoutSuffix.lastIndexOf('/')
-                        if (lastSlashIndex == -1) {
-                            onDirectorySet?.('')
-                        } else {
-                            onDirectorySet?.(directoryWithoutSuffix.slice(0, lastSlashIndex))
-                        }
-                    } else {
-                        onDirectorySet?.(path)
-                    }
-                }}>
-                    <FolderIcon size={0.6} />
-                    <div>{path}</div>
-                </sp-label>
-            </li>
-        );
-    }
+    const handleEditClick = () => {
+        setEditorMode(true);
+        openWorkflow(workflowAgentSID, workflow.path);
+    };
 
-    if (!workflow) return null;
+    const handleAutoRunClick = () => {
+        if (!isChecked) {
+            setAutoRunning({ type: 'workflow', value: path });
+        } else {
+            setAutoRunning(null);
+        }
+    };
 
     return (
-        <li className={"client-list-item" + (isChecked ? ' checked' : '')}>
-            <sp-label class="client-list-item-left" onClick={() => {
-                setEditorMode(true)
-                openWorkflow(workflowAgentSID, workflow.path)
-            }}>
-                <div>
-                    {workflow.error ? workflow.error.replace('sdppp PS side error:', '') : workflow.path}
-                </div>
-            </sp-label>
-            <div className="client-list-item-right">
-                <div className="tips-icon">
-                    <EditIcon size={0.6} onClick={() => {
-                        setEditorMode(true)
-                        openWorkflow(workflowAgentSID, workflow.path)
-                    }} />
-                </div>
-                <ActionButton highlight={isChecked} onClick={() => {
-                    if (!isChecked) {
-                        setAutoRunning({ type: 'workflow', value: path })
-                    } else {
-                        setAutoRunning(null)
-                    }
-                }}>
-                    <LivePaintingIcon size={0.6} />
-                </ActionButton>
-                <ActionButton onClick={() => { onRun(workflow.path) }}>
-                    <PlayIcon size={0.6} />
-                </ActionButton>
-            </div>
-        </li>
+        <BaseListItem
+            isChecked={isChecked}
+            rightContent={
+                <WorkflowActions
+                    isChecked={isChecked}
+                    onEdit={handleEditClick}
+                    onAutoRun={handleAutoRunClick}
+                    onRun={() => onRun(workflow.path)}
+                />
+            }
+            onClick={handleEditClick}
+        >
+            {workflow.error ? workflow.error.replace('sdppp PS side error:', '') : workflow.path}
+        </BaseListItem>
     );
-}
+};
 
-export default WorkflowListItem;
+const SpecialWorkflowItem: React.FC<ActiveWorkflowItemProps> = ({
+    onRun,
+    path,
+    title,
+    setEditorMode
+}) => {
+    const {
+        openWorkflow
+    } = useSDPPPComfyCaller();
+    const {
+        workflowAgentSID
+    } = useSDPPPContext();
+
+    const handleEditClick = async () => {
+        path && await openWorkflow(workflowAgentSID, path);
+        setEditorMode(true);
+    };
+
+    return (
+        <BaseListItem
+            rightContent={
+                <WorkflowActions
+                    onEdit={handleEditClick}
+                    onRun={onRun}
+                />
+            }
+            onClick={handleEditClick}
+        >
+            {title}
+        </BaseListItem>
+    );
+};
+
+export {
+    DirectoryItem,
+    WorkflowItem,
+    SpecialWorkflowItem
+};

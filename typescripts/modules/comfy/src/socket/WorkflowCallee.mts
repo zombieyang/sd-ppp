@@ -92,7 +92,9 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             function formatNodeErrors(errors: any) {
                 const ret: Record<string, string> = {};
                 Object.keys(errors).forEach((nodeID) => {
-                    ret[nodeID.split(":")[0]] = errors[nodeID].errors.map(JSON.stringify).join('\n')
+                    const id = nodeID.split(":")[0]
+                    const node = app.graph.nodes.find((item: any) => item.id == id)
+                    ret[id] = `[${node?.title || id}]` + errors[nodeID].errors.map(JSON.stringify).join('\n')
                 })
                 return ret
             }
@@ -137,6 +139,8 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
         private async open(params: WorkflowCalleeActions['open']['params']) {
             const { workflow_path } = params;
             try {
+                pageStore.setLastError('');
+                pageStore.setWidgetTableErrors({});
                 if (workflow_path.startsWith('sdppp://')) {
                     await this.openSDPPPWorkflow(params)
                 } else {
@@ -150,6 +154,8 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             const workflow_path = params.workflow_path.replace('sdppp://', '')
 
             const workflowContent = await fetch("/sd-ppp-static/sdppp-workflows/" + workflow_path).then(res => res.json())
+
+            workflowContent.extra['sdppp_workflow_alias'] = params.workflow_path
 
             await app.loadGraphData(workflowContent)
 

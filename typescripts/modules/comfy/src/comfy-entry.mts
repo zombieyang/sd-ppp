@@ -24,16 +24,17 @@ async function _init(app: any, api: any, $el: any) {
 		pageStore.setExecutingNodeTitle('');
 		pageStore.setLastError(detail.exception_message);
 		if (detail.node_id) {
+			const node = app.graph.nodes.find((item: any) => item.id == detail.node_id)
 			pageStore.setWidgetTableErrors({
-				[detail.node_id]: detail.exception_message
+				[detail.node_id]: `[${node?.title || detail.node_id}]` + detail.exception_message
 			});
 		}
 	});
 	let captureNextPromptBySID: string[] = []
 	api.addEventListener("execution_start", ({ detail }: { detail: { prompt_id: string } }) => {
 		pageStore.setLastError('');
-		pageStore.setProgress(0);
 		pageStore.setWidgetTableErrors({});
+		pageStore.setProgress(0);
 		pageStore.setExecutingNodeTitle('');
 		if (captureNextPromptBySID.length) {
 			const bySID = captureNextPromptBySID.shift();

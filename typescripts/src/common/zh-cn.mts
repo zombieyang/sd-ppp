@@ -94,10 +94,10 @@ export default {
     // photoshop UI
     'Runner': '运行载体',
     'PS Webview': 'PS 内置网页',
-    'Browser Page {0}': '浏览器页面 {0}',
+    'Browser {0}': '浏览器页面 {0}',
     'timeout': '超时',
     'Loading...': '加载中...',
-    '--multi-user activated, Not Login!': '--multi-user已激活，但未登录！',
+    '--multi-user Not Login!': '--multi-user已激活，但未登录！',
     'Logout': '登出',
     'User: ': '用户: ',
     'connect': '连接',
@@ -118,7 +118,7 @@ export default {
     'Error {0}... please contact me via Discord/Github': '出现错误 {0}...，请通过 QQ/Github 联系我',
     'Webview initialize failed. Please report to me via Discord/Github with your ComfyURL, Operate System': 'Webview 初始化失败，请通过 QQ/Github 联系我并附上你的Comfy地址、操作系统',
     'ComfyUI with --multi-user is only available for sponsors': '带"--multi-user"的ComfyUI仅对赞助者开放',
-    'Workflow Agent is loading...': '运行载体尚在加载...',
+    'Workflow Runner is loading...': '运行载体尚在加载...',
     '(Page ID: {0})Queue: {1}': '(页面ID: {0}) 队列长度 {1}',
     'no suitable node to control in this workflow': '这个工作流中没有能控制的节点',
     "Save": "保存",
@@ -146,6 +146,8 @@ export default {
     'Logged in by email/password': '已通过邮箱/密码登录',
     'Set API Key': '设置 API Key',
     'Please input API key (will reload Runner)': '请输入 API Key (会重启运行载体)',
+    '### Active Workflow ###': '### 当前工作流 ###',
+    '### Example SDXL ###': '### 示例SDXL工作流 ###',
 
     // photoshop connect error
     '502: Maybe the server is not running': '502: 服务器可能未运行',
