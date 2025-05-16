@@ -248,6 +248,9 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ))
+
+            if not 'layers' in ret:
+                return ([None],)
             ret_layer_or_group = []
             for i, ret_layer in enumerate(ret['layers']):
                 ret_layer_or_group.append({
