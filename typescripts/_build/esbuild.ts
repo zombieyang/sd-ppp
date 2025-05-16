@@ -13,7 +13,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 import { join } from 'path';
 import { typescriptSrcRoot } from './lib.ts';
 import { globSync } from 'glob';
-
+import * as path from 'path';
 let wss: WebSocketServer | null = null;
 let clients = new Set<WebSocket>();
 if (process.env.NODE_ENV === 'development') {
@@ -58,9 +58,10 @@ async function createBuildContexts() {
   const isWatchMode = process.argv.includes('--watch');
 
   const buildConfigs = await Promise.all(
-    globSync(join(typescriptSrcRoot, 'modules/*'))
+    globSync(join(typescriptSrcRoot, 'modules/*').replace(/\\/g, '/'))
       .map(async (path: string) => {
-        const config = await import(join(path, 'esbuild.ts'))
+        const configUrl = pathToFileURL(join(path, 'esbuild.ts'));
+        const config = await import(configUrl)
         return {
           config: config.config,
           name: path.split('/').pop()
@@ -87,6 +88,25 @@ async function createBuildContexts() {
   console.log(`Contexts created in ${((endTime - startTime) / 1000).toFixed(2)} seconds`);
 
   return contexts;
+}
+
+// 将 Windows 路径转换为 file:// URL
+function pathToFileURL(filePath: string): string {
+  // 已经是 URL 的情况
+  if (filePath.startsWith('file://')) {
+    return filePath;
+  }
+  
+  // 处理 Windows 绝对路径
+  if (path.isAbsolute(filePath) && process.platform === 'win32') {
+    // 确保路径使用正斜杠
+    const normalizedPath = path.normalize(filePath).replace(/\\/g, '/');
+    // 添加 file:// 前缀和驱动器号前的斜杠
+    return `file:///${normalizedPath}`;
+  }
+  
+  // 其他情况先直接返回
+  return filePath;
 }
 
 async function main() {
