@@ -921,3 +921,24 @@ h1 {
     /* 14px */
 }
 /* end of agent config panel */
+
+/* GroupFilter component styles */
+.group-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.group-filter-item {
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.group-filter-item:not(:first-child) {
+    margin-left: 8px;
+}
+/* end of GroupFilter component styles */

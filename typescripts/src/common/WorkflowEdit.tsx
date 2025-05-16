@@ -1,7 +1,7 @@
-import React, { ReactNode, useMemo } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import i18n from "./i18n.mjs";
 
-import type { WidgetTableStructure, WidgetTableStructureNode, WidgetTableValue } from "../types/sdppp/index.js";
+import type { WidgetTableStructure, WidgetTableStructureGroup, WidgetTableStructureNode, WidgetTableValue } from "../types/sdppp/index.js";
 import { computeUIWeightCSS, useTraceUpdate } from "./tsx/util.js";
 
 interface WorkflowEditProps {
@@ -26,6 +26,8 @@ export default function WorkflowEdit({
     onWidgetChange,
     onTitleRender
 }: WorkflowEditProps) {
+    const [groupFilter, setGroupFilter] = useState<number>(0);
+
     const allRenderedFields = useMemo(() => {
         return widgetTableStructure.nodeIndexes.map(nodeID => {
             const fieldInfo = widgetTableStructure.nodes[nodeID]
@@ -45,6 +47,7 @@ export default function WorkflowEdit({
             }
             const group = Object.values(widgetTableStructure.groups).find(group => group.nodeIDs.includes(fieldInfo.id))
             const groupColor = group?.color || 'rgba(127, 127, 127, .4)'
+            if (groupFilter && group?.id !== groupFilter) return null;
 
             const useShortTitle = fieldInfo.uiWeightSum <= 8 && fieldInfo.widgets.length == 1 && (
                 fieldInfo.widgets[0].outputType !== 'number' ||
@@ -75,8 +78,8 @@ export default function WorkflowEdit({
                     }
                 </div>
             )
-        })
-    }, [widgetTableStructure, widgetTableValue, widgetTableErrors, onWidgetRender, onWidgetChange, onTitleRender])
+        }).filter(Boolean)
+    }, [widgetTableStructure, widgetTableValue, widgetTableErrors, onWidgetRender, onWidgetChange, onTitleRender, groupFilter])
 
     const nodeErrorsNotInWidgetTable = useMemo(() => {
         return Object.keys(widgetTableErrors).filter((key: any) => !widgetTableStructure.nodes[parseInt(key)]);
@@ -93,6 +96,15 @@ export default function WorkflowEdit({
             {
                 !Object.keys(widgetTableStructure.nodes).length ?
                     (<span className="list-error-label">{i18n('no suitable node to control in this workflow')}</span>) : ''
+            }
+            {
+                (allRenderedFields.length > 10 || groupFilter > 0) && (
+                    <GroupFilter
+                        groups={Object.values(widgetTableStructure.groups)}
+                        selectedGroupId={groupFilter}
+                        onGroupSelect={setGroupFilter}
+                    />
+                )
             }
             <div className="workflow-edit-content">
                 {
@@ -129,3 +141,76 @@ class WidgetRenderErrorBoundary extends React.Component<{
     }
 }
 
+
+
+
+interface GroupFilterProps {
+    groups: WidgetTableStructureGroup[];
+    selectedGroupId: number;
+    onGroupSelect: (groupId: number) => void;
+}
+
+function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProps) {
+    return (
+        <div className="group-filter">
+            <div
+                className={`group-filter-item all-groups ${selectedGroupId === 0 ? 'selected' : ''}`}
+                style={{
+                    backgroundColor: adjustColorOpacity('#777', selectedGroupId === 0 ? 1 : 0.6),
+                    color: adjustColorOpacity('#fff', selectedGroupId === 0 ? 1 : 0.6),
+                }}
+                onClick={() => onGroupSelect(0)}
+            >
+                所有组
+            </div>
+            {groups.map(group => (
+                <div
+                    key={group.id}
+                    className={`group-filter-item ${selectedGroupId === group.id ? 'selected' : ''}`}
+                    style={{
+                        backgroundColor: adjustColorOpacity(group.color, selectedGroupId === group.id ? 1 : 0.6),
+                        color: adjustColorOpacity('#fff', selectedGroupId === group.id ? 1 : 0.6),
+                    }}
+                    onClick={() => onGroupSelect(group.id)}
+                >
+                    {group.name}
+                </div>
+            ))}
+        </div>
+    );
+}
+/**
+ * Adjusts the opacity of a color value
+ * @param color The color value (can be hex, rgb, rgba)
+ * @param opacity The opacity value between 0 and 1
+ * @returns The color with adjusted opacity
+ */
+export function adjustColorOpacity(color: string, opacity: number): string {
+    // Handle rgba colors
+    if (color.startsWith('rgba')) {
+        return color.split(',').map((item, index) => {
+            if (index === 3) {
+                return opacity.toString();
+            }
+            return item;
+        }).join(',');
+    }
+
+    // Handle rgb colors
+    if (color.startsWith('rgb')) {
+        return color.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
+    }
+
+    // Handle hex colors
+    if (color.startsWith('#')) {
+        // Handle both 3-digit and 6-digit hex colors
+        const hex = color.slice(1);
+        const r = parseInt(hex.length === 3 ? hex[0] + hex[0] : hex.slice(0, 2), 16);
+        const g = parseInt(hex.length === 3 ? hex[1] + hex[1] : hex.slice(2, 4), 16);
+        const b = parseInt(hex.length === 3 ? hex[2] + hex[2] : hex.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+    // Return original color if format not supported
+    return color;
+}
