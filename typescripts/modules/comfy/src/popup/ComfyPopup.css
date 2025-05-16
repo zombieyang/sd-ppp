@@ -229,3 +229,23 @@
 .sdppp-premiere-icon {
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg");
 }
+
+/* GroupFilter component styles */
+.sdppp-side-container .group-filter {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 4px 0;
+}
+
+.sdppp-side-container .group-filter-item {
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sdppp-side-container .group-filter-item:not(:first-child) {
+    margin-left: 8px;
+}
+/* end of GroupFilter component styles */

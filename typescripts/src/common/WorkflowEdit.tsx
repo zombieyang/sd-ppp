@@ -154,7 +154,7 @@ function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProp
     return (
         <div className="group-filter">
             <div
-                className={`group-filter-item all-groups ${selectedGroupId === 0 ? 'selected' : ''}`}
+                className={`group-filter-item all-groups`}
                 style={{
                     backgroundColor: adjustColorOpacity('#777', selectedGroupId === 0 ? 1 : 0.6),
                     color: adjustColorOpacity(isDarkColor('#777') ? '#fff' : '#000', selectedGroupId === 0 ? 1 : 0.6),
@@ -166,7 +166,7 @@ function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProp
             {groups.sort((a, b) => a.name.length - b.name.length).map(group => (
                 <div
                     key={group.id}
-                    className={`group-filter-item ${selectedGroupId === group.id ? 'selected' : ''}`}
+                    className={`group-filter-item`}
                     style={{
                         backgroundColor: adjustColorOpacity(group.color, selectedGroupId === group.id ? 1 : 0.6),
                         color: adjustColorOpacity(isDarkColor(group.color) ? '#fff' : '#000', selectedGroupId === group.id ? 1 : 0.6),
