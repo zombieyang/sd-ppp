@@ -98,7 +98,7 @@ export default function WorkflowEdit({
                     (<span className="list-error-label">{i18n('no suitable node to control in this workflow')}</span>) : ''
             }
             {
-                (allRenderedFields.length > 10 || groupFilter > 0) && (
+                (Object.keys(widgetTableStructure.groups).length > 1 || groupFilter > 0) && (
                     <GroupFilter
                         groups={Object.values(widgetTableStructure.groups)}
                         selectedGroupId={groupFilter}
@@ -157,19 +157,19 @@ function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProp
                 className={`group-filter-item all-groups ${selectedGroupId === 0 ? 'selected' : ''}`}
                 style={{
                     backgroundColor: adjustColorOpacity('#777', selectedGroupId === 0 ? 1 : 0.6),
-                    color: adjustColorOpacity('#fff', selectedGroupId === 0 ? 1 : 0.6),
+                    color: adjustColorOpacity(isDarkColor('#777') ? '#fff' : '#000', selectedGroupId === 0 ? 1 : 0.6),
                 }}
                 onClick={() => onGroupSelect(0)}
             >
                 所有组
             </div>
-            {groups.map(group => (
+            {groups.sort((a, b) => a.name.length - b.name.length).map(group => (
                 <div
                     key={group.id}
                     className={`group-filter-item ${selectedGroupId === group.id ? 'selected' : ''}`}
                     style={{
                         backgroundColor: adjustColorOpacity(group.color, selectedGroupId === group.id ? 1 : 0.6),
-                        color: adjustColorOpacity('#fff', selectedGroupId === group.id ? 1 : 0.6),
+                        color: adjustColorOpacity(isDarkColor(group.color) ? '#fff' : '#000', selectedGroupId === group.id ? 1 : 0.6),
                     }}
                     onClick={() => onGroupSelect(group.id)}
                 >
@@ -185,7 +185,7 @@ function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProp
  * @param opacity The opacity value between 0 and 1
  * @returns The color with adjusted opacity
  */
-export function adjustColorOpacity(color: string, opacity: number): string {
+function adjustColorOpacity(color: string, opacity: number): string {
     // Handle rgba colors
     if (color.startsWith('rgba')) {
         return color.split(',').map((item, index) => {
@@ -213,4 +213,32 @@ export function adjustColorOpacity(color: string, opacity: number): string {
 
     // Return original color if format not supported
     return color;
+}
+
+
+function isDarkColor(color: string): boolean {
+    let r: number, g: number, b: number;
+    
+    // Handle rgba colors
+    const rgba = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+    if (rgba) {
+        r = parseInt(rgba[1]);
+        g = parseInt(rgba[2]);
+        b = parseInt(rgba[3]);
+    } else {
+        // Handle hex colors
+        const hex = color.startsWith('#') ? color.slice(1) : color;
+        if (hex.length === 3) {
+            r = parseInt(hex[0] + hex[0], 16);
+            g = parseInt(hex[1] + hex[1], 16);
+            b = parseInt(hex[2] + hex[2], 16);
+        } else if (hex.length === 6) {
+            r = parseInt(hex.slice(0, 2), 16);
+            g = parseInt(hex.slice(2, 4), 16);
+            b = parseInt(hex.slice(4, 6), 16);
+        } else {
+            return false;
+        }
+    }
+    return r * 0.299 + g * 0.587 + b * 0.114 < 186;
 }

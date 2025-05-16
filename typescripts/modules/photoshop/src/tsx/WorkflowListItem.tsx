@@ -71,7 +71,7 @@ const DirectoryItem: React.FC<DirectoryItemProps> = ({
     return (
         <BaseListItem onClick={handleClick}>
             <FolderIcon size={ICON_SIZE} />
-            <div style={{ marginLeft: 3 }}>{path}</div>
+            <div style={{ marginLeft: 3 }}>{path.slice(0, -1).split('/').pop()}</div>
         </BaseListItem>
     );
 };
@@ -158,7 +158,7 @@ const WorkflowItem: React.FC<WorkflowItemProps> = ({
             }
             onClick={handleEditClick}
         >
-            {workflow.error ? workflow.error.replace('sdppp PS side error:', '') : workflow.path}
+            {workflow.error ? workflow.error.replace('sdppp PS side error:', '') : workflow.path.split('/').pop()}
         </BaseListItem>
     );
 };
