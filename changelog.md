@@ -1,3 +1,14 @@
+## [1.8.3] - 2025-05-18
+* fix: The slider widget not worked well.
+* fix: When running with xN, only the last previewed image will be sent.
+* optimization: The UX of selecting workflow runner is optimized.
+* optimization: Will clear error state when switching workflow.
+* optimization: The errors will now show the node title.
+* feature: Support opening the active workflow.
+* feature: Added SDXL example workflow in the package.
+* feature: Support group filter in workflow edit.
+* feature: Support apiKey setting for ComfyOrg. (Need ComfyUI upgraded to the corresponding version)
+
 ## [1.8.2] - 2025-05-12
 * fix: seeds would not randomize in some Comfy setting
 * fix: combo of `LoadImage` became smaller in last version

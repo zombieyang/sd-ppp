@@ -290,6 +290,7 @@ export default function (sdppp) {
                 id: node.id,
                 title: getTitle(node),
                 widgets: node.widgets.map((widget) => {
+                    if (widget.type == "speak_and_recognation_type") return null;
                     const ret = {
                         outputType: widget.type || "string",
                         value: widget.value,
@@ -301,7 +302,7 @@ export default function (sdppp) {
                     }
 
                     return ret;
-                })
+                }).filter(Boolean)
             };
         }
     })
