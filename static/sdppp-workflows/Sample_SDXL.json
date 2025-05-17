@@ -1,8 +1,8 @@
 {
-  "id": "49fd6a67-17b2-4c07-bf02-e0d2d4c17437",
+  "id": "f15f97e0-caa9-49be-8b28-3391a987c5b2",
   "revision": 0,
-  "last_node_id": 124,
-  "last_link_id": 282,
+  "last_node_id": 125,
+  "last_link_id": 286,
   "nodes": [
     {
       "id": 3,
@@ -13,7 +13,7 @@
       ],
       "size": [
         315,
-        262
+        358
       ],
       "flags": {},
       "order": 45,
@@ -40,12 +40,20 @@
           "link": 89
         },
         {
-          "name": "denoise",
-          "type": "FLOAT",
+          "name": "seed",
+          "type": "INT",
           "widget": {
-            "name": "denoise"
+            "name": "seed"
           },
-          "link": 48
+          "link": 169
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": 52
         },
         {
           "name": "cfg",
@@ -64,14 +72,6 @@
           "link": 51
         },
         {
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": 52
-        },
-        {
           "name": "scheduler",
           "type": "COMBO",
           "widget": {
@@ -80,12 +80,12 @@
           "link": 53
         },
         {
-          "name": "seed",
-          "type": "INT",
+          "name": "denoise",
+          "type": "FLOAT",
           "widget": {
-            "name": "seed"
+            "name": "denoise"
           },
-          "link": 169
+          "link": 48
         }
       ],
       "outputs": [
@@ -99,10 +99,12 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        508728816896219,
+        824536781191529,
         "randomize",
         16,
         4,
@@ -119,8 +121,8 @@
         -697
       ],
       "size": [
-        210,
-        58
+        210.29940795898438,
+        88
       ],
       "flags": {},
       "order": 22,
@@ -129,7 +131,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 3
+          "link": 284
         },
         {
           "name": "text",
@@ -152,10 +154,16 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "1girl, thin and tall, curvy, being humiliated, agony, defeated, standing\n\nfutanari, (erection-under-clothes:1.4), \n\n(mechanical shoulders:1.2)\nbare_thigh,light skin, both arms up, grey highleg-leotard, grey thighhighs, slim_thighs_waist_thigh, (black sash: 1.2), (black mouth-mask_catsuit_gloves: 1.1), high_collar, blonde hair, blush, (frowning: 1.4),  eyebrows down\n\nnipple-raised,  knee, fullbody, hair spread out, long hair, nose blush, parted bangs, restrained, shadow, sidelocks, single high ponytail, very long hair, zettai ryouiki, beautiful eyes\n\n\n\niron chain, in a prison, ruins,indoors,\n\nreflection, realistic skin, film grain, light and shadow contrast, high definition, amazing quality,\n\nvery aesthetic, best quality, masterpiece, best quality, very aesthetic, highres, absurdres, sensitive\n4n1v3rs3"
+        "1girl",
+        [
+          false,
+          true
+        ]
       ]
     },
     {
@@ -166,17 +174,17 @@
         -575
       ],
       "size": [
-        210,
-        58
+        210.29940795898438,
+        88
       ],
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 5
+          "link": 285
         },
         {
           "name": "text",
@@ -199,10 +207,16 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n"
+        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n",
+        [
+          false,
+          true
+        ]
       ]
     },
     {
@@ -242,6 +256,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "VAEDecode"
       },
       "widgets_values": []
@@ -264,7 +280,7 @@
         {
           "name": "",
           "type": "*",
-          "link": 11
+          "link": 283
         }
       ],
       "outputs": [
@@ -294,7 +310,7 @@
         26
       ],
       "flags": {},
-      "order": 24,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -304,7 +320,7 @@
             37.5,
             0
           ],
-          "link": 19
+          "link": 286
         }
       ],
       "outputs": [
@@ -354,83 +370,11 @@
       ],
       "title": "#01. Pos Prompt",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#01. Pos Prompt"
       },
       "widgets_values": [
-        "1girl, thin and tall, curvy, being humiliated, agony, defeated, standing\n\nfutanari, (erection-under-clothes:1.4), \n\n(mechanical shoulders:1.2)\nbare_thigh,light skin, both arms up, grey highleg-leotard, grey thighhighs, slim_thighs_waist_thigh, (black sash: 1.2), (black mouth-mask_catsuit_gloves: 1.1), high_collar, blonde hair, blush, (frowning: 1.4),  eyebrows down\n\nnipple-raised,  knee, fullbody, hair spread out, long hair, nose blush, parted bangs, restrained, shadow, sidelocks, single high ponytail, very long hair, zettai ryouiki, beautiful eyes\n\n\n\niron chain, in a prison, ruins,indoors,\n\nreflection, realistic skin, film grain, light and shadow contrast, high definition, amazing quality,\n\nvery aesthetic, best quality, masterpiece, best quality, very aesthetic, highres, absurdres, sensitive\n4n1v3rs3"
-      ]
-    },
-    {
-      "id": 26,
-      "type": "PrimitiveNode",
-      "pos": [
-        -1507,
-        -952
-      ],
-      "size": [
-        593.264404296875,
-        132.1354522705078
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "STRING",
-          "type": "STRING",
-          "widget": {
-            "name": "text"
-          },
-          "slot_index": 0,
-          "links": [
-            47
-          ]
-        }
-      ],
-      "title": "#02. Neg Prompt",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n"
-      ]
-    },
-    {
-      "id": 27,
-      "type": "PrimitiveNode",
-      "pos": [
-        -1877,
-        -1422
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "FLOAT",
-          "type": "FLOAT",
-          "widget": {
-            "name": "denoise"
-          },
-          "slot_index": 0,
-          "links": [
-            48
-          ]
-        }
-      ],
-      "title": "#04. Denoise",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1,
-        "fixed"
+        "1girl"
       ]
     },
     {
@@ -445,7 +389,7 @@
         106
       ],
       "flags": {},
-      "order": 3,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -463,7 +407,8 @@
       ],
       "title": "#07. Sampler",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#07. Sampler"
       },
       "widgets_values": [
         "dpmpp_sde_gpu",
@@ -483,7 +428,7 @@
         82
       ],
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -501,7 +446,8 @@
       ],
       "title": "#05. CFG",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#05. CFG"
       },
       "widgets_values": [
         4,
@@ -520,7 +466,7 @@
         82
       ],
       "flags": {},
-      "order": 5,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -538,7 +484,8 @@
       ],
       "title": "#06. Steps",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#06. Steps"
       },
       "widgets_values": [
         16,
@@ -557,7 +504,7 @@
         106
       ],
       "flags": {},
-      "order": 6,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -575,7 +522,8 @@
       ],
       "title": "#08. Scheduler",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#08. Scheduler"
       },
       "widgets_values": [
         "karras",
@@ -595,7 +543,7 @@
         146
       ],
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -628,11 +576,14 @@
       ],
       "title": "#00 Working Document",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Document",
-        "sdppp-version": "502"
+        "sdppp-version": "504",
+        "sdppp_widgetable_title": "#00 Working Document"
       },
       "widgets_values": [
-        null,
+        "PS_zbx/### 当前文档 ###",
         "",
         ""
       ]
@@ -646,7 +597,7 @@
       ],
       "size": [
         315,
-        106
+        126
       ],
       "flags": {},
       "order": 32,
@@ -680,6 +631,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "EmptyLatentImage"
       },
       "widgets_values": [
@@ -755,8 +708,10 @@
         }
       ],
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Parse Layer Info",
-        "sdppp-version": "502"
+        "sdppp-version": "504"
       },
       "widgets_values": [
         ""
@@ -809,15 +764,18 @@
       ],
       "title": ".canvas area",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "502",
+        "sdppp-version": "504",
         "layerWidgetDetail0": {
           "id": 0,
           "name": "",
           "identify": "",
           "level": 0,
           "fullPath": ""
-        }
+        },
+        "sdppp_widgetable_title": ".canvas area"
       },
       "widgets_values": [
         "### 整个画布 ###",
@@ -869,7 +827,6 @@
       "outputs": [
         {
           "name": "positive",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 0,
           "links": [
@@ -880,7 +837,6 @@
         },
         {
           "name": "negative",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 1,
           "links": [
@@ -890,6 +846,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "ControlNetApplyAdvanced"
       },
       "widgets_values": [
@@ -912,13 +870,12 @@
         58
       ],
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 2,
       "inputs": [],
       "outputs": [
         {
           "name": "CONTROL_NET",
-          "shape": 3,
           "type": "CONTROL_NET",
           "slot_index": 0,
           "links": [
@@ -929,7 +886,10 @@
       ],
       "title": "#21. ControlNet 1 Model",
       "properties": {
-        "Node name for S&R": "ControlNetLoader"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "ControlNetLoader",
+        "sdppp_widgetable_title": "#21. ControlNet 1 Model"
       },
       "widgets_values": [
         "SDXL/controlnet-canny-sdxl-1.0/diffusion_pytorch_model_V2.safetensors"
@@ -945,7 +905,7 @@
         -788
       ],
       "size": [
-        168,
+        173.033203125,
         126
       ],
       "flags": {},
@@ -1001,7 +961,10 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "cnr_id": "rgthree-comfy",
+        "ver": "4c87142dda191ce0e1937c4a31ea3f82be2d5218"
+      },
       "widgets_values": []
     },
     {
@@ -1012,7 +975,7 @@
         -606
       ],
       "size": [
-        168,
+        173.033203125,
         126
       ],
       "flags": {},
@@ -1068,7 +1031,10 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "cnr_id": "rgthree-comfy",
+        "ver": "4c87142dda191ce0e1937c4a31ea3f82be2d5218"
+      },
       "widgets_values": []
     },
     {
@@ -1111,7 +1077,8 @@
       ],
       "title": "#20. Enable ControlNet 1",
       "properties": {
-        "toggleRestriction": "default"
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#20. Enable ControlNet 1"
       },
       "color": "#223",
       "bgcolor": "#335"
@@ -1128,13 +1095,12 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 2,
       "inputs": [],
       "outputs": [
         {
           "name": "CONTROL_NET",
-          "shape": 3,
           "type": "CONTROL_NET",
           "slot_index": 0,
           "links": [
@@ -1145,7 +1111,10 @@
       ],
       "title": "#25. ControlNet 2 Model",
       "properties": {
-        "Node name for S&R": "ControlNetLoader"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "ControlNetLoader",
+        "sdppp_widgetable_title": "#25. ControlNet 2 Model"
       },
       "widgets_values": [
         "SDXL/controlnet-canny-sdxl-1.0/diffusion_pytorch_model_V2.safetensors"
@@ -1198,7 +1167,6 @@
       "outputs": [
         {
           "name": "positive",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 0,
           "links": [
@@ -1209,7 +1177,6 @@
         },
         {
           "name": "negative",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 1,
           "links": [
@@ -1219,6 +1186,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "ControlNetApplyAdvanced"
       },
       "widgets_values": [
@@ -1241,13 +1210,12 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 2,
       "inputs": [],
       "outputs": [
         {
           "name": "CONTROL_NET",
-          "shape": 3,
           "type": "CONTROL_NET",
           "slot_index": 0,
           "links": [
@@ -1258,7 +1226,10 @@
       ],
       "title": "#29. ControlNet 3 Model",
       "properties": {
-        "Node name for S&R": "ControlNetLoader"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "ControlNetLoader",
+        "sdppp_widgetable_title": "#29. ControlNet 3 Model"
       },
       "widgets_values": [
         "SDXL/controlnet-canny-sdxl-1.0/diffusion_pytorch_model_V2.safetensors"
@@ -1311,7 +1282,6 @@
       "outputs": [
         {
           "name": "positive",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 0,
           "links": [
@@ -1322,7 +1292,6 @@
         },
         {
           "name": "negative",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 1,
           "links": [
@@ -1332,6 +1301,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "ControlNetApplyAdvanced"
       },
       "widgets_values": [
@@ -1354,13 +1325,12 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 2,
       "inputs": [],
       "outputs": [
         {
           "name": "CONTROL_NET",
-          "shape": 3,
           "type": "CONTROL_NET",
           "slot_index": 0,
           "links": [
@@ -1371,7 +1341,10 @@
       ],
       "title": "#32. ControlNet 4 Model",
       "properties": {
-        "Node name for S&R": "ControlNetLoader"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "ControlNetLoader",
+        "sdppp_widgetable_title": "#32. ControlNet 4 Model"
       },
       "widgets_values": [
         ""
@@ -1424,7 +1397,6 @@
       "outputs": [
         {
           "name": "positive",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 0,
           "links": [
@@ -1434,7 +1406,6 @@
         },
         {
           "name": "negative",
-          "shape": 3,
           "type": "CONDITIONING",
           "slot_index": 1,
           "links": [
@@ -1443,6 +1414,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "ControlNetApplyAdvanced"
       },
       "widgets_values": [
@@ -1494,7 +1467,8 @@
       ],
       "title": "#28. Enable ControlNet 3",
       "properties": {
-        "toggleRestriction": "default"
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#28. Enable ControlNet 3"
       },
       "color": "#223",
       "bgcolor": "#335"
@@ -1541,7 +1515,8 @@
       ],
       "title": "#32. Enable ControlNet 4",
       "properties": {
-        "toggleRestriction": "default"
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#32. Enable ControlNet 4"
       },
       "color": "#223",
       "bgcolor": "#335"
@@ -1597,7 +1572,7 @@
         82
       ],
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1615,10 +1590,11 @@
       ],
       "title": "#09. Seed",
       "properties": {
-        "Run widget replace on values": false
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#09. Seed"
       },
       "widgets_values": [
-        508728816896219,
+        824536781191529,
         "randomize"
       ]
     },
@@ -1663,7 +1639,8 @@
       ],
       "title": "#24. Enable ControlNet 2",
       "properties": {
-        "toggleRestriction": "default"
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#24. Enable ControlNet 2"
       }
     },
     {
@@ -1695,6 +1672,13 @@
           "shape": 7,
           "type": "MASK",
           "link": null
+        },
+        {
+          "label": "图像质量",
+          "name": "quality",
+          "shape": 7,
+          "type": "FLOAT",
+          "link": null
         }
       ],
       "outputs": [
@@ -1719,11 +1703,13 @@
         }
       ],
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "502"
+        "sdppp-version": "504"
       },
       "widgets_values": [
-        null,
+        "PS_zbx/### 当前文档 ###",
         "",
         ""
       ]
@@ -1777,8 +1763,11 @@
       ],
       "title": "#26. ControlNet 2 Image",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "502"
+        "sdppp-version": "504",
+        "sdppp_widgetable_title": "#26. ControlNet 2 Image"
       },
       "widgets_values": [
         "",
@@ -1827,7 +1816,7 @@
         },
         {
           "dir": 3,
-          "name": "应用ControlNet（旧版高级）",
+          "name": "Apply ControlNet",
           "type": "*",
           "link": 265
         },
@@ -1902,8 +1891,11 @@
       ],
       "title": "#22. ControlNet 1 Image",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "502"
+        "sdppp-version": "504",
+        "sdppp_widgetable_title": "#22. ControlNet 1 Image"
       },
       "widgets_values": [
         "canny 拷贝 (id:57)",
@@ -1939,6 +1931,13 @@
           "shape": 7,
           "type": "MASK",
           "link": null
+        },
+        {
+          "label": "图像质量",
+          "name": "quality",
+          "shape": 7,
+          "type": "FLOAT",
+          "link": null
         }
       ],
       "outputs": [
@@ -1963,11 +1962,13 @@
         }
       ],
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "502"
+        "sdppp-version": "504"
       },
       "widgets_values": [
-        null,
+        "PS_zbx/### 当前文档 ###",
         "",
         ""
       ]
@@ -2021,8 +2022,11 @@
       ],
       "title": "#30. ControlNet 3 Image",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "502"
+        "sdppp-version": "504",
+        "sdppp_widgetable_title": "#30. ControlNet 3 Image"
       },
       "widgets_values": [
         "",
@@ -2058,6 +2062,13 @@
           "shape": 7,
           "type": "MASK",
           "link": null
+        },
+        {
+          "label": "图像质量",
+          "name": "quality",
+          "shape": 7,
+          "type": "FLOAT",
+          "link": null
         }
       ],
       "outputs": [
@@ -2082,11 +2093,13 @@
         }
       ],
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "502"
+        "sdppp-version": "504"
       },
       "widgets_values": [
-        null,
+        "PS_zbx/### 当前文档 ###",
         "",
         ""
       ]
@@ -2140,8 +2153,11 @@
       ],
       "title": "#33. ControlNet 4 Image",
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "502"
+        "sdppp-version": "504",
+        "sdppp_widgetable_title": "#33. ControlNet 4 Image"
       },
       "widgets_values": [
         "",
@@ -2177,6 +2193,13 @@
           "shape": 7,
           "type": "MASK",
           "link": null
+        },
+        {
+          "label": "图像质量",
+          "name": "quality",
+          "shape": 7,
+          "type": "FLOAT",
+          "link": null
         }
       ],
       "outputs": [
@@ -2201,11 +2224,13 @@
         }
       ],
       "properties": {
+        "cnr_id": "sd-ppp",
+        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
         "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "502"
+        "sdppp-version": "504"
       },
       "widgets_values": [
-        null,
+        "PS_zbx/### 当前文档 ###",
         "",
         ""
       ]
@@ -2252,7 +2277,7 @@
         },
         {
           "dir": 3,
-          "name": "应用ControlNet（旧版高级）",
+          "name": "Apply ControlNet",
           "type": "*",
           "link": 266
         },
@@ -2314,7 +2339,7 @@
         },
         {
           "dir": 3,
-          "name": "应用ControlNet（旧版高级）",
+          "name": "Apply ControlNet",
           "type": "*",
           "link": 267
         },
@@ -2383,7 +2408,7 @@
         },
         {
           "dir": 3,
-          "name": "应用ControlNet（旧版高级）",
+          "name": "Apply ControlNet",
           "type": "*",
           "link": 264
         },
@@ -2413,8 +2438,8 @@
       "id": 117,
       "type": "Mute / Bypass Repeater (rgthree)",
       "pos": [
-        -97,
-        91
+        -116.70399475097656,
+        74.90469360351562
       ],
       "size": [
         268.79998779296875,
@@ -2422,29 +2447,29 @@
       ],
       "flags": {},
       "order": 37,
-      "mode": 2,
+      "mode": 0,
       "inputs": [
         {
           "dir": 3,
-          "name": "VAE编码",
+          "name": "VAE Encode",
           "type": "*",
           "link": 277
         },
         {
           "dir": 3,
-          "name": "设置Latent噪波遮罩",
+          "name": "Set Latent Noise Mask",
           "type": "*",
           "link": 278
         },
         {
           "dir": 3,
-          "name": "加载图像（作为遮罩）",
+          "name": "#12. Inpaint Mask",
           "type": "*",
           "link": 281
         },
         {
           "dir": 3,
-          "name": "加载图像",
+          "name": "#11. Inpaint Image",
           "type": "*",
           "link": 282
         },
@@ -2493,6 +2518,8 @@
       ],
       "outputs": [],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "PreviewImage"
       },
       "widgets_values": []
@@ -2536,7 +2563,8 @@
       ],
       "title": "#10. Inpaint Selection",
       "properties": {
-        "toggleRestriction": "default"
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#10. Inpaint Selection"
       }
     },
     {
@@ -2597,15 +2625,18 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "cnr_id": "rgthree-comfy",
+        "ver": "4c87142dda191ce0e1937c4a31ea3f82be2d5218"
+      },
       "widgets_values": []
     },
     {
       "id": 120,
       "type": "VAEEncode",
       "pos": [
-        -361.9066467285156,
-        233.59487915039062
+        -381.6106872558594,
+        217.4995574951172
       ],
       "size": [
         210,
@@ -2613,7 +2644,7 @@
       ],
       "flags": {},
       "order": 31,
-      "mode": 2,
+      "mode": 0,
       "inputs": [
         {
           "name": "pixels",
@@ -2638,6 +2669,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "VAEEncode"
       },
       "widgets_values": []
@@ -2646,8 +2679,8 @@
       "id": 121,
       "type": "SetLatentNoiseMask",
       "pos": [
-        -133.05723571777344,
-        357.218994140625
+        -152.76124572753906,
+        341.1236877441406
       ],
       "size": [
         264.5999755859375,
@@ -2655,7 +2688,7 @@
       ],
       "flags": {},
       "order": 34,
-      "mode": 2,
+      "mode": 0,
       "inputs": [
         {
           "name": "samples",
@@ -2680,6 +2713,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
         "Node name for S&R": "SetLatentNoiseMask"
       },
       "widgets_values": []
@@ -2688,16 +2723,16 @@
       "id": 124,
       "type": "LoadImageMask",
       "pos": [
-        -811.8969116210938,
-        271.8177795410156
+        -831.6009521484375,
+        255.72244262695312
       ],
       "size": [
         315,
         318
       ],
       "flags": {},
-      "order": 13,
-      "mode": 2,
+      "order": 11,
+      "mode": 0,
       "inputs": [],
       "outputs": [
         {
@@ -2710,8 +2745,12 @@
           ]
         }
       ],
+      "title": "#12. Inpaint Mask",
       "properties": {
-        "Node name for S&R": "LoadImageMask"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImageMask",
+        "sdppp_widgetable_title": "#12. Inpaint Mask"
       },
       "widgets_values": [
         "1.flac",
@@ -2723,16 +2762,16 @@
       "id": 123,
       "type": "LoadImage",
       "pos": [
-        -1162.1910400390625,
-        16.896085739135742
+        -1181.8946533203125,
+        0.8007648587226868
       ],
       "size": [
         315,
         314
       ],
       "flags": {},
-      "order": 14,
-      "mode": 2,
+      "order": 12,
+      "mode": 0,
       "inputs": [],
       "outputs": [
         {
@@ -2750,8 +2789,12 @@
           "links": null
         }
       ],
+      "title": "#11. Inpaint Image",
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImage",
+        "sdppp_widgetable_title": "#11. Inpaint Image"
       },
       "widgets_values": [
         "1.flac",
@@ -2759,18 +2802,56 @@
       ]
     },
     {
-      "id": 4,
+      "id": 27,
+      "type": "PrimitiveNode",
+      "pos": [
+        -1865.114501953125,
+        -1371.600341796875
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "slot_index": 0,
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "#04. Denoise",
+      "properties": {
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#04. Denoise"
+      },
+      "widgets_values": [
+        1,
+        "fixed"
+      ]
+    },
+    {
+      "id": 125,
       "type": "CheckpointLoaderSimple",
       "pos": [
-        -1496,
-        -700
+        -1863.9359130859375,
+        -918.1248168945312
       ],
       "size": [
         315,
         98
       ],
       "flags": {},
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2779,7 +2860,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            11
+            283
           ]
         },
         {
@@ -2787,8 +2868,8 @@
           "type": "CLIP",
           "slot_index": 1,
           "links": [
-            3,
-            5
+            284,
+            285
           ]
         },
         {
@@ -2796,35 +2877,60 @@
           "type": "VAE",
           "slot_index": 2,
           "links": [
-            19
+            286
           ]
         }
       ],
+      "title": "#03. Checkpoint",
       "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.34",
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "sdppp_widgetable_title": "#03. Checkpoint"
       },
       "widgets_values": [
-        "SDXL/atomixPony3DXL_v10.safetensors"
+        "v1-5-pruned-emaonly-fp16.safetensors"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "PrimitiveNode",
+      "pos": [
+        -1507,
+        -952
+      ],
+      "size": [
+        593.264404296875,
+        132.1354522705078
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "slot_index": 0,
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "#02. Neg Prompt",
+      "properties": {
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#02. Neg Prompt"
+      },
+      "widgets_values": [
+        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n"
       ]
     }
   ],
   "links": [
-    [
-      3,
-      4,
-      1,
-      6,
-      0,
-      "CLIP"
-    ],
-    [
-      5,
-      4,
-      1,
-      7,
-      0,
-      "CLIP"
-    ],
     [
       7,
       3,
@@ -2834,28 +2940,12 @@
       "LATENT"
     ],
     [
-      11,
-      4,
-      0,
-      11,
-      0,
-      "*"
-    ],
-    [
       12,
       11,
       0,
       3,
       0,
       "MODEL"
-    ],
-    [
-      19,
-      4,
-      2,
-      15,
-      0,
-      "*"
     ],
     [
       20,
@@ -2886,7 +2976,7 @@
       27,
       0,
       3,
-      4,
+      9,
       "FLOAT"
     ],
     [
@@ -2894,7 +2984,7 @@
       29,
       0,
       3,
-      5,
+      6,
       "FLOAT"
     ],
     [
@@ -2902,7 +2992,7 @@
       28,
       0,
       3,
-      6,
+      7,
       "COMBO"
     ],
     [
@@ -2910,7 +3000,7 @@
       30,
       0,
       3,
-      7,
+      5,
       "INT"
     ],
     [
@@ -3198,7 +3288,7 @@
       75,
       0,
       3,
-      9,
+      4,
       "INT"
     ],
     [
@@ -3576,6 +3666,38 @@
       117,
       3,
       "*"
+    ],
+    [
+      283,
+      125,
+      0,
+      11,
+      0,
+      "*"
+    ],
+    [
+      284,
+      125,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      285,
+      125,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      286,
+      125,
+      2,
+      15,
+      0,
+      "*"
     ]
   ],
   "groups": [
@@ -3588,7 +3710,7 @@
         1405.584228515625,
         706.2962646484375
       ],
-      "color": "#3f789e",
+      "color": "#b58b2a",
       "font_size": 24,
       "flags": {}
     },
@@ -3596,12 +3718,12 @@
       "id": 2,
       "title": "Inpaint",
       "bounding": [
-        -1165.12890625,
-        -5.715957164764404,
+        -1184.83251953125,
+        -21.811277389526367,
         1311.8720703125,
         442.9053955078125
       ],
-      "color": "#3f789e",
+      "color": "#88A",
       "font_size": 24,
       "flags": {}
     },
@@ -3614,7 +3736,7 @@
         1227.0020751953125,
         260.29510498046875
       ],
-      "color": "#3f789e",
+      "color": "#8AA",
       "font_size": 24,
       "flags": {}
     },
@@ -3627,7 +3749,7 @@
         1471.4285888671875,
         1142.792724609375
       ],
-      "color": "#3f789e",
+      "color": "#8A8",
       "font_size": 24,
       "flags": {}
     }
@@ -3635,25 +3757,26 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.191817653772724,
+      "scale": 0.6115909044841509,
       "offset": [
-        449.90711488528876,
-        27.010065261844346
+        2019.432265995496,
+        320.2203947480005
       ]
-    }
+    },
+    "frontendVersion": "1.18.6"
   },
   "version": 0.4,
   "api_prompt": {
     "3": {
       "inputs": {
-        "seed": 508728816896219,
+        "seed": 824536781191529,
         "steps": 16,
         "cfg": 4,
         "sampler_name": "dpmpp_sde_gpu",
         "scheduler": "karras",
         "denoise": 1,
         "model": [
-          "4",
+          "125",
           0
         ],
         "positive": [
@@ -3671,42 +3794,45 @@
       },
       "class_type": "KSampler",
       "_meta": {
-        "title": "K采样器"
-      }
-    },
-    "4": {
-      "inputs": {
-        "ckpt_name": "SDXL/atomixPony3DXL_v10.safetensors"
-      },
-      "class_type": "CheckpointLoaderSimple",
-      "_meta": {
-        "title": "Checkpoint加载器（简易）"
+        "title": "KSampler"
       }
     },
     "6": {
       "inputs": {
-        "text": "1girl, thin and tall, curvy, being humiliated, agony, defeated, standing\n\nfutanari, (erection-under-clothes:1.4), \n\n(mechanical shoulders:1.2)\nbare_thigh,light skin, both arms up, grey highleg-leotard, grey thighhighs, slim_thighs_waist_thigh, (black sash: 1.2), (black mouth-mask_catsuit_gloves: 1.1), high_collar, blonde hair, blush, (frowning: 1.4),  eyebrows down\n\nnipple-raised,  knee, fullbody, hair spread out, long hair, nose blush, parted bangs, restrained, shadow, sidelocks, single high ponytail, very long hair, zettai ryouiki, beautiful eyes\n\n\n\niron chain, in a prison, ruins,indoors,\n\nreflection, realistic skin, film grain, light and shadow contrast, high definition, amazing quality,\n\nvery aesthetic, best quality, masterpiece, best quality, very aesthetic, highres, absurdres, sensitive\n4n1v3rs3",
+        "text": "1girl",
+        "speak_and_recognation": {
+          "__value__": [
+            false,
+            true
+          ]
+        },
         "clip": [
-          "4",
+          "125",
           1
         ]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
-        "title": "CLIP文本编码"
+        "title": "CLIP Text Encode (Prompt)"
       }
     },
     "7": {
       "inputs": {
-        "text": "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n",
+        "text": "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n",
+        "speak_and_recognation": {
+          "__value__": [
+            false,
+            true
+          ]
+        },
         "clip": [
-          "4",
+          "125",
           1
         ]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
-        "title": "CLIP文本编码"
+        "title": "CLIP Text Encode (Prompt)"
       }
     },
     "8": {
@@ -3716,19 +3842,19 @@
           0
         ],
         "vae": [
-          "4",
+          "125",
           2
         ]
       },
       "class_type": "VAEDecode",
       "_meta": {
-        "title": "VAE解码"
+        "title": "VAE Decode"
       }
     },
     "41": {
       "inputs": {
-        "document_name": "",
-        "sdppp": ""
+        "document_name": "{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0}",
+        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}"
       },
       "class_type": "SDPPP Get Document",
       "_meta": {
@@ -3749,12 +3875,12 @@
       },
       "class_type": "EmptyLatentImage",
       "_meta": {
-        "title": "空Latent图像"
+        "title": "Empty Latent Image"
       }
     },
     "50": {
       "inputs": {
-        "sdppp": "",
+        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}",
         "layer_info": [
           "51",
           2
@@ -3767,8 +3893,8 @@
     },
     "51": {
       "inputs": {
-        "layer_or_group": "### 整个画布 ###",
-        "sdppp": "",
+        "layer_or_group": "{\"identify\":\"### 整个画布 ###\",\"dirtyID\":0}",
+        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}",
         "document": [
           "41",
           0
@@ -3781,6 +3907,10 @@
     },
     "53": {
       "inputs": {
+        "any_02": [
+          "121",
+          0
+        ],
         "any_04": [
           "49",
           0
@@ -3824,7 +3954,67 @@
       },
       "class_type": "PreviewImage",
       "_meta": {
-        "title": "预览图像"
+        "title": "Preview Image"
+      }
+    },
+    "120": {
+      "inputs": {
+        "pixels": [
+          "123",
+          0
+        ],
+        "vae": [
+          "125",
+          2
+        ]
+      },
+      "class_type": "VAEEncode",
+      "_meta": {
+        "title": "VAE Encode"
+      }
+    },
+    "121": {
+      "inputs": {
+        "samples": [
+          "120",
+          0
+        ],
+        "mask": [
+          "124",
+          0
+        ]
+      },
+      "class_type": "SetLatentNoiseMask",
+      "_meta": {
+        "title": "Set Latent Noise Mask"
+      }
+    },
+    "123": {
+      "inputs": {
+        "image": "1.flac"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "#11. Inpaint Image"
+      }
+    },
+    "124": {
+      "inputs": {
+        "image": "1.flac",
+        "channel": "alpha"
+      },
+      "class_type": "LoadImageMask",
+      "_meta": {
+        "title": "#12. Inpaint Mask"
+      }
+    },
+    "125": {
+      "inputs": {
+        "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "#03. Checkpoint"
       }
     }
   }

@@ -95,7 +95,7 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
                 />
                 <SpecialWorkflowItem
                     setEditorMode={setEditorMode}
-                    path={'sdppp://SDXL1.7.0.json'}
+                    path={'sdppp://Sample_SDXL.json'}
                     title={i18n('### Example SDXL ###')}
                     onRun={async () => {
                         await runPage(workflowAgentSID);
