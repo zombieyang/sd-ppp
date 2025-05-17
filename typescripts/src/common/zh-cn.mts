@@ -191,6 +191,8 @@ export default {
     'GetSelection need Photoshop version 25+': 'GetSelection 需要 Photoshop 25+ 版本',
     'Action {0} not found': 'Action {0} 未找到',
     'Action set {0} not found': 'ActionSet {0} 未找到',
+    '{0} cannot be used in Photoshop Action Node': '{0} 不能在 Photoshop Action 节点中使用',
+    'Group layers': '图层组',
 
     // photoshop modal state
     'create document for sent images': '给发送的图片创建文档',

@@ -239,6 +239,7 @@ def define_comfyui_nodes_legacy(sdppp):
                         'boundary': convert_mask_to_boundary(item_bound), 
                         'image_blob': blob
                     })
+            # print('before send', time.time() - total_start_time)
 
             ret = call_async_func_in_server_thread(ProtocolPhotoshop.send_images(
                 instance_id=document['instance_id'],
@@ -248,6 +249,7 @@ def define_comfyui_nodes_legacy(sdppp):
                 boundaries=[p['boundary'] for p in params],
                 new_layer_name=sdppp_arg_item['lastOpenedWorkflow']
             ))
+            # print('final', time.time() - total_start_time)
 
             if not 'layers' in ret:
                 return ([None],)
