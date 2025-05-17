@@ -161,7 +161,7 @@ function GroupFilter({ groups, selectedGroupId, onGroupSelect }: GroupFilterProp
                 }}
                 onClick={() => onGroupSelect(0)}
             >
-                所有组
+                {i18n("Show All Groups")}
             </div>
             {groups.sort((a, b) => a.name.length - b.name.length).map(group => (
                 <div
