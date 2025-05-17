@@ -81,17 +81,26 @@ export default function WorkflowEdit({
         }).filter(Boolean)
     }, [widgetTableStructure, widgetTableValue, widgetTableErrors, onWidgetRender, onWidgetChange, onTitleRender, groupFilter])
 
-    const nodeErrorsNotInWidgetTable = useMemo(() => {
-        return Object.keys(widgetTableErrors).filter((key: any) => !widgetTableStructure.nodes[parseInt(key)]);
+    const [
+        nodeErrorsInWidgetTable,
+        nodeErrorsNotInWidgetTable
+    ] = useMemo(() => {
+        return [
+            Object.keys(widgetTableErrors).filter((key: any) => widgetTableStructure.nodes[parseInt(key)]),
+            Object.keys(widgetTableErrors).filter((key: any) => !widgetTableStructure.nodes[parseInt(key)])
+        ]
     }, [widgetTableErrors, widgetTableStructure]);
+    let errorLabel = null;
+    if (nodeErrorsNotInWidgetTable.length > 0) {
+        errorLabel = <span className="list-error-label">{widgetTableErrors[+nodeErrorsNotInWidgetTable[0]]}</span>
+    } else if (nodeErrorsInWidgetTable.length > 0) {
+        errorLabel = <span className="list-error-label">{widgetTableErrors[+nodeErrorsInWidgetTable[0]]}</span>
+    }
 
     return (
         <>
             {
-                nodeErrorsNotInWidgetTable.length > 0 &&
-                nodeErrorsNotInWidgetTable.map((key: any) => (
-                    <span key={key} className="list-error-label">{widgetTableErrors[key]}</span>
-                ))
+                errorLabel
             }
             {
                 !Object.keys(widgetTableStructure.nodes).length ?

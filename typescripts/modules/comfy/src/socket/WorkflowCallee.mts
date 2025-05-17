@@ -70,7 +70,12 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             let generalError = ''
             let nodeErrors: Record<string, string> = {}
             try {
+                queuePromptRecords = [];
                 const success = await app.queuePrompt(1, batchCount)
+                queuePromptRecords.forEach((res: any) => {
+                    const promptId = res.prompt_id
+                    PreviewSender.set(promptId, params.from_sid)
+                })
                 if (!success) {
                     hasAnyError = true
                     nodeErrors = formatNodeErrors(app.lastNodeErrors)
@@ -87,8 +92,6 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     pageStore.setWidgetTableErrors(nodeErrors)
                 }
             }
-            const promptId = lastQueuePromptRes.prompt_id
-            PreviewSender.set(promptId, params.from_sid)
             function formatNodeErrors(errors: any) {
                 const ret: Record<string, string> = {};
                 Object.keys(errors).forEach((nodeID) => {
@@ -273,13 +276,14 @@ async function openWorkflow(workflowManager: any, workflow: any) {
     }
 }
 let hijackedQueuePrompt = false
-let lastQueuePromptRes: any = null;
+let queuePromptRecords: any[] = [];
 function hijackQueuePrompt() {
     if (hijackedQueuePrompt) return;
     const originalQueuePrompt = api.queuePrompt;
     api.queuePrompt = async (...args: any[]) => {
-        lastQueuePromptRes = await originalQueuePrompt(...args)
-        return lastQueuePromptRes
+        const res = await originalQueuePrompt(...args)
+        queuePromptRecords.push(res)
+        return res
     }
     hijackedQueuePrompt = true
 }
