@@ -106,7 +106,7 @@ export default function WorkflowEdit({
                 !Object.keys(widgetTableStructure.nodes).length ?
                     (<span className="list-error-label">{i18n('no suitable node to control in this workflow')}</span>) : ''
             }
-            {
+            {/* {
                 (Object.keys(widgetTableStructure.groups).length > 1 || groupFilter > 0) && (
                     <GroupFilter
                         groups={Object.values(widgetTableStructure.groups)}
@@ -114,7 +114,7 @@ export default function WorkflowEdit({
                         onGroupSelect={setGroupFilter}
                     />
                 )
-            }
+            } */}
             <div className="workflow-edit-content">
                 {
                     allRenderedFields
