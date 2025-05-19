@@ -5,8 +5,8 @@
   "scripts": {
     "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
     "tscheck": "cd typescripts && tsc --noEmit",
-    "build": "NODE_ENV=production node typescripts/_build/esbuild.ts && bash typescripts/_build/package-ccx.sh && bash typescripts/_build/package-all.sh",
-    "dev": "NODE_ENV=development node typescripts/_build/esbuild.ts --watch"
+    "build": "cross-env NODE_ENV=production node typescripts/_build/esbuild.ts && bash typescripts/_build/package-ccx.sh && bash typescripts/_build/package-all.sh",
+    "dev": "cross-env NODE_ENV=development node typescripts/_build/esbuild.ts --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
@@ -21,6 +21,7 @@
     "@types/react-dom": "^18.3.5",
     "@types/ws": "^8.18.1",
     "buffer": "^6.0.3",
+    "cross-env": "^7.0.3",
     "esbuild": "^0.25.2",
     "esbuild-plugin-external-global": "^1.0.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
