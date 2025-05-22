@@ -124,15 +124,19 @@ export function WorkflowCallerSocket(SocketClass: SocketConstructor<Socket>) {
             })
         }
 
-        public async listWorkflows(workflowAgent: PageStore | null) {
+        public async listWorkflows(workflowAgent: PageStore | null, params: WorkflowCalleeActions['list']['params']) {
             if (!workflowAgent) {
-                return [];
+                return {
+                    workflows: [],
+                    error: 'Workflow agent not found'
+                };
             }
-            return await new Promise<string[]>((resolve, reject) => {
+            return await new Promise<WorkflowCalleeActions['list']['result']>((resolve, reject) => {
                 this.socket.emit('F_workflow', {
                     action: 'list',
-                    sid: workflowAgent.data.sid
-                }, (payload: any) => {
+                    sid: workflowAgent.data.sid,
+                    params
+                }, (payload: WorkflowCalleeActions['list']['result']) => {
                     resolve(payload);
                 });
             })

@@ -6,7 +6,7 @@ export interface WorkflowCaller {
     setWidgetValue(workflowAgent: PageStore | null, params: WorkflowCalleeActions['setWidgetValue']['params']): Promise<void>;
     openWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['open']['params']): Promise<void>;
     saveWorkflow(workflowAgent: PageStore | null, params: WorkflowCalleeActions['save']['params']): Promise<void>;
-    listWorkflows(workflowAgent: PageStore | null): Promise<string[] | { error: string }>;
+    listWorkflows(workflowAgent: PageStore | null, params: WorkflowCalleeActions['list']['params']): Promise<WorkflowCalleeActions['list']['result']>;
     logout(workflowAgent: PageStore | null): Promise<void>;
     interrupt(workflowAgentSID: string): Promise<void>;
     clearQueue(workflowAgentSID: string): Promise<void>;

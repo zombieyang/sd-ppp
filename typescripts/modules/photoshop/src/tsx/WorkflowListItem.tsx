@@ -58,7 +58,8 @@ const DirectoryItem: React.FC<DirectoryItemProps> = ({
         if (path === '../') {
             const directoryWithoutSuffix = dirname || '';
             const lastSlashIndex = directoryWithoutSuffix.lastIndexOf('/');
-            if (lastSlashIndex === -1) {
+            // no slash anymore. or meet the protocol name
+            if (lastSlashIndex === -1 || directoryWithoutSuffix[lastSlashIndex - 1] === '/') {
                 onDirectorySet?.('');
             } else {
                 onDirectorySet?.(directoryWithoutSuffix.slice(0, lastSlashIndex));
@@ -77,7 +78,6 @@ const DirectoryItem: React.FC<DirectoryItemProps> = ({
 };
 
 interface WorkflowItemProps {
-    path: string;
     isChecked: boolean;
     workflow: {
         path: string;
@@ -118,7 +118,6 @@ const WorkflowActions: React.FC<{
 };
 
 const WorkflowItem: React.FC<WorkflowItemProps> = ({
-    path,
     isChecked,
     workflow,
     onRun,
@@ -139,12 +138,12 @@ const WorkflowItem: React.FC<WorkflowItemProps> = ({
 
     const handleAutoRunClick = () => {
         if (!isChecked) {
-            setAutoRunning({ type: 'workflow', value: path });
+            setAutoRunning({ type: 'workflow', value: workflow.path });
         } else {
             setAutoRunning(null);
         }
     };
-
+    
     return (
         <BaseListItem
             isChecked={isChecked}

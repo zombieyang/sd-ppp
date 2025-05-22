@@ -128,7 +128,7 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('*rgthree*', {
         formatter: (node) => {
-            if (node.type.startsWith('Fast Groups Muter')|| node.type.startsWith('Fast Muter')) {
+            if (node.type.indexOf('Fast') != -1) {
                 return {
                     title: getTitle(node),
                     widgets: node.widgets.map((widget) => ({
@@ -136,7 +136,7 @@ export default function (sdppp) {
                         name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
                         outputType: fixRGthreeWidgetType(widget.type),
                         options: widget.options,
-                        uiWeight: 4
+                        uiWeight: 6
                     }))
                 }
             }

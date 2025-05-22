@@ -9,7 +9,7 @@ declare module "SDPPPInternal" {
     }: {
         children: React.ReactNode,
         loginAppID: string,
-        loginStyle?: 'invitation' | 'password',
+        loginStyle?: 'invitation' | 'password' | 'trialable-password',
         loginBannerTop?: React.ReactNode,
         loginBannerBottom?: React.ReactNode
     });
@@ -63,7 +63,7 @@ declare module "SDPPPInternal" {
             [path: string]: {
                 path: string,
                 content: any,
-                error: string | ''
+                error: string | '',
             }
         },
         isLoadingWorkflows: boolean,

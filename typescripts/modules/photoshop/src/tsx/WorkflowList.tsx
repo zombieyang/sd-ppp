@@ -71,7 +71,6 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ setEditorMode }) => {
                             <WorkflowItem
                                 setEditorMode={setEditorMode}
                                 key={path}
-                                path={path}
                                 isChecked={checked}
                                 workflow={workflow}
                                 onRun={async (path: string) => {

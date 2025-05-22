@@ -29,6 +29,8 @@ export interface WorkflowCalleeActions {
             workflow_path: string
             from_sid: string
             reset: boolean
+            sdpppID?: string,
+            sdpppToken?: string
         }
     }
     save: {
@@ -39,9 +41,13 @@ export interface WorkflowCalleeActions {
     },
     list: {
         params: {
+            listMode: 'cos' | '',
+            sdpppID?: string,
+            sdpppToken?: string
         },
         result: {
-            workflows: string[]
+            workflows: string[],
+            error?: string
         }
     },
     logout: {

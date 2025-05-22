@@ -102,7 +102,7 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 return ret
             }
         }
-        public async list() {
+        public async list(params: WorkflowCalleeActions['list']['params']): Promise<WorkflowCalleeActions['list']['result']> {
             const workflows = this.workflowManager.workflows
             let workflowPaths = workflows.map((w: any) => w.path.replace('workflows/', ''));
 
@@ -130,7 +130,10 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             } catch (error) {
                 console.warn('Error fetching favorites, returning unsorted workflows:', error);
             }
-            return workflowPaths;
+            return {
+                workflows: workflowPaths,
+                error: ''
+            };
         }
         private setWidgetValue(params: WorkflowCalleeActions['setWidgetValue']['params']) {
             params.values.forEach(({ nodeID, widgetIndex, value }) => {
