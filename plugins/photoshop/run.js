@@ -28,7 +28,7 @@ class PanelController {
     create() {
         this[_root] = document.createElement("div");
         this[_root].style.height = "100vh";
-        this[_root].style.overflowY = "auto";
+        this[_root].style.overflowY = "hidden";
         this[_root].style.overflowX = "hidden";
 
         // render entry
