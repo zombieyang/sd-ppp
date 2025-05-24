@@ -43,6 +43,9 @@ class SDPPPOptional(dict):
             return self.visible_dict[key]
         return self.optional_dict[key]
 
+class SDPPPMagicArray(list):
+    def __contains__(self, key):
+        return True
 
 def check_linked_in_prompt(prompt, unique_id, name):
     node_prompt = prompt[0][unique_id[0]]
@@ -523,15 +526,14 @@ def define_comfyui_nodes(sdpppServer):
             return {
                 "required": {
                     "layer_or_group": ("LAYER", {"default": None, "sdppp_type": "LAYER"}),
-                    "action_set": ("STRING", {"default": "", "sdppp_type": "STRING"}),
-                    "action": ("STRING", {"default": "", "sdppp_type": "STRING"}),
+                    "action": (SDPPPMagicArray([]), {"default": ''}),
                 },
                 "optional": SDPPPOptional({}, {
                     "sdppp": ("STRING", {"default": ""})
                 })
             }
         
-        def action(self, layer_or_group, action_set, action, **kwargs):
+        def action(self, layer_or_group, action, **kwargs):
             sdpppServer.has_ps_instance(throw_error=True)
             
             start_time = time.time()
@@ -539,10 +541,8 @@ def define_comfyui_nodes(sdpppServer):
                 instance_id=layer_or_group['document']['instance_id'],
                 document_identify=layer_or_group['document']['identify'],
                 layer_identify=layer_or_group['layer_identify'], 
-                action_set=action_set,
                 action=action
             ))
-            print(result)
             return (layer_or_group, )
 
         
@@ -573,6 +573,6 @@ def define_comfyui_nodes(sdpppServer):
         # 'SDPPP Send Text To Layer': SendTextToLayerNode,
         'SDPPP Get Selection': GetSelectionNode,
         'SDPPP Parse Layer Info': ParseLayerInfoNode,
-        'SDPPP Run PS Action On Layer': SelectLayerAndRunPSActionNode,
+        'SDPPP Select Layer And Run PS Action': SelectLayerAndRunPSActionNode,
         # 'SDPPP Settings': SDPPPSettingsNode,
     }

@@ -16,7 +16,7 @@ const SDPPPNodeList = {
     'SDPPP Get Layer By ID': GetLayerNode,
     'SDPPP Get Document': GetDocumentNode,
     'SDPPP Get Selection': GetSelectionNode,
-    'SDPPP Run Photoshop Action': RunPhotoshopActionNode,
+    'SDPPP Select Layer And Run PS Action': RunPhotoshopActionNode,
     // 'SDPPP Settings': SDPPPSettingsNode,
 }
 export const ComfyNodeDefList: Record<any, any> = {} as any

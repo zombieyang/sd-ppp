@@ -30,6 +30,8 @@ export interface PhotoshopStoreData {
     activeDocumentID: number  // active document name
     documents: PhotoshopDataDocument
 
+    actions: string[]
+
     canvasStateID: number  // last PS history state id that triggered image change
     selectionStateID: string  // last PS history state id that triggered selection change
     historyStateID: number  // last PS history state id
@@ -45,6 +47,8 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
 
             activeDocumentID: 0,
             documents: {},
+
+            actions: [],
 
             canvasStateID: 0,
             selectionStateID: '',
@@ -84,5 +88,9 @@ export class PhotoshopStore extends MainStore<PhotoshopStoreData> {
     @StoreMutation
     setComfyUserToken(comfyUserToken: string) {
         this._data.comfyUserToken = comfyUserToken;
+    }
+    @StoreMutation
+    setActions(actions: string[]) {
+        this._data.actions = actions;
     }
 }

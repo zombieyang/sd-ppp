@@ -54,6 +54,13 @@ export abstract class SDPPPComboWidget extends SDPPPWidget {
     }
 }
 export class DocumentWidget extends SDPPPComboWidget {
+    public getPSStore() {
+        if (!this.widget.value || this.widget.value.indexOf('/') == -1) return null;
+        let [instanceName,] = this.widget.value.split('/');
+
+        return pagePhotoshopStoreMap.getStoreByName(instanceName)?.data || null;
+    }
+
     static create(node: any, name: I18nKey) {
         const options: string[] = makeDocumentDataOptions();
         const size = node.size.slice(0);
@@ -274,7 +281,7 @@ export class LayerWidgetWithDocumentSelection extends LayerWidget {
                 })
                 identify = ret.value;
             }
-            let dirtyID = 0 
+            let dirtyID = 0
             if (SpeicialIDManager.is_SPECIAL_LAYER_NEW_LAYER(identify) || SpeicialIDManager.is_SPECIAL_LAYER_USE_CANVAS(identify)) {
                 dirtyID = PhotoshopStoreHelper.getCanvasDirtyID(document.documentData);
             } else {

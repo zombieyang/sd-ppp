@@ -44,6 +44,7 @@ export function makeDocumentOption(identify: Identify, instanceName: string) {
 }
 export function parseDocumentOption(value: string) {
     if (!value || !value.split) return null;
+    if (value.indexOf('/') == -1) return null;
     const backendDatas = pagePhotoshopStoreMap.getAllPhotoshopDocumentData();
     let [instanceName, documentIdentify] = value.split('/');
     if (!documentIdentify) {

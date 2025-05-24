@@ -133,7 +133,7 @@ class ProtocolPhotoshop:
         return result
 
     @classmethod
-    async def run_photoshop_action(cls, instance_id, document_identify, layer_identify, action_set, action):
+    async def run_photoshop_action(cls, instance_id, document_identify, layer_identify, action):
         ppp_instance = cls.sdpppServer.ppp_instances[instance_id]
         start = time.time()
         result = await protocol_call(ppp_instance, 'B_photoshop', data={
@@ -141,7 +141,6 @@ class ProtocolPhotoshop:
             'params': {
                 'document_identify': document_identify,
                 'layer_identify': layer_identify,
-                'action_set': action_set,
                 'action': action
             }
         })

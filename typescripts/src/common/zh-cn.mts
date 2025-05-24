@@ -28,17 +28,17 @@ export default {
     'hidden webview load failed: {0}, please select a browser page to continue': '内置 webview 加载失败: {0}，请选择一个浏览器页面继续',
     
     // comfy node title
-    'SDPPP Get Document': 'SDPPP获取文档(GetDocument)',
-    'SDPPP Get Layer By ID': 'SDPPP获取图层(GetLayer)',
-    'SDPPP Get Linked Layers': 'SDPPP获取链接图层(GetLinkedLayers)',
-    'SDPPP Get Layers In Group': 'SDPPP获取组中图层(GetLayersInGroup)',
-    'SDPPP Get Text From Layer': 'SDPPP获取图层文本(GetTextFromLayer)',
-    'SDPPP Parse Layer Info': 'SDPPP解析图层信息(ParseLayerInfo)',
-    'SDPPP Get Selection': 'SDPPP获取选区(GetSelection)', 
-    'SDPPP Get Image From Photoshop': 'SDPPP从PS获取图像(GetImageFromPhotoshop)',
-    'SDPPP Send Images To Photoshop': 'SDPPP发送图像到PS(SendImagesToPhotoshop)',
-    'SDPPP Send Text To Layer': 'SDPPP发送文本到图层(SendTextToLayer)',
-    'SDPPP Run Photoshop Action': 'SDPPP运行PS Action(RunPhotoshopAction)',
+    'SDPPP Get Document': '获取文档(GetDocument)',
+    'SDPPP Get Layer By ID': '获取图层(GetLayer)',
+    'SDPPP Get Linked Layers': '获取链接图层(GetLinkedLayers)',
+    'SDPPP Get Layers In Group': '获取组中图层(GetLayersInGroup)',
+    'SDPPP Get Text From Layer': '获取图层文本(GetTextFromLayer)',
+    'SDPPP Parse Layer Info': '解析图层信息(ParseLayerInfo)',
+    'SDPPP Get Selection': '获取选区(GetSelection)', 
+    'SDPPP Get Image From Photoshop': '从PS获取图像(GetImageFromPhotoshop)',
+    'SDPPP Send Images To Photoshop': '发送图像到PS(SendImagesToPhotoshop)',
+    'SDPPP Send Text To Layer': '发送文本到图层(SendTextToLayer)',
+    'SDPPP Select Layer And Run PS Action': '选中图层并运行PS Action(RunPhotoshopAction)',
 
 // comfy widget/input
     'download PS plugin (.ccx)': '下载 Photoshop 插件 (.ccx)',
@@ -90,6 +90,8 @@ export default {
     'mask': '遮罩',
     'name': '名称',
     'quality': '图像质量',
+    'action_set': '动作组',
+    'action': '动作',
     
     // photoshop UI
     'Runner': '运行载体',

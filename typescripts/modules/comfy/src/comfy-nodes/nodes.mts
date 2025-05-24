@@ -5,6 +5,7 @@ import { SDPPPDownloadableNode } from "./SDPPPDownloadableNode.mjs";
 import { SDPPPNodeWithInput } from "./SDPPPNodeWithInput.mjs";
 import i18n from "../../../../src/common/i18n.mts";
 import { pagePhotoshopStoreMap, pageStore } from "photoshopModels.mjs";
+import { findDocumentNodeRecursive } from "src/util.mjs";
 
 export class GetLayerNode extends SDPPPNodeWithInput implements NodeWithLayerOutput {
     get documentWidget() {
@@ -68,9 +69,6 @@ export class GetTextFromLayerNode extends SDPPPDownloadableNode {
             delete nodeData.input.optional['document'];
         }
     }
-    constructor(node: any) {
-        super(node);
-    }
     async update() {
         super.update();
         this.node.inputs[0].label = i18n(this.node.inputs[0].name)
@@ -132,7 +130,19 @@ export class GetDocumentNode extends SDPPPNodeWithInput implements NodeWithDocum
 export class RunPhotoshopActionNode extends SDPPPNodeWithInput {
     async update() {
         super.update();
+
         this.node.inputs.forEach((i: any) => i.label = i18n(i.name));
         this.node.outputs.forEach((i: any) => i.label = i18n(i.name));
+
+        let options = []
+        if (this.documentWidget) {
+            const store = this.documentWidget.getPSStore()
+            if (store) {
+                options = store.actions
+            }
+        }
+
+        this.node.widgets[0].options.values = options;
+        (this.node.constructor as any).nodeData.input.required.action[0] = options
     }
 }
