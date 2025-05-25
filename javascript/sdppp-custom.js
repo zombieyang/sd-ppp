@@ -87,36 +87,32 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('PrimitiveNode', {
         formatter: (node) => {
-            let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : getTitle(node);
-            if (!node.widgets || node.widgets.length == 0) {
-                return null;
-            }
-            let sliceNum = 2;
-            if (node.widgets.length == 2 && node.widgets[1].name == "control_after_generate" && node.widgets[1].value == 'fixed') {
-                sliceNum = 1;
-            }
-            let widgets = node.widgets.slice(0, sliceNum)
-                .map((widget, index) => {
-                    const ret = {
-                        value: widget.value,
-                        outputType: widget.type || "string",
-                        options: widget.options,
-                        uiWeight: 12
-                    }
-                    if (widget.type == "number" || widget.type == "combo") {
-                        ret.uiWeight = index == 0 ? (sliceNum == 2 ? 8 : 6) : 4
-                    }
-                    if (widget.type == "toggle") {
-                        ret.uiWeight = 4;
-                        ret.name = widget.label || widget.name
-                    }
-                    return ret
-                })
-                .filter(Boolean)
-            return {
-                title,
-                widgets
-            }
+let title = node.title.startsWith("Primitive") ? nameByConnectedOutputOrTitle(node) : getTitle(node);
+        if (!node.widgets || node.widgets.length == 0) {
+            return null;
+        }
+        let widgets = node.widgets.slice(0, 1)
+            .map((widget, index) => {
+                const ret = {
+                    value: widget.value,
+                    outputType: widget.type || "string",
+                    options: widget.options,
+                    uiWeight: 12
+                }
+                if (widget.type == "number" || widget.type == "combo") {
+                    ret.uiWeight = 12
+                }
+                if (widget.type == "toggle") {
+                    ret.uiWeight = 4;
+                    ret.name = widget.label || widget.name
+                }
+                return ret
+            })
+            .filter(Boolean)
+        return {
+            title,
+            widgets
+        }
         }
     })
     /**
@@ -128,7 +124,11 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('*rgthree*', {
         formatter: (node) => {
-            if (node.type.startsWith('Fast Groups Muter')|| node.type.startsWith('Fast Muter')) {
+              if (
+            node.type.startsWith('Fast Groups Muter') ||
+            node.type.startsWith('Fast Muter') ||
+            node.type.startsWith('Fast Groups Bypasser')////////增加类型/////
+        ) {
                 return {
                     title: getTitle(node),
                     widgets: node.widgets.map((widget) => ({
@@ -136,7 +136,7 @@ export default function (sdppp) {
                         name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
                         outputType: fixRGthreeWidgetType(widget.type),
                         options: widget.options,
-                        uiWeight: 4
+                        uiWeight: 3
                     }))
                 }
             }
@@ -150,7 +150,7 @@ export default function (sdppp) {
                         name: widget.value.lora,
                         outputType: 'toggle',
                         options: {on: true, off: false},
-                        uiWeight: 4
+                        uiWeight: 3///////////////////////////////////////////显示 4 个/////////
                     }))
                 }
             }
