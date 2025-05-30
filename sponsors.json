@@ -61,12 +61,19 @@
         ]
     },
     "cloud": {
-        "en": [],
+        "en": [
+        ],
         "zhcn": [
             {
                 "name": "晨羽智云",
                 "url": "https://www.chenyu.cn/console/login?invitationCode=BUD913",
                 "icon": "icons/chenyu.ico",
+                "color": "var(--uxp-host-text-color-secondary)"
+            },
+            {
+                "name": "仙宫云",
+                "url": "https://www.xiangongyun.com/register/NWF5AH",
+                "icon": "https://www.xiangongyun.com/favicon.ico",
                 "color": "var(--uxp-host-text-color-secondary)"
             },
             {

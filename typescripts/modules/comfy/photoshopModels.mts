@@ -56,7 +56,7 @@ function checkComfyStatus() {
     if (document.title !== pageStore.data.title) {
         pageStore.setTitle(document.title);
     }
-    if ('user' in app.extensionManager.user) {
+    if ('user' in app.extensionManager) {
         pageStore.setComfyOrgLoggedIn(app.extensionManager.user.isLoggedIn);
     }
     requestAnimationFrame(checkComfyStatus);
