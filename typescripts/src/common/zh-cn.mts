@@ -152,6 +152,13 @@ export default {
     '### Example SDXL ###': '### 示例SDXL工作流 ###',
     'Open ComfyUI in the browser to see more options': '在浏览器中打开 ComfyUI 以得到更多选项',
     'Webview load timeout, please switch to a different runner': 'Webview 加载超时，请切换到其他运行载体',
+    'Save workflow to ComfyUI': '保存工作流到 ComfyUI',
+    'Reload workflow': '重新加载工作流',
+    'Stop and cancel all': '停止并取消所有',
+    'Start auto running after change': '更改后自动运行',
+    'Stop auto run': '停止自动运行',
+    'Run workflow': '运行工作流',
+    'Run workflow xN': '运行工作流N次',
 
     // photoshop connect error
     '502: Maybe the server is not running': '502: 服务器可能未运行',
