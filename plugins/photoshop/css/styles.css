@@ -753,6 +753,17 @@ h1 {
     font-size: 12px;
     border-radius: 3px;
     cursor: pointer;
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.connect-config-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--uxp-host-text-color-secondary);
 }
 
 .connect-configuration:hover {
@@ -785,6 +796,10 @@ h1 {
 
 .connect-config-message {
     color: var(--uxp-host-text-color-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 .web-page-list .client-list-item-left {

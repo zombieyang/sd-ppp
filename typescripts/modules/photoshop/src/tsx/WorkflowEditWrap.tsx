@@ -285,10 +285,10 @@ export function WorkflowEditWrap({
 
                                 <div className="workflow-run-status">
                                     {lastError ? <sp-label class="error-label">{lastError}</sp-label> : ''}
-                                    {executingNodeTitle ? <>
+                                    {/* {executingNodeTitle ? <>
                                         <sp-label>{`${progress}% ${executingNodeTitle}...`}</sp-label>
                                         <sp-progressbar value={progress / 100}></sp-progressbar>
-                                    </> : ''}
+                                    </> : ''} */}
                                     {!lastError && !executingNodeTitle && autoRunning ? <sp-label>{i18n('auto run workflow after change..')}</sp-label> : ''}
                                     {!lastError && !executingNodeTitle && tips ? <sp-label>{tips}</sp-label> : ''}
                                 </div>
