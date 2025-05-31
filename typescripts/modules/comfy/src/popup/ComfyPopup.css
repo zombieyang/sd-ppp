@@ -156,9 +156,17 @@
     gap: 10px;
 }
 .workflow-edit-field {
+    color: var(--fg-color);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
     width: 100%;
+}
+
+.workflow-edit-field > * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 @media (min-width: 639px) {
@@ -180,14 +188,6 @@
     padding: 2px 2px 2px 5px;
     margin: 3px 0;
     display: inline-flex;
-}
-
-.workflow-edit-field {
-    color: var(--fg-color);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 5px;
 }
 
 .sdppp-side-icon {

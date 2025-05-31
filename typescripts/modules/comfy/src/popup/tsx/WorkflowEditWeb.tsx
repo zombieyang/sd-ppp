@@ -267,6 +267,7 @@ export class WorkflowEditWrap extends React.Component<{
                             onValueChange={async (v) => {
                                 editProps.onWidgetChange(fieldInfo.id, widgetIndex, v, fieldInfo);
                             }}
+                            nodeID={fieldInfo.id}
                             extraOptions={this.state.widgetTableStructure.extraOptions}
                         />
                     );

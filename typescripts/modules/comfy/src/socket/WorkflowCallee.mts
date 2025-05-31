@@ -72,14 +72,23 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
             try {
                 queuePromptRecords = [];
                 const success = await app.queuePrompt(1, batchCount)
-                queuePromptRecords.forEach((res: any) => {
-                    const promptId = res.prompt_id
-                    PreviewSender.set(promptId, params.from_sid)
+                queuePromptRecords.forEach((res) => {
+                    if (hasAnyError) return;
+                    if (res.error) {
+                        hasAnyError = true
+                        nodeErrors = formatNodeErrors(res.error.response.node_errors)
+                        Object.assign(nodeErrors, {
+                            '-1': res.error.response.error.message
+                        })
+                    } else {
+                        const promptId = res.result.prompt_id
+                        PreviewSender.set(promptId, params.from_sid)
+                    }
                 })
-                if (!success) {
-                    hasAnyError = true
-                    nodeErrors = formatNodeErrors(app.lastNodeErrors)
-                }
+                // if (!success) {
+                //     hasAnyError = true
+                //     nodeErrors = formatNodeErrors(app.lastNodeErrors)
+                // }
 
             } catch (error) {
                 hasAnyError = true
@@ -115,18 +124,19 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     './api/userdata/workflows%2F.index.json', {
                     headers
                 });
+                let favorites: string[] = [];
                 if (favoritesResponse.ok) {
                     const favoritesData = await favoritesResponse.json();
-                    const favorites = favoritesData.favorites.map((fav: string) => fav.replace('workflows/', ''));
-
-                    workflowPaths.sort((a: string, b: string) => {
-                        const aIsFavorite = favorites.includes(a);
-                        const bIsFavorite = favorites.includes(b);
-                        if (aIsFavorite && !bIsFavorite) return -1;
-                        if (!aIsFavorite && bIsFavorite) return 1;
-                        return 0;
-                    });
+                    favorites = favoritesData.favorites.map((fav: string) => fav.replace('workflows/', ''));
                 }
+                workflowPaths.sort((a: string, b: string) => {
+                    const aIsFavorite = favorites.includes(a);
+                    const bIsFavorite = favorites.includes(b);
+                    if (aIsFavorite && !bIsFavorite) return -1;
+                    if (!aIsFavorite && bIsFavorite) return 1;
+                    console.log(a, b)
+                    return a.localeCompare(b);
+                });
             } catch (error) {
                 console.warn('Error fetching favorites, returning unsorted workflows:', error);
             }
@@ -279,14 +289,25 @@ async function openWorkflow(workflowManager: any, workflow: any) {
     }
 }
 let hijackedQueuePrompt = false
-let queuePromptRecords: any[] = [];
+let queuePromptRecords: { error: any, result: any }[] = [];
 function hijackQueuePrompt() {
     if (hijackedQueuePrompt) return;
     const originalQueuePrompt = api.queuePrompt;
     api.queuePrompt = async (...args: any[]) => {
-        const res = await originalQueuePrompt(...args)
-        queuePromptRecords.push(res)
-        return res
+        try {
+            const res = await originalQueuePrompt.apply(api, ...args)
+            queuePromptRecords.push({
+                error: null,
+                result: res
+            })
+            return res
+        } catch (error) {
+            queuePromptRecords.push({
+                error: error,
+                result: null
+            })
+            throw error
+        }
     }
     hijackedQueuePrompt = true
 }
