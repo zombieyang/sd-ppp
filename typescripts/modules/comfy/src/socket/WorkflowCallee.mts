@@ -90,8 +90,11 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                 //     nodeErrors = formatNodeErrors(app.lastNodeErrors)
                 // }
 
-            } catch (error) {
+            } catch (error: any) {
                 hasAnyError = true
+                nodeErrors = {
+                    '-1': error.message || error.stack || error.toString()
+                }
             }
 
             if (hasAnyError) {
@@ -134,7 +137,6 @@ export function WorkflowCalleeSocket(SocketClass: SocketConstructor<Socket>) {
                     const bIsFavorite = favorites.includes(b);
                     if (aIsFavorite && !bIsFavorite) return -1;
                     if (!aIsFavorite && bIsFavorite) return 1;
-                    console.log(a, b)
                     return a.localeCompare(b);
                 });
             } catch (error) {
@@ -295,7 +297,7 @@ function hijackQueuePrompt() {
     const originalQueuePrompt = api.queuePrompt;
     api.queuePrompt = async (...args: any[]) => {
         try {
-            const res = await originalQueuePrompt.apply(api, ...args)
+            const res = await originalQueuePrompt.call(api, ...args)
             queuePromptRecords.push({
                 error: null,
                 result: res

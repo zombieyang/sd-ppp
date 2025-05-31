@@ -9,6 +9,7 @@ from nodes import CLIPTextEncode, ConditioningConcat, ConditioningSetMask
 from ..apis import addImageCache
 from ..protocols.photoshop import ProtocolPhotoshop
 from .nodes import check_linked_in_prompt, sdppp_get_prompt_item_from_list, convert_mask_to_boundary, SDPPPOptional
+import asyncio
 
 def define_comfyui_nodes_legacy(sdppp):
     def call_async_func_in_server_thread(coro, dontwait = False):
@@ -18,6 +19,7 @@ def define_comfyui_nodes_legacy(sdppp):
             'error': None
         }
         loop = sdppp.loop
+        
         async def do_call():
             try: 
                 handle['result'] = await coro
@@ -25,17 +27,17 @@ def define_comfyui_nodes_legacy(sdppp):
                 handle['error'] = e
             finally:
                 handle['done'] = True
-        loop.create_task(do_call())
 
+        # 使用 run_coroutine_threadsafe 确保在 aiohttp 的线程中执行
+        future = asyncio.run_coroutine_threadsafe(do_call(), loop)
+        
         if not dontwait:
-            while not handle['done']:
-                pass
+            # 等待任务完成
+            future.result()
             if handle['error'] is not None:
                 raise handle['error']
-            else:
-                return handle['result']
-        else:
-            return None
+            return handle['result']
+        return None
 
     def parse_params(unique_id, prompt, layer_or_group, document=""):
         linked_style = check_linked_in_prompt(prompt, unique_id, 'layer_or_group')
