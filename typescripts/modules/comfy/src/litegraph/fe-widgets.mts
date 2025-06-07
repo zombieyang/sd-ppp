@@ -70,8 +70,17 @@ export class DocumentWidget extends SDPPPComboWidget {
             if (!data) return JSON.stringify({
                 instance_id: i18n('document {0} not found', documentWidget.value),
                 identify: '',
-                dirtyID: 0
+                canvasDirtyID: 0,
+                selectionDirtyID: 0
             });
+            if (documentWidget.type == 'button') {
+                return JSON.stringify({
+                    instance_id: '',
+                    identify: '',
+                    canvasDirtyID: 0,
+                    selectionDirtyID: 0
+                });
+            }
             let identify = data.identify;
             if (SpeicialIDManager.is_SPECIAL_DOCUMENT_CURRENT(identify)) {
                 const ret = await ComfySocket.instance.getSpecialIdentifierValue(data.instance_id, {
@@ -152,6 +161,12 @@ export class LayerWidget extends SDPPPComboWidget {
             }
         })
         layerWidget.serializeValue = async () => {
+            if (layerWidget.type == 'button') {
+                return JSON.stringify({
+                    identify: layerWidget.value,
+                    dirtyID: 0
+                });
+            }
             const documentWidget = this.documentWidgetByLinked;
             if (!documentWidget) return JSON.stringify({
                 identify: layerWidget.value,
