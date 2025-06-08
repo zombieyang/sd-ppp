@@ -1,5 +1,7 @@
 ## [1.8.5] - 2025-06-08
 * fix: style error causing last textfield be hidden.
+* fix: Missing error message when PS webview load failed.
+* fix: bugfix for progress bar.
 * feature: support layer prefix setting in properties panel of `SendImagesToPS` node.
 
 ## [1.8.4] - 2025-05-31
