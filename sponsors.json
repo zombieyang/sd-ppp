@@ -1,4 +1,14 @@
 {
+    "site": {
+        "en": {
+            "name": "Github",
+            "url": "https://github.com/zombieyang/sd-ppp"
+        },
+        "zhcn": {
+            "name": ">> SD-PPP 官方站",
+            "url": "https://sdppp.zombee.tech/"
+        }
+    },
     "LICENSE": {
         "name": "BSD3-Clause",
         "url": {

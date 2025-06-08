@@ -135,4 +135,10 @@ export class SendImageToLayerNode extends SDPPPDownloadableNode {
         super.inputConnectionChange(index, connected);
         if (index == 1) this.layerLinked = connected;
     }
+    protected onConfigure(nodeData: any): void {
+        if (!('sdppp_send_prefix' in nodeData.properties)) {
+            this.node.setProperty('sdppp_send_prefix', '');
+        }
+        super.onConfigure(nodeData);
+    }
 }

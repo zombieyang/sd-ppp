@@ -348,7 +348,7 @@ export class DownloadWidget extends SDPPPWidget {
             ];
             widget.serializeValue = async () => {
                 const ret: any = {
-                    lastOpenedWorkflow: simplifyWorkflowPath(pageStore.data.widgetTableStructure.widgetTablePath)
+                    lastOpenedWorkflow: node.properties['sdppp_send_prefix'] || simplifyWorkflowPath(pageStore.data.widgetTableStructure.widgetTablePath)
                 }
                 const documentNode = findDocumentNodeRecursive(node);
                 if (documentNode?.widgets[0]) {
