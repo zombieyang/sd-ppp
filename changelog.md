@@ -1,3 +1,7 @@
+## [1.8.5] - 2025-06-08
+* fix: style error causing last textfield be hidden.
+* feature: support layer prefix setting in properties panel of `SendImagesToPS` node.
+
 ## [1.8.4] - 2025-05-31
 * fix: error when queuePrompt #167
 * fix: Get/send slow in some cases
@@ -5,7 +9,6 @@
 * optimization: add missing node error message
 * optimization: add status bar tips
 * feature: open mask edit for LoadImage in left sidebar
-
 
 ## [1.8.3] - 2025-05-18
 * fix: The slider widget not worked well.
