@@ -159,6 +159,7 @@ export default {
     'Stop auto run': '停止自动运行',
     'Run workflow': '运行工作流',
     'Run workflow xN': '运行工作流N次',
+    'Back to workflow list': '返回工作流列表',
 
     // photoshop connect error
     '502: Maybe the server is not running': '502: 服务器可能未运行',

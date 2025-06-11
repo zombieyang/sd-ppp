@@ -22,6 +22,10 @@
             "url": "https://v.douyin.com/hD2X7S717uw/"
         },
         {
+            "name": "灵绘AI",
+            "url": "https://v.douyin.com/Jssc9ysKic4/"
+        },
+        {
             "name": "芽麦AI&刘锐",
             "url": "https://v.douyin.com/cw4ba7Vn5-w/"
         },
@@ -32,6 +36,10 @@
         {
             "name": "梨梨AI",
             "url": "https://v.douyin.com/55KuUbZVGCM/"
+        },
+        {
+            "name": "老袁AIGC",
+            "url": "https://v.douyin.com/dOlouy4GIo0/"
         }
     ],
     "links": [
@@ -69,8 +77,8 @@
                 "url": "https://github.com/zombieyang/sd-ppp"
             },
             {
-                "name": "QQ频道",
-                "url": "https://pd.qq.com/s/5m42umo28"
+                "name": "微信群",
+                "url": "https://sdppp.zombee.tech/docs/category/sd-ppp%E5%90%84%E9%A2%86%E5%9F%9F%E8%AE%A8%E8%AE%BA%E7%BE%A4"
             },
             {
                 "name": "Bilibili",
@@ -85,19 +93,19 @@
             {
                 "name": "晨羽智云",
                 "url": "https://www.chenyu.cn/console/login?invitationCode=BUD913",
-                "icon": "icons/chenyu.ico",
+                "icon": "https://sdppp.zombee.tech/img/icons/chenyu.ico",
                 "color": "var(--uxp-host-text-color-secondary)"
             },
             {
                 "name": "仙宫云",
                 "url": "https://www.xiangongyun.com/register/NWF5AH",
-                "icon": "https://www.xiangongyun.com/favicon.ico",
+                "icon": "https://sdppp.zombee.tech/img/icons/xgc.ico",
                 "color": "var(--uxp-host-text-color-secondary)"
             },
             {
                 "name": "Cephalon",
                 "url": "https://cephalon.cloud/share/register-landing?invite_id=m95SDj",
-                "icon": "icons/cephalon.ico",
+                "icon": "https://sdppp.zombee.tech/img/icons/cephalon.ico",
                 "color": "var(--uxp-host-text-color-secondary)"
             }
         ]

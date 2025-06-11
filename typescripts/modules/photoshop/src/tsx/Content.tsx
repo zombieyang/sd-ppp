@@ -4,6 +4,7 @@ import WorkflowList from "./WorkflowList.js";
 import { useEffect, useState } from "react";
 import { WorkflowEditWrap } from "./WorkflowEditWrap.js";
 import type { AddressBarType, WorkflowEditPhotoshopType } from "./SDPPPInternalBridge.js";
+import { sdpppX } from "../../../../src/common/sdpppX.mjs";
 
 export function Content({
     connectState,
@@ -47,17 +48,25 @@ export function Content({
             <Promote />
             <div className="header-container">
                 <div className="connect-box">
-                    {
-                        !editorMode ?
-                            <div className={"status-bar " + connectState}>
-                                <div className="status-icon" title={lastConnectErrorMessage?.toString() || i18n(connectState)}>⬤</div>
-                            </div>
-                            :
-                            <sp-action-button
-                                onClick={() => {
-                                    setEditorMode(false);
-                                }}
-                            >←</sp-action-button>
+                    { 
+                        sdpppX.logo ? <img src={sdpppX.logo} alt="logo"
+                            style={{ width: '28px', height: '28px', cursor: 'pointer', marginRight: '2px' }}
+                            title={i18n('Back to workflow list')}
+                            onClick={() => {
+                                setEditorMode(false);
+                            }}
+                        /> : (
+                            !editorMode ?
+                                <div className={"status-bar " + connectState}>
+                                    <div className="status-icon" title={lastConnectErrorMessage?.toString() || i18n(connectState)}>⬤</div>
+                                </div>
+                                :
+                                <sp-action-button
+                                    onClick={() => {
+                                        setEditorMode(false);
+                                    }}
+                                >←</sp-action-button>
+                        )
                     }
                     <AddressBar />
                 </div>
@@ -72,7 +81,7 @@ export function Content({
                 ) : ''
             }
 
-            {/* <Auths /> */} 
+            {/* <Auths /> */}
 
             {
                 connectState === "connected" &&
