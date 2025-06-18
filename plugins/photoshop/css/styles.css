@@ -639,6 +639,7 @@ h1 {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .about-card-sections:first-child {
@@ -652,6 +653,9 @@ h1 {
 .about-card a {
     color: var(--uxp-host-widget-hover-text-color);
     text-decoration: underline;
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 15px;
 }
 
 .sdppp-primitive-string-widget {

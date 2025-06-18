@@ -277,7 +277,7 @@ export default function (sdppp) {
             return {
                 title: getTitle(node),
                 widgets: [{
-                    value: node.widgets[1]?.value || '',
+                    value: node.widgets[1]?.value || node.widgets[0]?.value || '',
                     outputType: "string"
                 }]
             }
