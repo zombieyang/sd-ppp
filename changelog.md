@@ -1,3 +1,7 @@
+## [1.8.6] - 2025-06-18
+* fix: `ShowText|pysssss` node not work.
+* fix: textfield widget does not resize correctly.
+
 ## [1.8.5] - 2025-06-08
 * fix: style error causing last textfield be hidden.
 * fix: Missing error message when PS webview load failed.
