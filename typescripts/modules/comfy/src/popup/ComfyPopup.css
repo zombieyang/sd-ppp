@@ -8,6 +8,7 @@
     background: var(--bg-color);
     align-items: stretch;
     justify-content: stretch;
+    z-index: 100;
 } 
 .sdppp-menu-container {
     box-sizing: content-box;
