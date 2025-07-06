@@ -1,3 +1,6 @@
+## [1.9.0] - 2025-06-18
+* feature: add beta version of Photoshop plugin 2.0.
+
 ## [1.8.6] - 2025-06-18
 * fix: `ShowText|pysssss` node not work.
 * fix: textfield widget does not resize correctly.

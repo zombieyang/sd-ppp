@@ -42,24 +42,6 @@ class SDPPP:
         registerComfyHTTPEndpoints(self, PromptServer)
         self.server_type = "comfy"
 
-
-    def attach_to_SD(self, app):
-        self.sio = socketio.AsyncServer(
-            async_mode='asgi', 
-            cors_allowed_origins="*",
-            max_http_buffer_size=524288000
-        )
-        app_sdppp = socketio.ASGIApp(
-            socketio_server=self.sio, 
-            socketio_path=''
-        )
-        app.mount('/sd-ppp', app_sdppp)
-        self.app = app
-        
-        self._registerSocketListeners()
-        registerSDHTTPEndpoints(self, app)
-        self.server_type = "a1111"
-
     def _registerSocketListeners(self):
         sio = self.sio
 
@@ -77,6 +59,8 @@ class SDPPP:
             with open(path.join(projectRoot, 'sdppp_python', 'version.txt'), 'r') as f:
                 api_level = f.read().strip()
             if api_level is not None and ('api_level' not in qsobj or qsobj['api_level'] != api_level):
+                if api_level is not None and 'api_level' in qsobj: 
+                    print(f'api_level: {api_level}, qsobj: {qsobj["api_level"]}')
                 raise socketio.exceptions.ConnectionRefusedError('version mismatch, please reinstall PS plugin')
 
         @sio.event

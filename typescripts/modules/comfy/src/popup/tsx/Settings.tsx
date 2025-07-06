@@ -9,6 +9,9 @@ const Settings: React.FC = () => {
     const handleDownloadPlugin = () => {
         location.href = "/sd-ppp-static/sd-ppp_PS.ccx?_=" + Date.now();
     };
+    const handleDownloadPlugin2 = () => {
+        location.href = "/sd-ppp-static/sd-ppp2_PS.ccx?_=" + Date.now();
+    };
 
     return (
         <div className="settings-container">
@@ -29,6 +32,16 @@ const Settings: React.FC = () => {
                 </div>
                 <div className="settings-control">
                     <button onClick={handleDownloadPlugin} className="download-button">
+                        {i18n("Download")}
+                    </button>
+                </div>
+            </div>
+            <div className="settings-section settings-row">
+                <div className="settings-label">
+                    <label>{i18n("Photoshop plugin")} 2.0 Beta(CHN only)</label>
+                </div>
+                <div className="settings-control">
+                    <button onClick={handleDownloadPlugin2} className="download-button">
                         {i18n("Download")}
                     </button>
                 </div>
