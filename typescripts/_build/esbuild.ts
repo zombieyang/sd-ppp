@@ -126,25 +126,25 @@ async function main() {
       notifyClients(result);
     }
 
-    // Add stdin listener for Enter key press
-    if (process.env.NODE_ENV === 'development') {
-      process.stdin.setRawMode(true);
-      process.stdin.resume();
-      process.stdin.setEncoding('utf8');
-      console.log('Press Enter to trigger client notification, or Ctrl+C to exit');
+    // // Add stdin listener for Enter key press
+    // if (process.env.NODE_ENV === 'development') {
+    //   process.stdin.setRawMode(true);
+    //   process.stdin.resume();
+    //   process.stdin.setEncoding('utf8');
+    //   console.log('Press Enter to trigger client notification, or Ctrl+C to exit');
       
-      process.stdin.on('data', (data) => {
-        const key = data.toString();
-        if (key === '\r' || key === '\n') {
-          console.log('Enter pressed, notifying clients...');
-          notifyClients({ errors: [], warnings: [] });
-        }
-        // Ctrl+C handling
-        if (key === '\u0003') {
-          process.exit();
-        }
-      });
-    }
+    //   process.stdin.on('data', (data) => {
+    //     const key = data.toString();
+    //     if (key === '\r' || key === '\n') {
+    //       console.log('Enter pressed, notifying clients...');
+    //       notifyClients({ errors: [], warnings: [] });
+    //     }
+    //     // Ctrl+C handling
+    //     if (key === '\u0003') {
+    //       process.exit();
+    //     }
+    //   });
+    // }
 
     if (isWatchMode) {
       console.log('Watch mode enabled. Watching for changes...');
