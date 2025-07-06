@@ -1,4 +1,4 @@
-# SD-PPP: Simplify ComfyUI and Connect with photoshop.
+# SD-PPP: ThirdParty Photoshop AI Plugin
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) 
 
@@ -6,6 +6,19 @@
 
 
 ![Image](https://github.com/user-attachments/assets/ab2168d9-ce7c-40d0-9f5a-8173937455ac)
+
+## 2.0 Beta is available!
+
+* New UI, especially for sending images and receiving images.
+* Select images with keyboard shortcuts
+* No more custom nodes needed when using ComfyUI
+* Support API from `replicate.com`
+
+[> Download 2.0 Beta](./static/sd-ppp2_PS.ccx)
+
+> only available for PS26.0+ (Adobe Photoshop 2025)
+
+> Still in beta, only Zh_CN is supported now.
 
 ## Simplify ComfyUI to SDWebUI liked interface.
 
