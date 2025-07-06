@@ -20,6 +20,9 @@
 
 > Still in beta, only Zh_CN is supported now.
 
+![cover](https://github.com/user-attachments/assets/6c49599d-52e2-4893-a96b-71f0b1014f41)
+
+
 ## Simplify ComfyUI to SDWebUI liked interface.
 
 ![image](https://github.com/user-attachments/assets/cf0b399c-5827-4e7a-9a06-8f80e42021fd)
