@@ -57,6 +57,25 @@ def registerComfyHTTPEndpoints(sdppp, PromptServer):
             return web.json_response({
                 'error': str(e)
             })
+
+    @PromptServer.instance.routes.post('/sdppp_upload2')
+    async def sdppp_upload(request):
+        post = await request.post()
+        image = post.get('image')
+        filename = post.get('filename')
+        if filename is None:
+            filename = image.filename or 'uploaded_image'
+        
+        # Read the file data from the FileField object
+        image_data = image.file.read()
+        
+        # 将filename传递给addImageCache作为name参数
+        result = await upload_image(sdppp, image_data, filename)
+        return web.json_response({
+            'name': result['name'], 
+            'subfolder': result['subfolder'], 
+            'type': result['type']
+        })
         
     
 def registerSDHTTPEndpoints(sdppp, app):
@@ -73,6 +92,7 @@ def registerSDHTTPEndpoints(sdppp, app):
     def sdppp_upload(image: UploadFile = File(...)):
         name = addImageCache(Image.open(BytesIO(image.file.read())))
         return {'name': name}
+
 
 def registerSocketEvents(sdppp, sio):
 
