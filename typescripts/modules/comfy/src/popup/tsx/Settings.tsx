@@ -10,7 +10,7 @@ const Settings: React.FC = () => {
         location.href = "/sd-ppp-static/sd-ppp_PS.ccx?_=" + Date.now();
     };
     const handleDownloadPlugin2 = () => {
-        location.href = "/sd-ppp-static/sd-ppp2_PS.ccx?_=" + Date.now();
+        location.href = "https://gitee.com/zombieyang/sd-ppp/raw/main/static/sd-ppp2_PS.ccx?_=" + Date.now();
     };
 
     return (

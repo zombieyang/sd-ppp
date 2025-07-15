@@ -1,8 +1,8 @@
 {
-  "id": "f15f97e0-caa9-49be-8b28-3391a987c5b2",
+  "id": "37b426ec-6858-4b89-9129-b53866a7d0b8",
   "revision": 0,
-  "last_node_id": 125,
-  "last_link_id": 286,
+  "last_node_id": 131,
+  "last_link_id": 293,
   "nodes": [
     {
       "id": 3,
@@ -16,7 +16,7 @@
         358
       ],
       "flags": {},
-      "order": 45,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
@@ -104,7 +104,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        824536781191529,
+        475987708754400,
         "randomize",
         16,
         4,
@@ -125,13 +125,13 @@
         88
       ],
       "flags": {},
-      "order": 22,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 284
+          "link": 3
         },
         {
           "name": "text",
@@ -159,11 +159,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "1girl",
-        [
-          false,
-          true
-        ]
+        "1girl"
       ]
     },
     {
@@ -178,13 +174,13 @@
         88
       ],
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 285
+          "link": 5
         },
         {
           "name": "text",
@@ -212,55 +208,8 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n",
-        [
-          false,
-          true
-        ]
+        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n"
       ]
-    },
-    {
-      "id": 8,
-      "type": "VAEDecode",
-      "pos": [
-        1638,
-        -193
-      ],
-      "size": [
-        210,
-        46
-      ],
-      "flags": {},
-      "order": 47,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 7
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 20
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            268
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.27",
-        "Node name for S&R": "VAEDecode"
-      },
-      "widgets_values": []
     },
     {
       "id": 11,
@@ -274,13 +223,13 @@
         26
       ],
       "flags": {},
-      "order": 21,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "",
           "type": "*",
-          "link": 283
+          "link": 11
         }
       ],
       "outputs": [
@@ -310,7 +259,7 @@
         26
       ],
       "flags": {},
-      "order": 23,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -320,7 +269,7 @@
             37.5,
             0
           ],
-          "link": 286
+          "link": 19
         }
       ],
       "outputs": [
@@ -378,6 +327,81 @@
       ]
     },
     {
+      "id": 26,
+      "type": "PrimitiveNode",
+      "pos": [
+        -1507,
+        -952
+      ],
+      "size": [
+        593.264404296875,
+        132.1354522705078
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "slot_index": 0,
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "#02. Neg Prompt",
+      "properties": {
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#02. Neg Prompt"
+      },
+      "widgets_values": [
+        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "PrimitiveNode",
+      "pos": [
+        -1877,
+        -1422
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "slot_index": 0,
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "#04. Denoise",
+      "properties": {
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#04. Denoise"
+      },
+      "widgets_values": [
+        1,
+        "fixed"
+      ]
+    },
+    {
       "id": 28,
       "type": "PrimitiveNode",
       "pos": [
@@ -389,7 +413,7 @@
         106
       ],
       "flags": {},
-      "order": 1,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -428,7 +452,7 @@
         82
       ],
       "flags": {},
-      "order": 2,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -466,7 +490,7 @@
         82
       ],
       "flags": {},
-      "order": 3,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -504,7 +528,7 @@
         106
       ],
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -532,59 +556,41 @@
       ]
     },
     {
-      "id": 41,
-      "type": "SDPPP Get Document",
+      "id": 35,
+      "type": "PrimitiveNode",
       "pos": [
-        -2003,
-        260
+        -1895,
+        -942
       ],
       "size": [
-        354.8324890136719,
-        146
+        317.9884033203125,
+        106
       ],
       "flags": {},
-      "order": 5,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
         {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
+          "name": "COMBO",
+          "type": "COMBO",
+          "widget": {
+            "name": "ckpt_name"
+          },
           "slot_index": 0,
           "links": [
-            76,
-            174,
-            180,
-            186,
-            187
+            57
           ]
-        },
-        {
-          "label": "文档范围",
-          "name": "document boundary",
-          "type": "MASK",
-          "slot_index": 1,
-          "links": null
-        },
-        {
-          "label": "选中范围",
-          "name": "selection boundary",
-          "type": "MASK",
-          "links": null
         }
       ],
-      "title": "#00 Working Document",
+      "title": "#03. Model",
       "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Document",
-        "sdppp-version": "504",
-        "sdppp_widgetable_title": "#00 Working Document"
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#03. Model"
       },
       "widgets_values": [
-        "PS_zbx/### 当前文档 ###",
-        "",
+        "SDXL/atomixPony3DXL_v10.safetensors",
+        "fixed",
         ""
       ]
     },
@@ -600,7 +606,7 @@
         126
       ],
       "flags": {},
-      "order": 32,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -609,7 +615,7 @@
           "widget": {
             "name": "width"
           },
-          "link": 78
+          "link": 283
         },
         {
           "name": "height",
@@ -617,7 +623,7 @@
           "widget": {
             "name": "height"
           },
-          "link": 79
+          "link": 284
         }
       ],
       "outputs": [
@@ -642,147 +648,6 @@
       ]
     },
     {
-      "id": 50,
-      "type": "SDPPP Parse Layer Info",
-      "pos": [
-        -672,
-        669
-      ],
-      "size": [
-        292.20001220703125,
-        158
-      ],
-      "flags": {},
-      "order": 25,
-      "mode": 0,
-      "inputs": [
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "link": 77
-        }
-      ],
-      "outputs": [
-        {
-          "label": "透明度",
-          "name": "opacity",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "label": "范围左边距",
-          "name": "bound_left",
-          "type": "INT",
-          "links": null
-        },
-        {
-          "label": "范围上边距",
-          "name": "bound_top",
-          "type": "INT",
-          "links": null
-        },
-        {
-          "label": "范围宽度",
-          "name": "bound_width",
-          "type": "INT",
-          "slot_index": 3,
-          "links": [
-            78
-          ]
-        },
-        {
-          "label": "范围高度",
-          "name": "bound_height",
-          "type": "INT",
-          "slot_index": 4,
-          "links": [
-            79
-          ]
-        },
-        {
-          "label": "名称",
-          "name": "name",
-          "type": "STRING",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Parse Layer Info",
-        "sdppp-version": "504"
-      },
-      "widgets_values": [
-        ""
-      ]
-    },
-    {
-      "id": 51,
-      "type": "SDPPP Get Layer By ID",
-      "pos": [
-        -1079,
-        657
-      ],
-      "size": [
-        315,
-        122
-      ],
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
-          "link": 76
-        }
-      ],
-      "outputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "links": null
-        },
-        {
-          "label": "图层范围",
-          "name": "layer boundary",
-          "type": "MASK",
-          "links": null
-        },
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "slot_index": 2,
-          "links": [
-            77
-          ]
-        }
-      ],
-      "title": ".canvas area",
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "504",
-        "layerWidgetDetail0": {
-          "id": 0,
-          "name": "",
-          "identify": "",
-          "level": 0,
-          "fullPath": ""
-        },
-        "sdppp_widgetable_title": ".canvas area"
-      },
-      "widgets_values": [
-        "### 整个画布 ###",
-        ""
-      ]
-    },
-    {
       "id": 55,
       "type": "ControlNetApplyAdvanced",
       "pos": [
@@ -794,7 +659,7 @@
         186
       ],
       "flags": {},
-      "order": 33,
+      "order": 29,
       "mode": 2,
       "inputs": [
         {
@@ -815,7 +680,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 182
+          "link": 291
         },
         {
           "name": "vae",
@@ -870,7 +735,7 @@
         58
       ],
       "flags": {},
-      "order": 6,
+      "order": 8,
       "mode": 2,
       "inputs": [],
       "outputs": [
@@ -909,7 +774,7 @@
         126
       ],
       "flags": {},
-      "order": 41,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
@@ -979,7 +844,7 @@
         126
       ],
       "flags": {},
-      "order": 43,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
@@ -1038,52 +903,6 @@
       "widgets_values": []
     },
     {
-      "id": 63,
-      "type": "Fast Muter (rgthree)",
-      "pos": [
-        1526,
-        -1157
-      ],
-      "size": [
-        354.3999938964844,
-        78
-      ],
-      "flags": {},
-      "order": 53,
-      "mode": 0,
-      "inputs": [
-        {
-          "dir": 3,
-          "label": "",
-          "name": "Mute / Bypass Repeater (rgthree)",
-          "type": "*",
-          "link": 178
-        },
-        {
-          "dir": 3,
-          "name": "",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "dir": 4,
-          "name": "OPT_CONNECTION",
-          "type": "*",
-          "slot_index": 0,
-          "links": null
-        }
-      ],
-      "title": "#20. Enable ControlNet 1",
-      "properties": {
-        "toggleRestriction": "default",
-        "sdppp_widgetable_title": "#20. Enable ControlNet 1"
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 64,
       "type": "ControlNetLoader",
       "pos": [
@@ -1095,7 +914,7 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 7,
+      "order": 9,
       "mode": 2,
       "inputs": [],
       "outputs": [
@@ -1134,7 +953,7 @@
         186
       ],
       "flags": {},
-      "order": 35,
+      "order": 31,
       "mode": 2,
       "inputs": [
         {
@@ -1155,7 +974,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 172
+          "link": 290
         },
         {
           "name": "vae",
@@ -1210,7 +1029,7 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 8,
+      "order": 10,
       "mode": 2,
       "inputs": [],
       "outputs": [
@@ -1249,7 +1068,7 @@
         186
       ],
       "flags": {},
-      "order": 38,
+      "order": 34,
       "mode": 2,
       "inputs": [
         {
@@ -1270,7 +1089,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 185
+          "link": 287
         },
         {
           "name": "vae",
@@ -1325,7 +1144,7 @@
         60.174171447753906
       ],
       "flags": {},
-      "order": 9,
+      "order": 11,
       "mode": 2,
       "inputs": [],
       "outputs": [
@@ -1364,7 +1183,7 @@
         186
       ],
       "flags": {},
-      "order": 40,
+      "order": 36,
       "mode": 2,
       "inputs": [
         {
@@ -1385,7 +1204,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 195
+          "link": 286
         },
         {
           "name": "vae",
@@ -1427,101 +1246,6 @@
       "bgcolor": "#335"
     },
     {
-      "id": 71,
-      "type": "Fast Muter (rgthree)",
-      "pos": [
-        1522,
-        -1712
-      ],
-      "size": [
-        369.6395568847656,
-        78
-      ],
-      "flags": {},
-      "order": 48,
-      "mode": 2,
-      "inputs": [
-        {
-          "dir": 3,
-          "name": "Mute / Bypass Repeater (rgthree)",
-          "type": "*",
-          "link": 191
-        },
-        {
-          "dir": 3,
-          "name": "",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "dir": 4,
-          "name": "OPT_CONNECTION",
-          "type": "*",
-          "slot_index": 0,
-          "links": [
-            217
-          ]
-        }
-      ],
-      "title": "#28. Enable ControlNet 3",
-      "properties": {
-        "toggleRestriction": "default",
-        "sdppp_widgetable_title": "#28. Enable ControlNet 3"
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 72,
-      "type": "Fast Muter (rgthree)",
-      "pos": [
-        1557,
-        -2028
-      ],
-      "size": [
-        354.3999938964844,
-        78
-      ],
-      "flags": {},
-      "order": 44,
-      "mode": 2,
-      "inputs": [
-        {
-          "dir": 3,
-          "label": "",
-          "name": "Mute / Bypass Repeater (rgthree)",
-          "type": "*",
-          "link": 194
-        },
-        {
-          "dir": 3,
-          "name": "",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "dir": 4,
-          "name": "OPT_CONNECTION",
-          "type": "*",
-          "slot_index": 0,
-          "links": [
-            199
-          ]
-        }
-      ],
-      "title": "#32. Enable ControlNet 4",
-      "properties": {
-        "toggleRestriction": "default",
-        "sdppp_widgetable_title": "#32. Enable ControlNet 4"
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 74,
       "type": "Reroute",
       "pos": [
@@ -1533,7 +1257,7 @@
         26
       ],
       "flags": {},
-      "order": 30,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1572,7 +1296,7 @@
         82
       ],
       "flags": {},
-      "order": 10,
+      "order": 12,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1594,184 +1318,8 @@
         "sdppp_widgetable_title": "#09. Seed"
       },
       "widgets_values": [
-        824536781191529,
+        475987708754400,
         "randomize"
-      ]
-    },
-    {
-      "id": 78,
-      "type": "Fast Muter (rgthree)",
-      "pos": [
-        1519,
-        -1466
-      ],
-      "size": [
-        396.3999938964844,
-        78
-      ],
-      "flags": {},
-      "order": 51,
-      "mode": 2,
-      "inputs": [
-        {
-          "dir": 3,
-          "name": "Mute / Bypass Repeater (rgthree)",
-          "type": "*",
-          "link": 218
-        },
-        {
-          "dir": 3,
-          "name": "",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "dir": 4,
-          "name": "OPT_CONNECTION",
-          "type": "*",
-          "slot_index": 0,
-          "links": [
-            197
-          ]
-        }
-      ],
-      "title": "#24. Enable ControlNet 2",
-      "properties": {
-        "toggleRestriction": "default",
-        "sdppp_widgetable_title": "#24. Enable ControlNet 2"
-      }
-    },
-    {
-      "id": 79,
-      "type": "Get Image From Photoshop Layer",
-      "pos": [
-        339,
-        -1267
-      ],
-      "size": [
-        378,
-        126
-      ],
-      "flags": {
-        "collapsed": true
-      },
-      "order": 26,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "link": 175
-        },
-        {
-          "label": "范围",
-          "name": "bound",
-          "shape": 7,
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "label": "图像质量",
-          "name": "quality",
-          "shape": 7,
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "label": "RGB输出",
-          "name": "rgb_out",
-          "shape": 6,
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            172,
-            261
-          ]
-        },
-        {
-          "label": "Alpha输出",
-          "name": "alpha_out",
-          "shape": 6,
-          "type": "MASK",
-          "slot_index": 1,
-          "links": []
-        }
-      ],
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "504"
-      },
-      "widgets_values": [
-        "PS_zbx/### 当前文档 ###",
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 80,
-      "type": "SDPPP Get Layer By ID",
-      "pos": [
-        46,
-        -1371
-      ],
-      "size": [
-        259.1182556152344,
-        122
-      ],
-      "flags": {},
-      "order": 17,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
-          "link": 174
-        }
-      ],
-      "outputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "slot_index": 0,
-          "links": [
-            175,
-            216
-          ]
-        },
-        {
-          "label": "图层范围",
-          "name": "layer boundary",
-          "type": "MASK",
-          "links": null
-        },
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "slot_index": 2,
-          "links": []
-        }
-      ],
-      "title": "#26. ControlNet 2 Image",
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "504",
-        "sdppp_widgetable_title": "#26. ControlNet 2 Image"
-      },
-      "widgets_values": [
-        "",
-        ""
       ]
     },
     {
@@ -1786,7 +1334,7 @@
         126
       ],
       "flags": {},
-      "order": 52,
+      "order": 48,
       "mode": 2,
       "inputs": [
         {
@@ -1798,27 +1346,21 @@
         },
         {
           "dir": 3,
-          "name": "#22. ControlNet 1 Image",
-          "type": "*",
-          "link": 201
-        },
-        {
-          "dir": 3,
           "name": "#24. Enable ControlNet 2",
           "type": "*",
           "link": 197
         },
         {
           "dir": 3,
-          "name": "SDPPP从PS获取图像(GetImageFromPhotoshop)",
-          "type": "*",
-          "link": 259
-        },
-        {
-          "dir": 3,
           "name": "Apply ControlNet",
           "type": "*",
           "link": 265
+        },
+        {
+          "dir": 3,
+          "name": "#30. ControlNet 3 Image",
+          "type": "*",
+          "link": 292
         },
         {
           "dir": 3,
@@ -1843,399 +1385,6 @@
       "properties": {}
     },
     {
-      "id": 83,
-      "type": "SDPPP Get Layer By ID",
-      "pos": [
-        28,
-        -1077
-      ],
-      "size": [
-        259.1182556152344,
-        122
-      ],
-      "flags": {},
-      "order": 18,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
-          "link": 180
-        }
-      ],
-      "outputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "slot_index": 0,
-          "links": [
-            181,
-            201
-          ]
-        },
-        {
-          "label": "图层范围",
-          "name": "layer boundary",
-          "type": "MASK",
-          "links": null
-        },
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "slot_index": 2,
-          "links": []
-        }
-      ],
-      "title": "#22. ControlNet 1 Image",
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "504",
-        "sdppp_widgetable_title": "#22. ControlNet 1 Image"
-      },
-      "widgets_values": [
-        "canny 拷贝 (id:57)",
-        ""
-      ]
-    },
-    {
-      "id": 84,
-      "type": "Get Image From Photoshop Layer",
-      "pos": [
-        308,
-        -968
-      ],
-      "size": [
-        378,
-        126
-      ],
-      "flags": {
-        "collapsed": true
-      },
-      "order": 27,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "link": 181
-        },
-        {
-          "label": "范围",
-          "name": "bound",
-          "shape": 7,
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "label": "图像质量",
-          "name": "quality",
-          "shape": 7,
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "label": "RGB输出",
-          "name": "rgb_out",
-          "shape": 6,
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            182,
-            259
-          ]
-        },
-        {
-          "label": "Alpha输出",
-          "name": "alpha_out",
-          "shape": 6,
-          "type": "MASK",
-          "slot_index": 1,
-          "links": []
-        }
-      ],
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "504"
-      },
-      "widgets_values": [
-        "PS_zbx/### 当前文档 ###",
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 85,
-      "type": "SDPPP Get Layer By ID",
-      "pos": [
-        42,
-        -1659
-      ],
-      "size": [
-        259.1182556152344,
-        122
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
-          "link": 186
-        }
-      ],
-      "outputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "slot_index": 0,
-          "links": [
-            184,
-            203
-          ]
-        },
-        {
-          "label": "图层范围",
-          "name": "layer boundary",
-          "type": "MASK",
-          "links": null
-        },
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "slot_index": 2,
-          "links": []
-        }
-      ],
-      "title": "#30. ControlNet 3 Image",
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "504",
-        "sdppp_widgetable_title": "#30. ControlNet 3 Image"
-      },
-      "widgets_values": [
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 86,
-      "type": "Get Image From Photoshop Layer",
-      "pos": [
-        323,
-        -1546
-      ],
-      "size": [
-        378,
-        126
-      ],
-      "flags": {
-        "collapsed": true
-      },
-      "order": 28,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "link": 184
-        },
-        {
-          "label": "范围",
-          "name": "bound",
-          "shape": 7,
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "label": "图像质量",
-          "name": "quality",
-          "shape": 7,
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "label": "RGB输出",
-          "name": "rgb_out",
-          "shape": 6,
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            185,
-            262
-          ]
-        },
-        {
-          "label": "Alpha输出",
-          "name": "alpha_out",
-          "shape": 6,
-          "type": "MASK",
-          "slot_index": 1,
-          "links": []
-        }
-      ],
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "504"
-      },
-      "widgets_values": [
-        "PS_zbx/### 当前文档 ###",
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 87,
-      "type": "SDPPP Get Layer By ID",
-      "pos": [
-        29,
-        -1911
-      ],
-      "size": [
-        259.1182556152344,
-        122
-      ],
-      "flags": {},
-      "order": 20,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "文档",
-          "name": "document",
-          "type": "DOCUMENT",
-          "link": 187
-        }
-      ],
-      "outputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "slot_index": 0,
-          "links": [
-            188,
-            204
-          ]
-        },
-        {
-          "label": "图层范围",
-          "name": "layer boundary",
-          "type": "MASK",
-          "links": null
-        },
-        {
-          "label": "图层信息",
-          "name": "layer_info",
-          "type": "LAYER_INFO",
-          "slot_index": 2,
-          "links": []
-        }
-      ],
-      "title": "#33. ControlNet 4 Image",
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "SDPPP Get Layer By ID",
-        "sdppp-version": "504",
-        "sdppp_widgetable_title": "#33. ControlNet 4 Image"
-      },
-      "widgets_values": [
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 88,
-      "type": "Get Image From Photoshop Layer",
-      "pos": [
-        318,
-        -1807
-      ],
-      "size": [
-        378,
-        126
-      ],
-      "flags": {
-        "collapsed": true
-      },
-      "order": 29,
-      "mode": 2,
-      "inputs": [
-        {
-          "label": "图层(或组)",
-          "name": "layer_or_group",
-          "type": "LAYER",
-          "link": 188
-        },
-        {
-          "label": "范围",
-          "name": "bound",
-          "shape": 7,
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "label": "图像质量",
-          "name": "quality",
-          "shape": 7,
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "label": "RGB输出",
-          "name": "rgb_out",
-          "shape": 6,
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            195,
-            263
-          ]
-        },
-        {
-          "label": "Alpha输出",
-          "name": "alpha_out",
-          "shape": 6,
-          "type": "MASK",
-          "slot_index": 1,
-          "links": []
-        }
-      ],
-      "properties": {
-        "cnr_id": "sd-ppp",
-        "ver": "9d00dbfe90121024a5305fb8773abe5f4446edd2",
-        "Node name for S&R": "Get Image From Photoshop Layer",
-        "sdppp-version": "504"
-      },
-      "widgets_values": [
-        "PS_zbx/### 当前文档 ###",
-        "",
-        ""
-      ]
-    },
-    {
       "id": 89,
       "type": "Mute / Bypass Repeater (rgthree)",
       "pos": [
@@ -2247,7 +1396,7 @@
         126
       ],
       "flags": {},
-      "order": 46,
+      "order": 42,
       "mode": 2,
       "inputs": [
         {
@@ -2261,19 +1410,13 @@
           "dir": 3,
           "name": "#30. ControlNet 3 Image",
           "type": "*",
-          "link": 203
+          "link": 288
         },
         {
           "dir": 3,
           "name": "#32. Enable ControlNet 4",
           "type": "*",
           "link": 199
-        },
-        {
-          "dir": 3,
-          "name": "SDPPP从PS获取图像(GetImageFromPhotoshop)",
-          "type": "*",
-          "link": 262
         },
         {
           "dir": 3,
@@ -2304,68 +1447,6 @@
       "properties": {}
     },
     {
-      "id": 90,
-      "type": "Mute / Bypass Repeater (rgthree)",
-      "pos": [
-        1131,
-        -2037
-      ],
-      "size": [
-        284.80096435546875,
-        106
-      ],
-      "flags": {},
-      "order": 42,
-      "mode": 2,
-      "inputs": [
-        {
-          "dir": 3,
-          "label": "",
-          "name": "#32. ControlNet 4 Model",
-          "type": "*",
-          "link": 192
-        },
-        {
-          "dir": 3,
-          "name": "#33. ControlNet 4 Image",
-          "type": "*",
-          "link": 204
-        },
-        {
-          "dir": 3,
-          "name": "SDPPP从PS获取图像(GetImageFromPhotoshop)",
-          "type": "*",
-          "link": 263
-        },
-        {
-          "dir": 3,
-          "name": "Apply ControlNet",
-          "type": "*",
-          "link": 267
-        },
-        {
-          "dir": 3,
-          "name": "",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "color_off": "#a80",
-          "color_on": "#Fc0",
-          "dir": 4,
-          "name": "OPT_CONNECTION",
-          "type": "*",
-          "slot_index": 0,
-          "links": [
-            194
-          ]
-        }
-      ],
-      "properties": {}
-    },
-    {
       "id": 101,
       "type": "Mute / Bypass Repeater (rgthree)",
       "pos": [
@@ -2377,7 +1458,7 @@
         126
       ],
       "flags": {},
-      "order": 50,
+      "order": 46,
       "mode": 2,
       "inputs": [
         {
@@ -2390,21 +1471,15 @@
         },
         {
           "dir": 3,
-          "name": "#26. ControlNet 2 Image",
+          "name": "#30. ControlNet 3 Image",
           "type": "*",
-          "link": 216
+          "link": 289
         },
         {
           "dir": 3,
           "name": "#28. Enable ControlNet 3",
           "type": "*",
           "link": 217
-        },
-        {
-          "dir": 3,
-          "name": "SDPPP从PS获取图像(GetImageFromPhotoshop)",
-          "type": "*",
-          "link": 261
         },
         {
           "dir": 3,
@@ -2438,16 +1513,16 @@
       "id": 117,
       "type": "Mute / Bypass Repeater (rgthree)",
       "pos": [
-        -116.70399475097656,
-        74.90469360351562
+        -97,
+        91
       ],
       "size": [
         268.79998779296875,
         106
       ],
       "flags": {},
-      "order": 37,
-      "mode": 0,
+      "order": 33,
+      "mode": 2,
       "inputs": [
         {
           "dir": 3,
@@ -2463,13 +1538,13 @@
         },
         {
           "dir": 3,
-          "name": "#12. Inpaint Mask",
+          "name": "Load Image (as Mask)",
           "type": "*",
           "link": 281
         },
         {
           "dir": 3,
-          "name": "#11. Inpaint Image",
+          "name": "Load Image",
           "type": "*",
           "link": 282
         },
@@ -2496,35 +1571,6 @@
       "properties": {}
     },
     {
-      "id": 118,
-      "type": "PreviewImage",
-      "pos": [
-        2056.459716796875,
-        -183.5548095703125
-      ],
-      "size": [
-        210,
-        26
-      ],
-      "flags": {},
-      "order": 49,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 268
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.27",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
-    },
-    {
       "id": 54,
       "type": "Fast Muter (rgthree)",
       "pos": [
@@ -2536,7 +1582,7 @@
         78
       ],
       "flags": {},
-      "order": 39,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -2579,7 +1625,7 @@
         106
       ],
       "flags": {},
-      "order": 36,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -2635,16 +1681,16 @@
       "id": 120,
       "type": "VAEEncode",
       "pos": [
-        -381.6106872558594,
-        217.4995574951172
+        -361.9066467285156,
+        233.59487915039062
       ],
       "size": [
         210,
         46
       ],
       "flags": {},
-      "order": 31,
-      "mode": 0,
+      "order": 28,
+      "mode": 2,
       "inputs": [
         {
           "name": "pixels",
@@ -2679,16 +1725,16 @@
       "id": 121,
       "type": "SetLatentNoiseMask",
       "pos": [
-        -152.76124572753906,
-        341.1236877441406
+        -133.05723571777344,
+        357.218994140625
       ],
       "size": [
         264.5999755859375,
         46
       ],
       "flags": {},
-      "order": 34,
-      "mode": 0,
+      "order": 30,
+      "mode": 2,
       "inputs": [
         {
           "name": "samples",
@@ -2723,16 +1769,16 @@
       "id": 124,
       "type": "LoadImageMask",
       "pos": [
-        -831.6009521484375,
-        255.72244262695312
+        -811.8969116210938,
+        271.8177795410156
       ],
       "size": [
         315,
         318
       ],
       "flags": {},
-      "order": 11,
-      "mode": 0,
+      "order": 13,
+      "mode": 2,
       "inputs": [],
       "outputs": [
         {
@@ -2745,12 +1791,10 @@
           ]
         }
       ],
-      "title": "#12. Inpaint Mask",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.3.27",
-        "Node name for S&R": "LoadImageMask",
-        "sdppp_widgetable_title": "#12. Inpaint Mask"
+        "Node name for S&R": "LoadImageMask"
       },
       "widgets_values": [
         "1.flac",
@@ -2762,16 +1806,16 @@
       "id": 123,
       "type": "LoadImage",
       "pos": [
-        -1181.8946533203125,
-        0.8007648587226868
+        -1162.1910400390625,
+        16.896085739135742
       ],
       "size": [
         315,
         314
       ],
       "flags": {},
-      "order": 12,
-      "mode": 0,
+      "order": 14,
+      "mode": 2,
       "inputs": [],
       "outputs": [
         {
@@ -2789,12 +1833,10 @@
           "links": null
         }
       ],
-      "title": "#11. Inpaint Image",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.3.27",
-        "Node name for S&R": "LoadImage",
-        "sdppp_widgetable_title": "#11. Inpaint Image"
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
         "1.flac",
@@ -2802,106 +1844,15 @@
       ]
     },
     {
-      "id": 27,
+      "id": 125,
       "type": "PrimitiveNode",
       "pos": [
-        -1865.114501953125,
-        -1371.600341796875
+        -1025.470947265625,
+        650.8255004882812
       ],
       "size": [
         210,
         82
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "FLOAT",
-          "type": "FLOAT",
-          "widget": {
-            "name": "denoise"
-          },
-          "slot_index": 0,
-          "links": [
-            48
-          ]
-        }
-      ],
-      "title": "#04. Denoise",
-      "properties": {
-        "Run widget replace on values": false,
-        "sdppp_widgetable_title": "#04. Denoise"
-      },
-      "widgets_values": [
-        1,
-        "fixed"
-      ]
-    },
-    {
-      "id": 125,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        -1863.9359130859375,
-        -918.1248168945312
-      ],
-      "size": [
-        315,
-        98
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "slot_index": 0,
-          "links": [
-            283
-          ]
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "slot_index": 1,
-          "links": [
-            284,
-            285
-          ]
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "slot_index": 2,
-          "links": [
-            286
-          ]
-        }
-      ],
-      "title": "#03. Checkpoint",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.34",
-        "Node name for S&R": "CheckpointLoaderSimple",
-        "sdppp_widgetable_title": "#03. Checkpoint"
-      },
-      "widgets_values": [
-        "v1-5-pruned-emaonly-fp16.safetensors"
-      ]
-    },
-    {
-      "id": 26,
-      "type": "PrimitiveNode",
-      "pos": [
-        -1507,
-        -952
-      ],
-      "size": [
-        593.264404296875,
-        132.1354522705078
       ],
       "flags": {},
       "order": 15,
@@ -2909,28 +1860,627 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "STRING",
-          "type": "STRING",
+          "name": "INT",
+          "type": "INT",
           "widget": {
-            "name": "text"
+            "name": "width"
           },
-          "slot_index": 0,
           "links": [
-            47
+            283
           ]
         }
       ],
-      "title": "#02. Neg Prompt",
+      "title": "#00. Width",
       "properties": {
         "Run widget replace on values": false,
-        "sdppp_widgetable_title": "#02. Neg Prompt"
+        "sdppp_widgetable_title": "#00. Width"
       },
       "widgets_values": [
-        "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n"
+        512,
+        "fixed"
+      ]
+    },
+    {
+      "id": 126,
+      "type": "PrimitiveNode",
+      "pos": [
+        -1033.10302734375,
+        772.2666015625
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "links": [
+            284
+          ]
+        }
+      ],
+      "title": "#00. Height",
+      "properties": {
+        "Run widget replace on values": false,
+        "sdppp_widgetable_title": "#00. Height"
+      },
+      "widgets_values": [
+        512,
+        "fixed"
+      ]
+    },
+    {
+      "id": 90,
+      "type": "Mute / Bypass Repeater (rgthree)",
+      "pos": [
+        1167.298583984375,
+        -2082.2216796875
+      ],
+      "size": [
+        284.80096435546875,
+        106
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 2,
+      "inputs": [
+        {
+          "dir": 3,
+          "label": "",
+          "name": "#32. ControlNet 4 Model",
+          "type": "*",
+          "link": 192
+        },
+        {
+          "dir": 3,
+          "name": "#33. ControlNet 4 Image",
+          "type": "*",
+          "link": 285
+        },
+        {
+          "dir": 3,
+          "name": "Apply ControlNet",
+          "type": "*",
+          "link": 267
+        },
+        {
+          "dir": 3,
+          "name": "",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": "#a80",
+          "color_on": "#Fc0",
+          "dir": 4,
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "slot_index": 0,
+          "links": [
+            194
+          ]
+        }
+      ],
+      "properties": {}
+    },
+    {
+      "id": 127,
+      "type": "LoadImage",
+      "pos": [
+        288.06085205078125,
+        -2088.979248046875
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            285,
+            286
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "#33. ControlNet 4 Image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImage",
+        "sdppp_widgetable_title": "#33. ControlNet 4 Image"
+      },
+      "widgets_values": [
+        "1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 128,
+      "type": "LoadImage",
+      "pos": [
+        300.19403076171875,
+        -1749.648193359375
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            287,
+            288
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "#30. ControlNet 3 Image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImage",
+        "sdppp_widgetable_title": "#30. ControlNet 3 Image"
+      },
+      "widgets_values": [
+        "1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 129,
+      "type": "LoadImage",
+      "pos": [
+        271.656494140625,
+        -1421.0721435546875
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            289,
+            290
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "#30. ControlNet 3 Image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImage",
+        "sdppp_widgetable_title": "#30. ControlNet 3 Image"
+      },
+      "widgets_values": [
+        "1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 130,
+      "type": "LoadImage",
+      "pos": [
+        260.5142517089844,
+        -1049.749755859375
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            291,
+            292
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "#30. ControlNet 3 Image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "LoadImage",
+        "sdppp_widgetable_title": "#30. ControlNet 3 Image"
+      },
+      "widgets_values": [
+        "1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 72,
+      "type": "Fast Muter (rgthree)",
+      "pos": [
+        1557,
+        -2028
+      ],
+      "size": [
+        354.3999938964844,
+        78
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 2,
+      "inputs": [
+        {
+          "dir": 3,
+          "label": "",
+          "name": "Mute / Bypass Repeater (rgthree)",
+          "type": "*",
+          "link": 194
+        },
+        {
+          "dir": 3,
+          "name": "",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "dir": 4,
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "slot_index": 0,
+          "links": [
+            199
+          ]
+        }
+      ],
+      "title": "#32. Enable ControlNet 4",
+      "properties": {
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#32. Enable ControlNet 4"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 71,
+      "type": "Fast Muter (rgthree)",
+      "pos": [
+        1522,
+        -1712
+      ],
+      "size": [
+        369.6395568847656,
+        78
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 2,
+      "inputs": [
+        {
+          "dir": 3,
+          "name": "Mute / Bypass Repeater (rgthree)",
+          "type": "*",
+          "link": 191
+        },
+        {
+          "dir": 3,
+          "name": "",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "dir": 4,
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "slot_index": 0,
+          "links": [
+            217
+          ]
+        }
+      ],
+      "title": "#28. Enable ControlNet 3",
+      "properties": {
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#28. Enable ControlNet 3"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 78,
+      "type": "Fast Muter (rgthree)",
+      "pos": [
+        1519,
+        -1466
+      ],
+      "size": [
+        396.3999938964844,
+        78
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 2,
+      "inputs": [
+        {
+          "dir": 3,
+          "name": "Mute / Bypass Repeater (rgthree)",
+          "type": "*",
+          "link": 218
+        },
+        {
+          "dir": 3,
+          "name": "",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "dir": 4,
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "slot_index": 0,
+          "links": [
+            197
+          ]
+        }
+      ],
+      "title": "#24. Enable ControlNet 2",
+      "properties": {
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#24. Enable ControlNet 2"
+      }
+    },
+    {
+      "id": 63,
+      "type": "Fast Muter (rgthree)",
+      "pos": [
+        1526,
+        -1157
+      ],
+      "size": [
+        354.3999938964844,
+        78
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "dir": 3,
+          "label": "",
+          "name": "Mute / Bypass Repeater (rgthree)",
+          "type": "*",
+          "link": 178
+        },
+        {
+          "dir": 3,
+          "name": "",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "dir": 4,
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "slot_index": 0,
+          "links": null
+        }
+      ],
+      "title": "#20. Enable ControlNet 1",
+      "properties": {
+        "toggleRestriction": "default",
+        "sdppp_widgetable_title": "#20. Enable ControlNet 1"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 131,
+      "type": "SaveImage",
+      "pos": [
+        1977.5831298828125,
+        -175.1420440673828
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 293
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": [
+        1649.5867919921875,
+        -184.31008911132812
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            293
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -1496,
+        -700
+      ],
+      "size": [
+        315,
+        98
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ckpt_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "ckpt_name"
+          },
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            3,
+            5
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 2,
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": ".Load Checkpoint",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "sdppp_widgetable_title": ".Load Checkpoint"
+      },
+      "widgets_values": [
+        "SDXL/atomixPony3DXL_v10.safetensors"
       ]
     }
   ],
   "links": [
+    [
+      3,
+      4,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      5,
+      4,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
     [
       7,
       3,
@@ -2940,12 +2490,28 @@
       "LATENT"
     ],
     [
+      11,
+      4,
+      0,
+      11,
+      0,
+      "*"
+    ],
+    [
       12,
       11,
       0,
       3,
       0,
       "MODEL"
+    ],
+    [
+      19,
+      4,
+      2,
+      15,
+      0,
+      "*"
     ],
     [
       20,
@@ -3012,36 +2578,12 @@
       "COMBO"
     ],
     [
-      76,
-      41,
+      57,
+      35,
       0,
-      51,
-      0,
-      "DOCUMENT"
-    ],
-    [
-      77,
-      51,
-      2,
-      50,
-      0,
-      "LAYER_INFO"
-    ],
-    [
-      78,
-      50,
-      3,
-      49,
-      0,
-      "INT"
-    ],
-    [
-      79,
-      50,
       4,
-      49,
-      1,
-      "INT"
+      0,
+      "COMBO"
     ],
     [
       89,
@@ -3292,30 +2834,6 @@
       "INT"
     ],
     [
-      172,
-      79,
-      0,
-      65,
-      3,
-      "IMAGE"
-    ],
-    [
-      174,
-      41,
-      0,
-      80,
-      0,
-      "DOCUMENT"
-    ],
-    [
-      175,
-      80,
-      0,
-      79,
-      0,
-      "LAYER"
-    ],
-    [
       177,
       56,
       0,
@@ -3332,76 +2850,12 @@
       "*"
     ],
     [
-      180,
-      41,
-      0,
-      83,
-      0,
-      "DOCUMENT"
-    ],
-    [
-      181,
-      83,
-      0,
-      84,
-      0,
-      "LAYER"
-    ],
-    [
-      182,
-      84,
-      0,
-      55,
-      3,
-      "IMAGE"
-    ],
-    [
       183,
       64,
       0,
       65,
       2,
       "CONTROL_NET"
-    ],
-    [
-      184,
-      85,
-      0,
-      86,
-      0,
-      "LAYER"
-    ],
-    [
-      185,
-      86,
-      0,
-      67,
-      3,
-      "IMAGE"
-    ],
-    [
-      186,
-      41,
-      0,
-      85,
-      0,
-      "DOCUMENT"
-    ],
-    [
-      187,
-      41,
-      0,
-      87,
-      0,
-      "DOCUMENT"
-    ],
-    [
-      188,
-      87,
-      0,
-      88,
-      0,
-      "LAYER"
     ],
     [
       189,
@@ -3436,19 +2890,11 @@
       "*"
     ],
     [
-      195,
-      88,
-      0,
-      69,
-      3,
-      "IMAGE"
-    ],
-    [
       197,
       78,
       0,
       81,
-      2,
+      1,
       "*"
     ],
     [
@@ -3460,43 +2906,11 @@
       "*"
     ],
     [
-      201,
-      83,
-      0,
-      81,
-      1,
-      "*"
-    ],
-    [
-      203,
-      85,
-      0,
-      89,
-      1,
-      "*"
-    ],
-    [
-      204,
-      87,
-      0,
-      90,
-      1,
-      "*"
-    ],
-    [
       215,
       64,
       0,
       101,
       0,
-      "*"
-    ],
-    [
-      216,
-      80,
-      0,
-      101,
-      1,
       "*"
     ],
     [
@@ -3524,43 +2938,11 @@
       "*"
     ],
     [
-      259,
-      84,
-      0,
-      81,
-      3,
-      "*"
-    ],
-    [
-      261,
-      79,
-      0,
-      101,
-      3,
-      "*"
-    ],
-    [
-      262,
-      86,
-      0,
-      89,
-      3,
-      "*"
-    ],
-    [
-      263,
-      88,
-      0,
-      90,
-      2,
-      "*"
-    ],
-    [
       264,
       65,
       0,
       101,
-      4,
+      3,
       "*"
     ],
     [
@@ -3568,7 +2950,7 @@
       55,
       0,
       81,
-      4,
+      2,
       "*"
     ],
     [
@@ -3576,7 +2958,7 @@
       67,
       0,
       89,
-      4,
+      3,
       "*"
     ],
     [
@@ -3584,16 +2966,8 @@
       69,
       0,
       90,
-      3,
+      2,
       "*"
-    ],
-    [
-      268,
-      8,
-      0,
-      118,
-      0,
-      "IMAGE"
     ],
     [
       271,
@@ -3671,33 +3045,89 @@
       283,
       125,
       0,
-      11,
+      49,
       0,
-      "*"
+      "INT"
     ],
     [
       284,
-      125,
-      1,
-      6,
+      126,
       0,
-      "CLIP"
+      49,
+      1,
+      "INT"
     ],
     [
       285,
-      125,
-      1,
-      7,
+      127,
       0,
-      "CLIP"
+      90,
+      1,
+      "*"
     ],
     [
       286,
-      125,
-      2,
-      15,
+      127,
       0,
+      69,
+      3,
+      "IMAGE"
+    ],
+    [
+      287,
+      128,
+      0,
+      67,
+      3,
+      "IMAGE"
+    ],
+    [
+      288,
+      128,
+      0,
+      89,
+      1,
       "*"
+    ],
+    [
+      289,
+      129,
+      0,
+      101,
+      1,
+      "*"
+    ],
+    [
+      290,
+      129,
+      0,
+      65,
+      3,
+      "IMAGE"
+    ],
+    [
+      291,
+      130,
+      0,
+      55,
+      3,
+      "IMAGE"
+    ],
+    [
+      292,
+      130,
+      0,
+      81,
+      3,
+      "*"
+    ],
+    [
+      293,
+      8,
+      0,
+      131,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [
@@ -3710,7 +3140,7 @@
         1405.584228515625,
         706.2962646484375
       ],
-      "color": "#b58b2a",
+      "color": "#3f789e",
       "font_size": 24,
       "flags": {}
     },
@@ -3718,12 +3148,12 @@
       "id": 2,
       "title": "Inpaint",
       "bounding": [
-        -1184.83251953125,
-        -21.811277389526367,
+        -1165.12890625,
+        -5.715957164764404,
         1311.8720703125,
         442.9053955078125
       ],
-      "color": "#88A",
+      "color": "#3f789e",
       "font_size": 24,
       "flags": {}
     },
@@ -3736,7 +3166,7 @@
         1227.0020751953125,
         260.29510498046875
       ],
-      "color": "#8AA",
+      "color": "#3f789e",
       "font_size": 24,
       "flags": {}
     },
@@ -3749,7 +3179,7 @@
         1471.4285888671875,
         1142.792724609375
       ],
-      "color": "#8A8",
+      "color": "#3f789e",
       "font_size": 24,
       "flags": {}
     }
@@ -3757,26 +3187,26 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.6115909044841509,
+      "scale": 0.984973267580763,
       "offset": [
-        2019.432265995496,
-        320.2203947480005
+        1964.1597460378857,
+        1119.8417420730725
       ]
     },
-    "frontendVersion": "1.18.6"
+    "frontendVersion": "1.23.4"
   },
   "version": 0.4,
   "api_prompt": {
     "3": {
       "inputs": {
-        "seed": 824536781191529,
+        "seed": 475987708754400,
         "steps": 16,
         "cfg": 4,
         "sampler_name": "dpmpp_sde_gpu",
         "scheduler": "karras",
         "denoise": 1,
         "model": [
-          "125",
+          "4",
           0
         ],
         "positive": [
@@ -3797,17 +3227,20 @@
         "title": "KSampler"
       }
     },
+    "4": {
+      "inputs": {
+        "ckpt_name": "SDXL/atomixPony3DXL_v10.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": ".Load Checkpoint"
+      }
+    },
     "6": {
       "inputs": {
         "text": "1girl",
-        "speak_and_recognation": {
-          "__value__": [
-            false,
-            true
-          ]
-        },
         "clip": [
-          "125",
+          "4",
           1
         ]
       },
@@ -3818,15 +3251,9 @@
     },
     "7": {
       "inputs": {
-        "text": "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\n",
-        "speak_and_recognation": {
-          "__value__": [
-            false,
-            true
-          ]
-        },
+        "text": "anime,text,watermark,bad anatomy, bad proportions, extra limbs, extra digit, extra legs, extra legs and arms, disfigured, missing arms, too many fingers, fused fingers, missing fingers, unclear eyes,watermark,username,furry\nhigh heels, (latex:1.2), boots, cleavage, zip, kneeling, sitting, pants, covered-thigh, covered-hips, cape, cloak, wrinkles, loose clothing, bare arm, (bare shoulder:2), (armpits:2)\nsky, window\n",
         "clip": [
-          "125",
+          "4",
           1
         ]
       },
@@ -3842,7 +3269,7 @@
           0
         ],
         "vae": [
-          "125",
+          "4",
           2
         ]
       },
@@ -3851,26 +3278,10 @@
         "title": "VAE Decode"
       }
     },
-    "41": {
-      "inputs": {
-        "document_name": "{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0}",
-        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}"
-      },
-      "class_type": "SDPPP Get Document",
-      "_meta": {
-        "title": "#00 Working Document"
-      }
-    },
     "49": {
       "inputs": {
-        "width": [
-          "50",
-          3
-        ],
-        "height": [
-          "50",
-          4
-        ],
+        "width": 512,
+        "height": 512,
         "batch_size": 1
       },
       "class_type": "EmptyLatentImage",
@@ -3878,39 +3289,8 @@
         "title": "Empty Latent Image"
       }
     },
-    "50": {
-      "inputs": {
-        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}",
-        "layer_info": [
-          "51",
-          2
-        ]
-      },
-      "class_type": "SDPPP Parse Layer Info",
-      "_meta": {
-        "title": "SDPPP解析图层信息(ParseLayerInfo)"
-      }
-    },
-    "51": {
-      "inputs": {
-        "layer_or_group": "{\"identify\":\"### 整个画布 ###\",\"dirtyID\":0}",
-        "sdppp": "{\"lastOpenedWorkflow\":\"SDXL1.7.2\",\"document\":{\"instance_id\":\"pPbsfTBxBWnOQIfoAAE6\",\"identify\":\"Untitled-1-Recovered (id:59)\",\"canvasDirtyID\":0,\"selectionDirtyID\":0},\"isLocal\":true}",
-        "document": [
-          "41",
-          0
-        ]
-      },
-      "class_type": "SDPPP Get Layer By ID",
-      "_meta": {
-        "title": ".canvas area"
-      }
-    },
     "53": {
       "inputs": {
-        "any_02": [
-          "121",
-          0
-        ],
         "any_04": [
           "49",
           0
@@ -3945,76 +3325,17 @@
         "title": "Any Switch (rgthree)"
       }
     },
-    "118": {
+    "131": {
       "inputs": {
+        "filename_prefix": "ComfyUI",
         "images": [
           "8",
           0
         ]
       },
-      "class_type": "PreviewImage",
+      "class_type": "SaveImage",
       "_meta": {
-        "title": "Preview Image"
-      }
-    },
-    "120": {
-      "inputs": {
-        "pixels": [
-          "123",
-          0
-        ],
-        "vae": [
-          "125",
-          2
-        ]
-      },
-      "class_type": "VAEEncode",
-      "_meta": {
-        "title": "VAE Encode"
-      }
-    },
-    "121": {
-      "inputs": {
-        "samples": [
-          "120",
-          0
-        ],
-        "mask": [
-          "124",
-          0
-        ]
-      },
-      "class_type": "SetLatentNoiseMask",
-      "_meta": {
-        "title": "Set Latent Noise Mask"
-      }
-    },
-    "123": {
-      "inputs": {
-        "image": "1.flac"
-      },
-      "class_type": "LoadImage",
-      "_meta": {
-        "title": "#11. Inpaint Image"
-      }
-    },
-    "124": {
-      "inputs": {
-        "image": "1.flac",
-        "channel": "alpha"
-      },
-      "class_type": "LoadImageMask",
-      "_meta": {
-        "title": "#12. Inpaint Mask"
-      }
-    },
-    "125": {
-      "inputs": {
-        "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
-      },
-      "class_type": "CheckpointLoaderSimple",
-      "_meta": {
-        "title": "#03. Checkpoint"
+        "title": "Save Image"
       }
     }
   }
