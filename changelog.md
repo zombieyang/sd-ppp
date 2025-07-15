@@ -1,4 +1,9 @@
-## [1.9.0] - 2025-06-18
+
+## [1.9.1] - 2025-07-15
+* fix: Fix the bugs that will make 1.x plugin not work.
+* optimize: update the download link of 2.x beta plugin.
+
+## [1.9.0] - 2025-07-06
 * feature: add beta version of Photoshop plugin 2.0.
 
 ## [1.8.6] - 2025-06-18
