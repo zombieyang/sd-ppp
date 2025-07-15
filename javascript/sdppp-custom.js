@@ -28,7 +28,7 @@
  */
 
 
-export default function (sdppp) {
+export default function (sdppp, version = 1) {
     /**
      * Handle SDPPP Get Document
      * 处理 SDPPP Get Document
@@ -140,18 +140,18 @@ export default function (sdppp) {
                     }))
                 }
             }
-            if(node.type.startsWith('Power Lora Loader')){
-                return{
+            if (node.type.startsWith('Power Lora Loader')) {
+                return {
                     title: getTitle(node),
                     widgets: node.widgets
-                    .filter(widget=> widget.name.startsWith('lora_'))
-                    .map((widget) => ({
-                        value: widget.value.on,
-                        name: widget.value.lora,
-                        outputType: 'toggle',
-                        options: {on: true, off: false},
-                        uiWeight: 4
-                    }))
+                        .filter(widget => widget.name.startsWith('lora_'))
+                        .map((widget) => ({
+                            value: widget.value.on,
+                            name: widget.value.lora,
+                            outputType: 'toggle',
+                            options: { on: true, off: false },
+                            uiWeight: 4
+                        }))
                 }
             }
             return {
@@ -177,15 +177,15 @@ export default function (sdppp) {
             }
         },
         setter: (node, widgetIndex, value) => {
-            if(node.type.startsWith('Power Lora Loader')){
+            if (node.type.startsWith('Power Lora Loader')) {
                 const ws = node.widgets.filter(widget => widget.name.startsWith('lora_'));
-                if(ws[widgetIndex].name.startsWith('lora_')) {
+                if (ws[widgetIndex].name.startsWith('lora_')) {
                     if (ws[widgetIndex].value.on != value) {
                         ws[widgetIndex].value.on = value;
                     }
                 }
                 return true;
-            }else if (node.widgets[widgetIndex].type == 'custom') {
+            } else if (node.widgets[widgetIndex].type == 'custom') {
                 if (node.widgets[widgetIndex].value.toggled != value) {
                     node.widgets[widgetIndex].doModeChange();
                 }
@@ -200,13 +200,39 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('LoadImage', {
         formatter: (node) => {
-            return {
-                title: getTitle(node),
-                widgets: [{
-                    value: node.widgets[0].value,
-                    outputType: "IMAGE_PATH",
-                    options: node.widgets[0].options
-                }]
+            if (version == 2) {
+                const [subfolder, ...rest] = node.widgets[0].value.split('/')
+                return {
+                    title: getTitle(node),
+                    widgets: [{
+                        value: {
+                            url: node.widgets[0].value,
+                            source: node.properties.source || 'comfyUI',
+                            thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
+                        },
+                        outputType: "images",
+                        options: node.widgets[0].options
+                    }]
+                }
+
+            } else if (version == 1) {
+                return {
+                    title: getTitle(node),
+                    widgets: [{
+                        value: node.widgets[0].value,
+                        outputType: "IMAGE_PATH",
+                        options: node.widgets[0].options
+                    }]
+                }
+
+            }
+        },
+        setter: (node, widgetIndex, value) => {
+            if (version == 1) return false;
+            if (version == 2) {
+                node.widgets[widgetIndex].value = value.url;
+                node.setProperty('source', value.source);
+                return true;
             }
         }
     })
@@ -217,13 +243,39 @@ export default function (sdppp) {
      */
     sdppp.widgetable.add('LoadImageMask', {
         formatter: (node) => {
-            return {
-                title: getTitle(node),
-                widgets: [{
-                    value: node.widgets[0].value,
-                    outputType: "MASK_PATH",
-                    options: node.widgets[0].options
-                }]
+            if (version == 2) {
+                const [subfolder, ...rest] = node.widgets[0].value.split('/')
+                return {
+                    title: getTitle(node),
+                    widgets: [{
+                        value: {
+                            url: node.widgets[0].value,
+                            source: node.properties.source || 'comfyUI',
+                            thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
+                        },
+                        outputType: "masks",
+                        options: node.widgets[0].options
+                    }]
+                }
+
+            } else if (version == 1) {
+                return {
+                    title: getTitle(node),
+                    widgets: [{
+                        value: node.widgets[0].value,
+                        outputType: "MASK_PATH",
+                        options: node.widgets[0].options
+                    }]
+                }
+
+            }
+        },
+        setter: (node, widgetIndex, value) => {
+            if (version == 1) return false;
+            if (version == 2) {
+                node.widgets[widgetIndex].value = value.url;
+                node.setProperty('source', value.source);
+                return true;
             }
         }
     })
