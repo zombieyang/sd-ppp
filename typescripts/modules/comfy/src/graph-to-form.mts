@@ -65,9 +65,13 @@ export function getWidgetTableValue(graph: any): WidgetTableValue {
                 return wildcardMatch(wildcard, node.type);
             }) || defaultConverter;
             if (converter) {
-                const converted = converter[1].formatter(node);
-                if (converted) {
-                    ret[node.id] = converted.widgets.map((widget: any) => widget.value);
+                try {
+                    const converted = converter[1].formatter(node);
+                    if (converted) {
+                        ret[node.id] = converted.widgets.map((widget: any) => widget.value);
+                    }
+                } catch (e: any) {
+                    ret[node.id] = [];
                 }
             }
         });

@@ -128,18 +128,6 @@ export default function (sdppp, version = 1) {
      */
     sdppp.widgetable.add('*rgthree*', {
         formatter: (node) => {
-            if (node.type.indexOf('Fast') != -1) {
-                return {
-                    title: getTitle(node),
-                    widgets: node.widgets.map((widget) => ({
-                        value: fixRGthreeWidgetValue(widget.type, widget.value),
-                        name: (widget.label || widget.name).replace(/^(enable[-_ ]?)?/gi, ''),
-                        outputType: fixRGthreeWidgetType(widget.type),
-                        options: widget.options,
-                        uiWeight: 6
-                    }))
-                }
-            }
             if (node.type.startsWith('Power Lora Loader')) {
                 return {
                     title: getTitle(node),
@@ -150,17 +138,37 @@ export default function (sdppp, version = 1) {
                             name: widget.value.lora,
                             outputType: 'toggle',
                             options: { on: true, off: false },
-                            uiWeight: 4
+                            uiWeight: 12
                         }))
+                }
+            }
+            if (node.properties['toggleRestriction'] == 'always one' && node.widgets.length > 1) {
+                const selected = node.widgets.find(widget => {
+                    return fixRGthreeWidgetValue(widget.type, widget.value)
+                }) || node.widgets[0];
+                return {
+                    title: getTitle(node),
+                    widgets: [{
+                        value: removeEnablePrefix(selected.label || selected.name),
+                        name: '',
+                        outputType: node.widgets.length == 2 ? 'segment' : 'combo',
+                        options: {
+                            values: node.widgets.map((widget) => (
+                                removeEnablePrefix(widget.label || widget.name)
+                            ))
+                        },
+                        uiWeight: 12
+                    }]
                 }
             }
             return {
                 title: getTitle(node),
                 widgets: node.widgets.map((widget) => ({
                     value: fixRGthreeWidgetValue(widget.type, widget.value),
-                    name: node.type.indexOf('Group') != -1 ? (widget.label || widget.name) : '',
+                    name: removeEnablePrefix(widget.label || widget.name),
                     outputType: fixRGthreeWidgetType(widget.type),
-                    options: widget.options
+                    options: widget.options,
+                    uiWeight: 12
                 }))
             }
             function fixRGthreeWidgetValue(type, value) {
@@ -175,6 +183,9 @@ export default function (sdppp, version = 1) {
                 }
                 return type || 'toggle'
             }
+            function removeEnablePrefix(value) {
+                return value.replace(/^(enable[-_ ]?)?/gi, '');
+            }
         },
         setter: (node, widgetIndex, value) => {
             if (node.type.startsWith('Power Lora Loader')) {
@@ -185,14 +196,81 @@ export default function (sdppp, version = 1) {
                     }
                 }
                 return true;
+
+            } else if (
+                node.properties['toggleRestriction'] == 'always one'
+            ) {
+                const groupName = value;
+                node.widgets.forEach((widget, index) => {
+                    if ((widget.label || widget.name) == 'Enable ' + groupName) {
+                        if (!fixRGthreeWidgetValue(widget.type, widget.value)) {
+                            changeRGthreeWidgetValue(widget, true);
+                        }
+                    } else {
+                        if (fixRGthreeWidgetValue(widget.type, widget.value)) {
+                            changeRGthreeWidgetValue(widget, false);
+                        }
+                    }
+                });
+                return true;
+
             } else if (node.widgets[widgetIndex].type == 'custom') {
                 if (node.widgets[widgetIndex].value.toggled != value) {
                     node.widgets[widgetIndex].doModeChange();
                 }
                 return true
             }
+            return false;
+            function fixRGthreeWidgetValue(type, value) {
+                if (type == 'custom') {
+                    return value.toggled
+                }
+                return value
+            }
+            function changeRGthreeWidgetValue(widget, value) {
+                if (widget.type == 'custom') {
+                    if (widget.value.toggled != value) {
+                        widget.doModeChange();
+                    }
+                } else {
+                    if (widget.doModeChange && widget.value != value) {
+                        widget.doModeChange();
+
+                    } else {
+                        widget.value = value;
+                        widget.callback();
+                    }
+                }
+            }
         }
     })
+
+    function switchFormatter(node) {
+        if (!node.widgets.length || node.widgets[0].options.max > 50) return null;
+        const max = node.widgets[0].options.max;
+        const ret = {
+            title: getTitle(node),
+            widgets: [
+                {
+                    value: node.widgets[0].value,
+                    outputType: "combo",
+                    options: {
+                        values: Array.from({ length: max }, (_, i) => i + 1)
+                    },
+                    uiWeight: 12
+                }
+            ]
+        }
+        return ret;
+
+    }
+    sdppp.widgetable.add("ImpactInversedSwitch", {
+        formatter: switchFormatter
+    })
+    sdppp.widgetable.add("ImpactSwitch", {
+        formatter: switchFormatter
+    })
+
     /**
      * Handle LoadImage
      * 处理 LoadImage 节点
@@ -293,7 +371,7 @@ export default function (sdppp, version = 1) {
         }
     })
 
-    // 替换为Parameter处理
+    // krita的
     sdppp.widgetable.add('ETN_Parameter', {
         formatter: (node) => {
             const outputTypeMap = {
@@ -323,6 +401,107 @@ export default function (sdppp, version = 1) {
             }
         }
     });
+
+    const floatFormatter = (node) => {
+        if (!('sdppp_max' in node.properties)) {
+            node.setProperty('sdppp_max', 100);
+        }
+        if (!('sdppp_min' in node.properties)) {
+            node.setProperty('sdppp_min', 0);
+        }
+        if (!('sdppp_step' in node.properties)) {
+            node.setProperty('sdppp_step', 0.01);
+        }
+        return {
+            title: getTitle(node),
+            widgets: [{
+                value: node.widgets[0].value, // 主值widget
+                name: '',   // 参数名widget
+                outputType: "number",
+                options: {
+                    max: node.properties.sdppp_max,
+                    min: node.properties.sdppp_min,
+                    step: node.properties.sdppp_step,
+                    slider: true
+                },
+                uiWeight: 12 // 独占整行
+            }]
+        }
+    }
+    sdppp.widgetable.add("easy float", {
+        formatter: floatFormatter
+    })
+    sdppp.widgetable.add("ImpactFloat", {
+        formatter: floatFormatter
+    })
+    function intFormatter(node) {
+        if (!('sdppp_max' in node.properties)) {
+            node.setProperty('sdppp_max', 100);
+        }
+        if (!('sdppp_min' in node.properties)) {
+            node.setProperty('sdppp_min', 0);
+        }
+        return {
+            title: getTitle(node),
+            widgets: [{
+                value: node.widgets[0].value, // 主值widget
+                name: '',   // 参数名widget
+                outputType: "number",
+                options: {
+                    max: node.properties.sdppp_max,
+                    min: node.properties.sdppp_min,
+                    step: 1,
+                    slider: true 
+                },
+                uiWeight: 12 // 独占整行
+            }]
+        }
+    }
+    sdppp.widgetable.add("easy int", {
+        formatter: intFormatter
+    })
+    sdppp.widgetable.add("ImpactInt", {
+        formatter: intFormatter
+    })
+
+
+
+    sdppp.widgetable.add("ImpactStringSelector", {
+        formatter: (node) => {
+            node.constructor["@sdppp_type"] = {
+              type: "combo",
+              values: ["combo", "segment"],
+            };
+            
+            if (node.widgets[1] && node.widgets[1].value) {
+                throw new Error("multiline string selector is not supported");
+            }
+            if (!node.properties["sdppp_type"]) {
+                node.setProperty("sdppp_type", "combo");
+            }
+            const options = node.widgets[0].value.split('\n');
+            const selecting = node.widgets[2].value;
+
+            return {
+                title: getTitle(node),
+                widgets: [{
+                    value: options[selecting], // 主值widget
+                    name: '',   // 参数名widget
+                    outputType: node.properties["sdppp_type"] || "combo",
+                    options: {
+                        values: options 
+                    },
+                    uiWeight: 12 // 独占整行
+                }]
+            }
+        },
+        setter: (node, widgetIndex, value) => {
+            const options = node.widgets[0].value.split('\n');
+            const index = options.indexOf(value);
+            node.widgets[2].value = index == -1 ? 0 : index;
+            return true;
+        }
+    })
 
     sdppp.widgetable.add("ShowText|pysssss", {
         formatter: (node) => {
