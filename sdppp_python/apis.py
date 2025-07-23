@@ -76,6 +76,27 @@ def registerComfyHTTPEndpoints(sdppp, PromptServer):
             'subfolder': result['subfolder'], 
             'type': result['type']
         })
+
+    @PromptServer.instance.routes.get('/sdppp_version')
+    async def sdppp_version(request):
+        # 读取相对于本文件./version2.txt
+        version_file = path.join(projectRoot, 'sdppp_python/version2.txt')
+        if not path.exists(version_file):
+            return web.json_response({
+                'error': 'version file not found'
+            })
+        with open(version_file, 'r') as f:
+            version = f.read().strip()
+        if not version.isdigit():
+            return web.json_response({
+                'error': 'version file is not a valid number'
+            })
+        version = int(version)
+        # 返回版本号
+        
+        return web.json_response({
+            'version': version
+        })
         
     
 def registerSDHTTPEndpoints(sdppp, app):

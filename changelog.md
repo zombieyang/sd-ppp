@@ -1,4 +1,7 @@
 
+## [1.9.2] - 2025-07-23
+* Update the 2.x beta plugin to preview.3.
+
 ## [1.9.1] - 2025-07-15
 * fix: Fix the bugs that will make 1.x plugin not work.
 * optimize: update the download link of 2.x beta plugin.
