@@ -285,7 +285,8 @@ export default function (sdppp, version = 1) {
                     widgets: [{
                         value: {
                             url: node.widgets[0].value,
-                            source: node.properties.source || 'comfyUI',
+                            source: node.properties.source || 'remote',
+                            auto: node.properties.auto || false,
                             thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
                         },
                         outputType: "images",
@@ -310,6 +311,7 @@ export default function (sdppp, version = 1) {
             if (version == 2) {
                 node.widgets[widgetIndex].value = value.url;
                 node.setProperty('source', value.source);
+                node.setProperty('auto', value.auto);
                 return true;
             }
         }
@@ -328,7 +330,8 @@ export default function (sdppp, version = 1) {
                     widgets: [{
                         value: {
                             url: node.widgets[0].value,
-                            source: node.properties.source || 'comfyUI',
+                            source: node.properties.source || 'remote',
+                            auto: node.properties.auto || false,
                             thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
                         },
                         outputType: "masks",
@@ -353,6 +356,7 @@ export default function (sdppp, version = 1) {
             if (version == 2) {
                 node.widgets[widgetIndex].value = value.url;
                 node.setProperty('source', value.source);
+                node.setProperty('auto', value.auto);
                 return true;
             }
         }
