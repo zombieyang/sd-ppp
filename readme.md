@@ -115,7 +115,7 @@
 | [猫咪老师](https://space.bilibili.com/1054925384) | =>[BiliBili](https://www.bilibili.com/video/BV17fs2ejE3s)|
 | [鸡肉爱土豆](https://space.bilibili.com/403361177) | =>[BiliBili](https://www.bilibili.com/video/BV1shakevEbf)|
 | [来真的](https://space.bilibili.com/590784254) | => [BiliBili](https://www.bilibili.com/video/BV1BoCnYqEPX)|
-| [李心宝爱玩Ai](https://b23.tv/MLgsAxP) | => [BiliBili](https://b23.tv/cKGs17J)|
+| [李心宝爱玩Ai](https://b23.tv/MLgsAxP) | => [BiliBili](https://www.bilibili.com/video/BV1wFvTzFEdw/)|
 
 ## Open Source declaration
 
@@ -137,4 +137,5 @@ This project is licensed under the **BSD 3-Clause License**. See the [LICENSE](L
 @[AbdullahAlfaraj](https://github.com/AbdullahAlfaraj)
 @[tianlang0704](https://github.com/tianlang0704)
 @[猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f)
+
 
