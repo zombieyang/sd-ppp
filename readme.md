@@ -11,7 +11,7 @@
 
 **Latest: Support Nano-banana, Flux-Kontext-Pro/Max, Midjourney or any API via RunningHUB in Photoshop!**
 
-<img width="400" alt="Image" src="https://sdppp.zombee.tech/index_screenshot.png" />
+<img width="400" alt="Image" src="./static/index.gif" />
 
 
 ## 2.0 Beta is available!
