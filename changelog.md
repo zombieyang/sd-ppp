@@ -1,3 +1,6 @@
+## [1.9.4] - 2025-09-07
+* Update the 2.x beta plugin to beta.6.
+* support runninghub.ai
 
 ## [1.9.2] - 2025-08-21
 * Update the 2.x beta plugin to beta.5.

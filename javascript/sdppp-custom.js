@@ -44,7 +44,7 @@ export default function (sdppp, version = 1) {
                     value: node.widgets[0].value,
                     outputType: "PS_DOCUMENT",
                     options: {
-                        values: node.widgets[0].options.values()
+                        values: typeof node.widgets[0].options.values == 'function' ? node.widgets[0].options.values() : node.widgets[0].options.values
                     }
                 }]
             }
