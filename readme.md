@@ -1,4 +1,4 @@
-# SD-PPP: ThirdParty Photoshop AI Plugin
+# SD-PPP: Unofficial Photoshop AI Plugin
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/9HeGjDvEmn?style=flat)](https://discord.gg/9HeGjDvEmn) | [![QQ group](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-SDPPP%E7%9A%84%E9%A2%91%E9%81%93-brightgreen.svg)](https://pd.qq.com/s/5m42umo28) 
 
@@ -40,5 +40,6 @@ GPL-3.0
 @[AbdullahAlfaraj](https://github.com/AbdullahAlfaraj)
 @[tianlang0704](https://github.com/tianlang0704)
 @[猫咪老师](https://www.xiaohongshu.com/user/profile/59f1fcc411be101aba7f048f)
+
 
 
