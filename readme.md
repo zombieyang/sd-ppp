@@ -22,17 +22,13 @@
 * Select images with keyboard shortcuts
 * Select any area, layer, document in Photoshop quickly!
 
-[> Download 2.0 Beta](https://sdppp.zombee.tech/en/installation)
+[> Download 2.0 Beta](https://sdppp.zombee.tech/)
 
 > only available for PS26.0+ (Adobe Photoshop 2025)
 
 ## How to use?
 
-
-* **[Installation](https://sdppp.zombee.tech/en/installation)**
-* [Use with runninghub.ai](https://sdppp.zombee.tech/en/tutorial-basics2/runninghub)
-* [Use with replicate.com](https://sdppp.zombee.tech/en/tutorial-basics2/replicate)
-* [Install ComfyUI Extension](https://sdppp.zombee.tech/en/installation-comfy)  [Use with ComfyUI](https://sdppp.zombee.tech/en/tutorial-basics2/sending) 
+* **[Official Website](https://sdppp.zombee.tech/)**
 
 ## License  
 GPL-3.0
