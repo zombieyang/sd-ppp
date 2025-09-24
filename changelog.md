@@ -1,3 +1,8 @@
+## [1.9.10] - 2025-09-25
+* The release candidate of 2.0.
+* Update the image selection again, now is more easier.
+* support live painting again.
+
 ## [1.9.4] - 2025-09-07
 * Update the 2.x beta plugin to beta.6.
 * support runninghub.ai
