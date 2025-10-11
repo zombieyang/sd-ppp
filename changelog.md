@@ -1,3 +1,12 @@
+## [1.9.11] - 2025-09-25
+* fix: if current layer is group and curlayer is actived in image widget, many strange behaviour.
+* fix: cannot send image if the prefix is setted in `SaveImage` node
+* fix: empty custom api's input will cause white screen.
+* fix: not sending to correct position when sending back to canvas.
+* fix: the image limit size would always set to 2048.
+* feature: autosend
+* optimize: optimize the once image syncing logic
+
 ## [1.9.10] - 2025-09-25
 * The release candidate of 2.0.
 * Update the image selection again, now is more easier.

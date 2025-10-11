@@ -279,16 +279,10 @@ export default function (sdppp, version = 1) {
     sdppp.widgetable.add('LoadImage', {
         formatter: (node) => {
             if (version == 2) {
-                const [subfolder, ...rest] = node.widgets[0].value.split('/')
                 return {
                     title: getTitle(node),
                     widgets: [{
-                        value: {
-                            url: node.widgets[0].value,
-                            source: node.properties.source || 'remote',
-                            auto: node.properties.auto || false,
-                            thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
-                        },
+                        value: node.widgets[0].value,
                         outputType: "images",
                         options: node.widgets[0].options
                     }]
@@ -307,13 +301,7 @@ export default function (sdppp, version = 1) {
             }
         },
         setter: (node, widgetIndex, value) => {
-            if (version == 1) return false;
-            if (version == 2) {
-                node.widgets[widgetIndex].value = value.url;
-                node.setProperty('source', value.source);
-                node.setProperty('auto', value.auto);
-                return true;
-            }
+            return false;
         }
     })
     /**
@@ -324,16 +312,10 @@ export default function (sdppp, version = 1) {
     sdppp.widgetable.add('LoadImageMask', {
         formatter: (node) => {
             if (version == 2) {
-                const [subfolder, ...rest] = node.widgets[0].value.split('/')
                 return {
                     title: getTitle(node),
                     widgets: [{
-                        value: {
-                            url: node.widgets[0].value,
-                            source: node.properties.source || 'remote',
-                            auto: node.properties.auto || false,
-                            thumbnail: location.protocol + '//' + location.host + '/api/view?type=input&filename=' + rest.join('/') + '&subfolder=' + subfolder
-                        },
+                        value: node.widgets[0].value,
                         outputType: "masks",
                         options: node.widgets[0].options
                     }]
@@ -352,13 +334,7 @@ export default function (sdppp, version = 1) {
             }
         },
         setter: (node, widgetIndex, value) => {
-            if (version == 1) return false;
-            if (version == 2) {
-                node.widgets[widgetIndex].value = value.url;
-                node.setProperty('source', value.source);
-                node.setProperty('auto', value.auto);
-                return true;
-            }
+            return false;
         }
     })
 
