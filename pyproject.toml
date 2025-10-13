@@ -1,7 +1,7 @@
 [project]
 name = "sd-ppp"
 description = "getting/sending picture from/to Photoshop with a simple connection. Make Photoshop become the workspace of your ComfyUI."
-version = "1.9.11"
+version = "1.9.12"
 license = { file = "LICENSE" }
 
 [project.urls]

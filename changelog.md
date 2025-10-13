@@ -1,4 +1,7 @@
-## [1.9.11] - 2025-09-25
+## [1.9.12] - 2025-10-13
+* fix: wrong send back position if DPI/PPI>72
+
+## [1.9.11] - 2025-10-11
 * fix: if current layer is group and curlayer is actived in image widget, many strange behaviour.
 * fix: cannot send image if the prefix is setted in `SaveImage` node
 * fix: empty custom api's input will cause white screen.

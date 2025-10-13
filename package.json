@@ -1,6 +1,6 @@
 {
   "name": "sdppp",
-  "version": "1.9.11",
+  "version": "1.9.12",
   "type": "module",
   "scripts": {
     "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
