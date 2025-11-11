@@ -272,6 +272,27 @@ export default function (sdppp, version = 1) {
     })
 
     /**
+     * Handle LoadVideos
+     * 处理 LoadVideos 节点
+     */
+    sdppp.widgetable.add('LoadVideo', {
+        formatter: (node) => {
+            if (!node.widgets?.length) {
+                return null;
+            }
+            return {
+                title: getTitle(node),
+                widgets: [{
+                    value: node.widgets[0].value,
+                    outputType: "video",
+                    options: node.widgets[0].options,
+                    uiWeight: 12
+                }]
+            }
+        },
+        setter: () => false
+    })
+    /**
      * Handle LoadImage
      * 处理 LoadImage 节点
      * 
