@@ -1,6 +1,6 @@
 import { BaseWidgetProps } from './_base';
 import { Select, Upload, Image, Flex } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadIcon } from '../icons';
 import i18n from '../../../../../../src/common/i18n.mts';
 import { app } from 'src/comfy-globals.mjs';
 
@@ -44,7 +44,7 @@ export const ImageWidget = ({ value, onValueChange, options, nodeID }: ImageWidg
                     })}
                 >
                     <button type="button" className="ant-btn">
-                        <UploadOutlined /> {i18n('upload')}
+                        <UploadIcon size={16} /> {i18n('upload')}
                     </button>
                 </Upload>
             </Flex>

@@ -1,3 +1,6 @@
+## [1.9.14] - 2025-11-11
+* optimize: Completely rework for image selection UX.
+
 ## [1.9.12] - 2025-10-13
 * fix: wrong send back position if DPI/PPI>72
 

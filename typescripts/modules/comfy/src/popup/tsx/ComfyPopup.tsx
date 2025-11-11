@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Settings from "./Settings";
 import { WorkflowEditWrap } from "./WorkflowEditWeb";
 import { ConfigProvider } from 'antd';
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseIcon } from './icons';
 import i18n from "../../../../../src/common/i18n.mts";
 var docStyle = document.createElement('style');
 docStyle.innerHTML = cssText;
@@ -65,7 +65,7 @@ export default function ComfyPopup({ onClose, tab }: { onClose: () => void, tab:
                         <button onClick={() => setTab('2')} className={_tab === '2' ? 'active' : ''}>{i18n("Photoshop")}</button>
                     </div>
                     <span>Powered by SDPPP</span>
-                    <button className="sdppp-menu-close-button" onClick={onClose}><CloseOutlined /></button>
+                    <button className="sdppp-menu-close-button" onClick={onClose}><CloseIcon size={18} /></button>
                 </div>
                 <div className="sdppp-menu-content">
                     <div className="sdppp-menu-workflow-edit-wrap" style={{ display: _tab === '1' ? 'block' : 'none' }}>
