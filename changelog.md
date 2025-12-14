@@ -1,3 +1,6 @@
+## [1.9.19] - 2025-12-13
+* optimize: Completely rework for image selection UX.
+
 ## [1.9.15] - 2025-11-11
 * optimize: Completely rework for image selection UX.
 

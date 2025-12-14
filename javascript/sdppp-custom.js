@@ -299,13 +299,45 @@ export default function (sdppp, version = 1) {
      */
     sdppp.widgetable.add('LoadImage', {
         formatter: (node) => {
+            initNodeProperty(node, "#sdppp_variant", {
+                default: "default",
+                type: "combo",
+                values: ["default", "simple", "file"]
+            });
+            initNodeProperty(node, "#sdppp_simple_content", {
+                default: "canvas",
+                type: "combo",
+                values: ["canvas", "curlayer"],
+            });
+            initNodeProperty(node, "#sdppp_simple_mask", {
+                default: "canvas",
+                type: "combo",
+                values: ["canvas", "curlayer", "selection", "smart_selection"],
+            });
+            initNodeProperty(node, "#sdppp_simple_boundary", {
+                default: "canvas",
+                type: "combo",
+                values: ["canvas", "curlayer", "selection"],
+            });
+            initNodeProperty(node, "#sdppp_label", {
+                default: "",
+                type: "string",
+            });
+
             if (version == 2) {
                 return {
                     title: getTitle(node),
                     widgets: [{
                         value: node.widgets[0].value,
                         outputType: "images",
-                        options: node.widgets[0].options
+                        options: {
+                            ...node.widgets[0].options,
+                            ['#sdppp_variant']: node.properties["#sdppp_variant"],
+                            ['#sdppp_simple_content']: node.properties["#sdppp_simple_content"],
+                            ['#sdppp_simple_mask']: node.properties["#sdppp_simple_mask"],
+                            ['#sdppp_simple_boundary']: node.properties["#sdppp_simple_boundary"],
+                            ['#sdppp_label']: node.properties["#sdppp_label"],
+                        }
                     }]
                 }
 
@@ -452,7 +484,7 @@ export default function (sdppp, version = 1) {
                     max: node.properties.sdppp_max,
                     min: node.properties.sdppp_min,
                     step: 1,
-                    slider: true 
+                    slider: true
                 },
                 uiWeight: 12 // 独占整行
             }]
@@ -464,21 +496,38 @@ export default function (sdppp, version = 1) {
     sdppp.widgetable.add("ImpactInt", {
         formatter: intFormatter
     })
+    sdppp.widgetable.add('easy seed', {
+        formatter: (node) => {
+            return {
+                title: getTitle(node),
+                widgets: [{
+                    value: node.widgets[0].value, // 主值widget
+                    name: '',   // 参数名widget
+                    outputType: "number",
+                    options: {
+                        step: 1,
+                        slider: false
+                    },
+                    uiWeight: 12 // 独占整行
+                }]
+            }
+        }
+    })
 
 
 
     sdppp.widgetable.add("ImpactStringSelector", {
         formatter: (node) => {
-            node.constructor["@sdppp_type"] = {
-              type: "combo",
-              values: ["combo", "segment"],
+            node.constructor["@sdppp_variant"] = {
+                type: "combo",
+                values: ["combo", "segment"],
             };
-            
+
             if (node.widgets[1] && node.widgets[1].value) {
                 throw new Error("multiline string selector is not supported");
             }
-            if (!node.properties["sdppp_type"]) {
-                node.setProperty("sdppp_type", "combo");
+            if (!node.properties["sdppp_variant"]) {
+                node.setProperty("sdppp_variant", "combo");
             }
             const options = node.widgets[0].value.split('\n');
             const selecting = node.widgets[2].value;
@@ -488,9 +537,9 @@ export default function (sdppp, version = 1) {
                 widgets: [{
                     value: options[selecting], // 主值widget
                     name: '',   // 参数名widget
-                    outputType: node.properties["sdppp_type"] || "combo",
+                    outputType: node.properties["sdppp_variant"] || "combo",
                     options: {
-                        values: options 
+                        values: options
                     },
                     uiWeight: 12 // 独占整行
                 }]
@@ -560,4 +609,22 @@ function nameByConnectedOutputOrTitle(node) {
  */
 function getTitle(node) {
     return sdpppX.getNodeTitle(node);
+}
+
+/**
+ * 
+ * @param {*} node 
+ * @param {*} key 
+ * @param {*} settings 
+ */
+function initNodeProperty(node, key, settings) {
+    if (!node.properties[key]) {
+        node.setProperty(key, settings.default);
+    }
+    if (settings.type) {
+        node.constructor['@' + key] = {
+            type: settings.type,
+            values: settings.values || []
+        };
+    }
 }
