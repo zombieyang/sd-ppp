@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { pageStore } from "../../../photoshopModels.mts";
-import i18n from "../../../../../src/common/i18n.mts";
-import { api } from "../../comfy-globals.mts";
 import { Checkbox } from "antd";
+import React, { useState } from "react";
+import i18n from "../../../../../src/common/i18n.mts";
+import { pageStore } from "../../../photoshopModels.mts";
+import { api } from "../../comfy-globals.mts";
 
 const Settings: React.FC = () => {
     const [useSliderForNumberWidget, setUseSliderForNumberWidget] = useState(pageStore.data.useSliderForNumberWidget);
@@ -38,7 +38,7 @@ const Settings: React.FC = () => {
             </div>
             <div className="settings-section settings-row">
                 <div className="settings-label">
-                    <label>{i18n("Photoshop plugin")} 2.0 Beta(CHN only)</label>
+                    <label>{i18n("Photoshop plugin")} 2.0 Beta</label>
                 </div>
                 <div className="settings-control">
                     <button onClick={handleDownloadPlugin2} className="download-button">

@@ -192,10 +192,10 @@
 }
 
 .sdppp-side-icon {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     mask-image: url("./sd-ppp-static/sdppp-icon.svg");
-    mask-size: 36px;
+    mask-size: 27px;
     mask-position: center;
     mask-repeat: no-repeat;
     background-color: currentColor;
