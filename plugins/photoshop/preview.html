@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./css/styles.css">
+    <script>
+      window.React = window.React || undefined;
+      window.ReactDOMClient = window.ReactDOMClient || undefined;
+      window.ReactJSXRuntime = window.ReactJSXRuntime || undefined;
+      window.Jimp = window.Jimp || undefined;
+      window.socketIO = window.socketIO || undefined;
+      window.Buffer = window.Buffer || undefined;
+      window.SDPPPInternal = window.SDPPPInternal || {};
+      global = window;
+      global.screen = {};
+      window.WebSocket.prototype.OPEN = 1;
+    </script>
+    <script src="sdpppX.js"></script>
+    <script src="./dist/librarys.js"></script>
+    <script src="./dist/index.js"></script>
+    <script>
+      (function () {
+        try {
+          const ws = new WebSocket('ws://localhost:8787');
+          ws.onmessage = (ev) => {
+            const data = JSON.parse(ev.data || '{}');
+            if (data && data.type === 'build-complete') {
+              location.reload();
+            }
+          };
+        } catch (e) { }
+      })();
+    </script>
+    <style>
+      html, body { height: 100%; }
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="app-root"></div>
+  </body>
+</html>
+

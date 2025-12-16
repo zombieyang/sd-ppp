@@ -1,2 +1,3 @@
 global.sdpppX = {
+    useMinimalStandalone: true
 }
