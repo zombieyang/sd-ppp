@@ -219,6 +219,9 @@ export default function (sdppp, version = 1) {
                     node.widgets[widgetIndex].doModeChange();
                 }
                 return true
+            } else {
+                node.widgets[widgetIndex].value = value;
+                node.widgets[widgetIndex].callback?.(value)
             }
             return false;
             function fixRGthreeWidgetValue(type, value) {
@@ -511,6 +514,11 @@ export default function (sdppp, version = 1) {
                     uiWeight: 12 // 独占整行
                 }]
             }
+        },
+        setter: (node, widgetIndex, value) => {
+            // it should be implemented.
+            // otherwise the roll button will be trigger and make a queuePrompt.
+            return widgetIndex == 2;
         }
     })
 
