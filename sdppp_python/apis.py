@@ -77,6 +77,10 @@ def registerComfyHTTPEndpoints(sdppp, PromptServer):
             'type': result['type']
         })
 
+    @PromptServer.instance.routes.head('/sdppp_upload2')
+    async def sdppp_upload_head(request):
+        return web.Response(status=200)
+
     @PromptServer.instance.routes.get('/sdppp_version')
     async def sdppp_version(request):
         # 读取相对于本文件./version2.txt
