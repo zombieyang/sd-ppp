@@ -1,5 +1,5 @@
-## [1.9.21] - 2025-12-21
-* bugfixes
+## [2.0.0] - 2025-02-05
+* sponsor API
 
 ## [1.9.19] - 2025-12-13
 * optimize: Completely rework for image selection UX.
