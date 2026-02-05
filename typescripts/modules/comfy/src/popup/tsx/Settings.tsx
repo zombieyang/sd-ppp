@@ -28,7 +28,7 @@ const Settings: React.FC = () => {
 
             <div className="settings-section settings-row">
                 <div className="settings-label">
-                    <label>{i18n("Photoshop plugin")}</label>
+                    <label>{i18n("Photoshop plugin")} (1.x deprecated)</label>
                 </div>
                 <div className="settings-control">
                     <button onClick={handleDownloadPlugin} className="download-button">
@@ -38,7 +38,7 @@ const Settings: React.FC = () => {
             </div>
             <div className="settings-section settings-row">
                 <div className="settings-label">
-                    <label>{i18n("Photoshop plugin")} 2.0 Beta</label>
+                    <label>{i18n("Photoshop plugin")} 2.0</label>
                 </div>
                 <div className="settings-control">
                     <button onClick={handleDownloadPlugin2} className="download-button">
