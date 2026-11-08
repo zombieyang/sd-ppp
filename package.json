@@ -4,9 +4,17 @@
   "type": "module",
   "scripts": {
     "watch": "nodemon -w typescripts -e mjs,js,jsx,mts,ts,tsx,json,css,html -x node typescripts/src/build/index.build.ts",
-    "tscheck": "cd typescripts && tsc --noEmit",
+    "typecheck": "pnpm run tscheck",
+    "tscheck": "tsc -p typescripts/src/tsconfig.json --noEmit && tsc -p typescripts/_build/tsconfig.json --noEmit",
     "build": "cross-env NODE_ENV=production node typescripts/_build/esbuild.ts && bash typescripts/_build/package-ccx.sh && bash typescripts/_build/package-all.sh",
     "dev": "cross-env NODE_ENV=development node typescripts/_build/esbuild.ts --watch"
+  },
+  "nx": {
+    "tags": [
+      "scope:app",
+      "platform:photoshop",
+      "type:app"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
